@@ -1,0 +1,611 @@
+<template>
+  <view class="content">
+    <CustomNavBar v-model="selectedLocation" :locations="locations" @handleSelect="handleSelect" />
+    <view class="page-content" :style="{ marginTop: navBarHeight + 26 + 'px' }">
+      <MessageNotification :data="messageList" />
+      <template v-if="UserUtil.getDataPermissionType() !== 'SELF'">
+        <CustomerPool :data="poolData" @click="handlePoolClick" />
+      </template>
+      <template>
+        <TaskCard :data="taskData" @click="handleTaskClick" />
+      </template>
+      <StatisticsCard
+        title="业务数据"
+        :data="statisticsData"
+        :showTime="true"
+        :timeStart="timeStart"
+        :timeEnd="timeEnd"
+        @showTimeStart="showTimeStart"
+        @showTimeEnd="showTimeEnd" />
+      <template v-if="UserUtil.getDataPermissionType() === 'SELF'">
+        <StatisticsCard title="客户数据" :data="customerData" />
+      </template>
+      <template v-else>
+        <StatisticsCard
+          :tabs="selfSaleTabs"
+          :tabIndex="selfSaleTabIndex"
+          :data="selfSaleData"
+          @tabChange="handleSelfSaleTabChange" />
+      </template>
+    </view>
+    <up-datetime-picker
+      :show="isTimeStart"
+      v-model="timeStart"
+      mode="date"
+      :title="`开始时间`"
+      @cancel="isTimeStart = false"
+      @confirm="onTimeStartConfirm($event)" />
+    <up-datetime-picker
+      :show="isTimeEnd"
+      v-model="timeEnd"
+      mode="date"
+      :title="`结束时间`"
+      @cancel="isTimeEnd = false"
+      @confirm="onTimeEndConfirm($event)" />
+  </view>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import CustomNavBar from "@/components/CustomNavBar/index.vue";
+import MessageNotification from "@/components/MessageNotification/index.vue";
+import TaskCard from "@/components/TaskCard/index.vue";
+import StatisticsCard from "@/components/StatisticsCard/index.vue";
+import CustomerPool from "@/components/CustomerPool/index.vue";
+import { requestApi } from "@/api/request";
+import { ProjectUtil, UserUtil } from "@/utils/auth";
+import { onShow } from "@dcloudio/uni-app";
+import { getCurrentMonthDay } from "@/utils/tools";
+import dayjs from "dayjs";
+
+const selectedLocation = ref(1);
+const locations = ref([]);
+const navBarHeight = ref(0);
+// 消息
+const messageList = ref([]);
+// 任务
+const taskData = ref([
+  {
+    name: "首访跟进",
+    current: 0,
+    total: 0
+  },
+  {
+    name: "复访跟进",
+    current: 0,
+    total: 0
+  }
+]);
+// 业务数据
+const statisticsData = ref([
+  {
+    value: 0,
+    label: "线索数",
+    unit: "组"
+  },
+  {
+    value: 0,
+    label: "认购",
+    unit: "组"
+  },
+  {
+    value: 0,
+    label: "签约",
+    unit: "组"
+  },
+  {
+    value: 0,
+    label: "回款",
+    unit: "万元"
+  }
+]);
+// 客户数据
+const customerData = ref([
+  {
+    value: 0,
+    label: "客户总数",
+    unit: "组"
+  },
+  {
+    value: 0,
+    label: "首访",
+    unit: "组"
+  },
+  {
+    value: 0,
+    label: "复访",
+    unit: "组"
+  },
+  {
+    value: 0,
+    label: "预计认购",
+    unit: "组"
+  },
+  {
+    value: 0,
+    label: "A",
+    unit: "组"
+  },
+  {
+    value: 0,
+    label: "B",
+    unit: "组"
+  },
+  {
+    value: 0,
+    label: "C",
+    unit: "组"
+  },
+  {
+    value: 0,
+    label: "D",
+    unit: "组"
+  }
+]);
+const selfSaleTabIndex = ref("selfSale");
+const allSelfSaleData = ref([]);
+//自售数据、渠道数据、全民营销
+const selfSaleData = ref([
+  {
+    value: 0,
+    label: "客户总数",
+    unit: "组"
+  },
+  {
+    value: 0,
+    label: "有效数",
+    unit: "组"
+  },
+  {
+    value: 0,
+    label: "公客池",
+    unit: "组"
+  },
+  {
+    value: 0,
+    label: "预计认购",
+    unit: "组"
+  },
+  {
+    value: 0,
+    label: "A",
+    unit: "组"
+  },
+  {
+    value: 0,
+    label: "B",
+    unit: "组"
+  },
+  {
+    value: 0,
+    label: "C",
+    unit: "组"
+  },
+  {
+    value: 0,
+    label: "D",
+    unit: "组"
+  }
+]);
+//自售数据tabs
+const selfSaleTabs = ref([
+  {
+    name: "自售数据",
+    value: "selfSale"
+  },
+  {
+    name: "渠道数据",
+    value: "channel"
+  },
+  {
+    name: "全民营销",
+    value: "nationalMarketing"
+  }
+]);
+// 公客池、报备池、签约提醒总条数
+const poolData = ref([
+  {
+    type: "public",
+    title: "公客池",
+    value: 0,
+    bgClass: "bg-blue"
+  },
+  {
+    type: "report",
+    title: "报备池",
+    value: 0,
+    bgClass: "bg-green"
+  },
+  {
+    type: "sign",
+    title: "签约提醒",
+    value: 0,
+    bgClass: "bg-orange"
+  }
+]);
+
+const isTimeStart = ref(false);
+const isTimeEnd = ref(false);
+const timeStart = ref(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000));
+const timeEnd = ref(new Date());
+
+// 选择项目
+const handleSelect = (item: { id: number; name: string }) => {
+  selectedLocation.value = item.id;
+  ProjectUtil.setProjectInfo({ projectId: item.id, projectName: item.name });
+  if (UserUtil.getDataPermissionType() === "SELF") {
+    getBusinessData();
+    getFollowTask();
+  } else {
+    selfSaleTabIndex.value = "selfSale";
+    getPoolTotal();
+    getBusinessData();
+    getSelfSaleData();
+    getFollowTask();
+  }
+};
+
+// 客户池
+const handlePoolClick = (type: "public" | "report" | "sign") => {
+  if (type === "public") {
+    uni.navigateTo({
+      url: "/pages/pool/index"
+    });
+  } else if (type === "report") {
+    uni.navigateTo({
+      url: "/pages/pool/report"
+    });
+  } else if (type === "sign") {
+    uni.navigateTo({
+      url: "/pages/pool/sign"
+    });
+  }
+};
+
+// 任务
+const handleTaskClick = (type: 1 | 2) => {
+  uni.navigateTo({
+    url: "/pages/index/task?type=" + type
+  });
+};
+
+// 获取用户信息
+const getUserInfo = () => {
+  requestApi.post("/auth/user/info").then((res) => {
+    if (res.code === 0) {
+      UserUtil.setUserInfo(res.data);
+      // 获取项目信息
+      getProjectInfo();
+    }
+  });
+};
+
+// 获取项目信息
+const getProjectInfo = () => {
+  requestApi.post("/home/query/user/by/project").then((res) => {
+    if (res.code === 0) {
+      locations.value = res.data.map((item: { projectId: number; projectName: string }) => ({
+        id: item.projectId,
+        name: item.projectName
+      }));
+      selectedLocation.value = ProjectUtil.getProjectInfo().projectId || res.data[0].projectId;
+      if (!ProjectUtil.getProjectInfo().projectId) {
+        ProjectUtil.setProjectInfo(res.data[0]);
+      }
+      //置业顾问
+      if (UserUtil.getDataPermissionType() === "SELF") {
+        getBusinessData();
+        getFollowTask();
+      } else {
+        getPoolTotal();
+        getBusinessData();
+        getSelfSaleData();
+        getFollowTask();
+      }
+    } else {
+      uni.showToast({ title: res.msg, icon: "none" });
+    }
+  });
+};
+
+// 获取消息
+const getMessage = () => {
+  requestApi
+    .post("/home/query/sys/user/message", {
+      pageNumber: 1,
+      pageSize: 3,
+      userId: UserUtil.getUserInfo().id
+    })
+    .then((res) => {
+      if (res.code === 0) {
+        messageList.value = res.data.list;
+      }
+    });
+};
+
+//获取公客池、报备池、签约提醒总条数
+const getPoolTotal = () => {
+  requestApi.post("/home/query/task/pool/statistics", { id: selectedLocation.value }).then((res) => {
+    if (res.code === 0) {
+      poolData.value = [
+        {
+          type: "public",
+          title: "公客池",
+          value: res.data.countCommonCustomerPool || 0,
+          bgClass: "bg-blue"
+        },
+        {
+          type: "report",
+          title: "报备池",
+          value: res.data.countCustomerReport || 0,
+          bgClass: "bg-green"
+        },
+        {
+          type: "sign",
+          title: "签约提醒",
+          value: res.data.countSubscription || 0,
+          bgClass: "bg-orange"
+        }
+      ];
+    }
+  });
+};
+
+//选择业务数据时间(开始)
+const showTimeStart = () => {
+  isTimeStart.value = true;
+};
+
+//选择业务数据时间(结束)
+const showTimeEnd = () => {
+  isTimeEnd.value = true;
+};
+
+//选择业务数据时间(开始)确认
+const onTimeStartConfirm = (event: any) => {
+  isTimeStart.value = false;
+  timeStart.value = event.value;
+  getBusinessData();
+};
+
+//选择业务数据时间(结束)确认
+const onTimeEndConfirm = (event: any) => {
+  isTimeEnd.value = false;
+  timeEnd.value = event.value;
+  getBusinessData();
+};
+
+// 获取业务数据
+const getBusinessData = () => {
+  requestApi
+    .post("/home/query/business/statistics", {
+      id: selectedLocation.value,
+      beginDate: dayjs(timeStart.value).format("YYYY-MM-DD"),
+      endDate: dayjs(timeEnd.value).format("YYYY-MM-DD")
+    })
+    .then((res) => {
+      if (res.code === 0) {
+        statisticsData.value = [
+          {
+            value: res.data.countFirstCloserTask || 0,
+            label: "线索数",
+            unit: "组"
+          },
+          {
+            value: res.data.subscription || 0,
+            label: `认购`,
+            unit: "组"
+          },
+          {
+            value: res.data.sign || 0,
+            label: "签约",
+            unit: "组"
+          },
+          {
+            value: res.data.describes || 0,
+            label: "回款",
+            unit: "万元"
+          }
+        ];
+      }
+    });
+};
+
+//获取客户数据
+const getCustomerData = (first: number, repeat: number) => {
+  requestApi.post("/home/query/customer/statistics", { id: selectedLocation.value }).then((res) => {
+    if (res.code === 0) {
+      customerData.value = [
+        {
+          value: first + repeat || 0,
+          label: "客户总数",
+          unit: "组"
+        },
+        {
+          value: first || 0,
+          label: "首访",
+          unit: "组"
+        },
+        {
+          value: repeat || 0,
+          label: "复访",
+          unit: "组"
+        },
+        {
+          value: res.data.countSubscription || 0,
+          label: `${getCurrentMonthDay()}预计认购`,
+          unit: "组"
+        },
+        {
+          value: res.data.a || 0,
+          label: "A",
+          unit: "组"
+        },
+        {
+          value: res.data.b || 0,
+          label: "B",
+          unit: "组"
+        },
+        {
+          value: res.data.c || 0,
+          label: "C",
+          unit: "组"
+        },
+        {
+          value: res.data.d || 0,
+          label: "D",
+          unit: "组"
+        }
+      ];
+    }
+  });
+};
+
+//获取自售数据、渠道数据、全民营销数据
+const getSelfSaleData = () => {
+  requestApi.post("/home/channel/stat", { id: selectedLocation.value }).then((res) => {
+    if (res.code === 0) {
+      allSelfSaleData.value = res.data;
+      selfSaleData.value = [
+        {
+          value: res.data.selfSale.customerCount || 0,
+          label: "客户总数",
+          unit: "组"
+        },
+        {
+          value: res.data.selfSale.validCount || 0,
+          label: "有效数",
+          unit: "组"
+        },
+        {
+          value: res.data.selfSale.publicPoolCount || 0,
+          label: "公客池",
+          unit: "组"
+        },
+        {
+          value: res.data.selfSale.expectedSubscriptionCount || 0,
+          label: `${getCurrentMonthDay()}预计认购`,
+          unit: "组"
+        },
+        {
+          value: res.data.selfSale.a || 0,
+          label: "A",
+          unit: "组"
+        },
+        {
+          value: res.data.selfSale.b || 0,
+          label: "B",
+          unit: "组"
+        },
+        {
+          value: res.data.selfSale.c || 0,
+          label: "C",
+          unit: "组"
+        },
+        {
+          value: res.data.selfSale.d || 0,
+          label: "D",
+          unit: "组"
+        }
+      ];
+    }
+  });
+};
+
+// 自售数据tab切换
+const handleSelfSaleTabChange = (index: number | string) => {
+  // @ts-expect-error 忽略索引类型检查
+  selfSaleTabIndex.value = index;
+  // @ts-expect-error 忽略索引类型检查
+  const currentData = allSelfSaleData.value[index];
+  selfSaleData.value = [
+    {
+      value: currentData.customerCount || 0,
+      label: "客户总数",
+      unit: "组"
+    },
+    {
+      value: currentData.validCount || 0,
+      label: "有效数",
+      unit: "组"
+    },
+    {
+      value: currentData.publicPoolCount || 0,
+      label: "公客池",
+      unit: "组"
+    },
+    {
+      value: currentData.expectedSubscriptionCount || 0,
+      label: `${getCurrentMonthDay()}预计认购`,
+      unit: "组"
+    },
+    {
+      value: currentData.a || 0,
+      label: "A",
+      unit: "组"
+    },
+    {
+      value: currentData.b || 0,
+      label: "B",
+      unit: "组"
+    },
+    {
+      value: currentData.c || 0,
+      label: "C",
+      unit: "组"
+    },
+    {
+      value: currentData.d || 0,
+      label: "D",
+      unit: "组"
+    }
+  ];
+};
+
+//跟进任务（条数）
+const getFollowTask = () => {
+  requestApi.post("/home/query/closer/task", { id: selectedLocation.value }).then((res) => {
+    if (res.code === 0) {
+      taskData.value = [
+        {
+          name: "首访跟进",
+          current: res.data.countNotFirstCloserTask || 0,
+          total: res.data.countFirstCloserTask || 0
+        },
+        {
+          name: "复访跟进",
+          current: res.data.countNotRepetitionCloserTask || 0,
+          total: res.data.countRepetitionCloserTask || 0
+        }
+      ];
+    }
+    getCustomerData(res.data.countFirstCloserTask, res.data.countRepetitionCloserTask);
+  });
+};
+
+onShow(() => {
+  console.log(ProjectUtil.getProjectInfo().projectId);
+  selectedLocation.value = ProjectUtil.getProjectInfo().projectId;
+
+  //置业顾问
+  if (UserUtil.getDataPermissionType() === "SELF") {
+    getBusinessData();
+  } else {
+    getPoolTotal();
+    getBusinessData();
+    getSelfSaleData();
+  }
+  getFollowTask();
+  getMessage();
+});
+
+onMounted(() => {
+  // 获取导航栏高度
+  const menuButtonInfo = uni.getMenuButtonBoundingClientRect();
+  if (menuButtonInfo) {
+    navBarHeight.value = (menuButtonInfo.bottom + menuButtonInfo.top) / 2 + 8;
+  }
+  // 获取用户信息
+  getUserInfo();
+});
+</script>

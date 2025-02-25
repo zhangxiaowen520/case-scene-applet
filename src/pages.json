@@ -1,0 +1,224 @@
+{
+	"pages": [
+		{
+			"path": "pages/login/index",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页",
+				"navigationStyle": "custom",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path": "pages/index/task",
+			"style": {
+				"navigationBarTitleText": "任务列表"
+			}
+		},
+		{
+			"path": "pages/property/index",
+			"style": {
+				"navigationBarTitleText": "楼盘",
+				"navigationStyle": "custom",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path": "pages/property/all",
+			"style": {
+				"navigationBarTitleText": "全部户型"
+			}
+		},
+		{
+			"path": "pages/property/details",
+			"style": {
+				"navigationBarTitleText": "户型详情"
+			}
+		},
+		{
+			"path": "pages/customer/index",
+			"style": {
+				"navigationBarTitleText": "客户"
+			}
+		},
+		{
+			"path": "pages/customer/filter",
+			"style": {
+				"navigationBarTitleText": "筛选"
+			}
+		},
+		{
+			"path": "pages/customer/add",
+			"style": {
+				"navigationBarTitleText": "客户报备"
+			}
+		},
+		{
+			"path": "pages/customer/details",
+			"style": {
+				"navigationBarTitleText": "客户详情"
+			}
+		},
+		{
+			"path": "pages/customer/basic",
+			"style": {
+				"navigationBarTitleText": "基础信息"
+			}
+		},
+		{
+			"path": "pages/customer/attribution",
+			"style": {
+				"navigationBarTitleText": "归属变更记录"
+			}
+		},
+		{
+			"path": "pages/customer/follow",
+			"style": {
+				"navigationBarTitleText": "跟进记录"
+			}
+		},
+		{
+			"path": "pages/customer/need",
+			"style": {
+				"navigationBarTitleText": "客户需求"
+			}
+		},
+		{
+			"path": "pages/customer/addFollow",
+			"style": {
+				"navigationBarTitleText": "写跟进"
+			}
+		},
+		{
+			"path": "pages/my/index",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"navigationStyle": "custom",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path": "pages/my/resetPassword",
+			"style": {
+				"navigationBarTitleText": "重置密码"
+			}
+		},
+		{
+			"path": "pages/message/index",
+			"style": {
+				"navigationBarTitleText": "消息通知"
+			}
+		},
+		{
+			"path": "pages/pool/index",
+			"style": {
+				"navigationBarTitleText": "公客池"
+			}
+		},
+		{
+			"path": "pages/pool/report",
+			"style": {
+				"navigationBarTitleText": "报备池"
+			}
+		},
+		{
+			"path": "pages/pool/sign",
+			"style": {
+				"navigationBarTitleText": "签约提醒"
+			}
+		},
+		{
+			"path": "pages/pool/rule",
+			"style": {
+				"navigationBarTitleText": "分配规则"
+			}
+		},
+		{
+			"path": "pages/people/index",
+			"style": {
+				"navigationBarTitleText": "全民"
+			}
+		},
+		{
+			"path": "pages/people/add",
+			"style": {
+				"navigationBarTitleText": "客户报备"
+			}
+		},
+		{
+			"path": "pages/people/my",
+			"style": {
+				"navigationBarTitleText": "个人中心"
+			}
+		}
+	],
+	"condition": {
+		"current": 0,
+		"list": [
+			{
+				"name": "首页",
+				"path": "pages/index/index"
+			},
+			{
+				"name": "全民",
+				"path": "pages/people/index"
+			},
+			{
+				"name": "写跟进",
+				"path": "pages/customer/addFollow"
+			}
+		]
+	},
+	"tabBar": {
+		"color": "#999999",
+		"selectedColor": "#2C65F6",
+		"backgroundColor": "#FFFFFF",
+		"borderStyle": "black",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": "首页",
+				"iconPath": "static/tabBar/home.png",
+				"selectedIconPath": "static/tabBar/home_active.png"
+			},
+			{
+				"pagePath": "pages/customer/index",
+				"text": "客户",
+				"iconPath": "static/tabBar/customer.png",
+				"selectedIconPath": "static/tabBar/customer_active.png"
+			},
+			{
+				"pagePath": "pages/property/index",
+				"text": "楼盘",
+				"iconPath": "static/tabBar/property.png",
+				"selectedIconPath": "static/tabBar/property_active.png"
+			},
+			{
+				"pagePath": "pages/my/index",
+				"text": "我的",
+				"iconPath": "static/tabBar/my.png",
+				"selectedIconPath": "static/tabBar/my_active.png"
+			}
+		]
+	},
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"^u--(.*)": "uview-plus/components/u-$1/u-$1.vue",
+			"^up-(.*)": "uview-plus/components/u-$1/u-$1.vue",
+	        "^u-([^-].*)": "uview-plus/components/u-$1/u-$1.vue"
+		}
+	},
+	
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "案场助手",
+		"navigationBarBackgroundColor": "#FFFFFF",
+		"backgroundColor": "#FFFFFF"
+	}
+}
