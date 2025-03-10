@@ -27,7 +27,7 @@
           :key="room.id"
           :class="['room-item', `room-status-${room.roomStatus}`]"
           @click="handleRoomClick(room)">
-          <view class="room-number">{{ room.roomNumber }}</view>
+          <view class="room-number" :style="getRoomNumberStyle(room.roomNumber)">{{ room.roomNumber }}</view>
           <view class="room-info">{{ room.roomStatusName }}</view>
         </view>
       </view>
@@ -137,6 +137,26 @@ const handleRoomClick = (room: any) => {
     url: `/pages/property/details?id=${room.id}`
   });
 };
+
+// 根据房间号长度计算字体大小
+const getRoomNumberStyle = (roomNumber: string) => {
+  const length = String(roomNumber).length;
+  let fontSize = '32rpx'; // 默认字体大小
+  
+  if (length > 4) {
+    fontSize = '28rpx';
+  }
+  if (length > 6) {
+    fontSize = '24rpx';
+  }
+  if (length > 8) {
+    fontSize = '20rpx';
+  }
+  
+  return {
+    fontSize
+  };
+};
 </script>
 
 <style scoped>
@@ -239,8 +259,13 @@ const handleRoomClick = (room: any) => {
 }
 
 .room-number {
-  font-size: 32rpx;
   margin-bottom: 8rpx;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
 }
 
 .room-info {

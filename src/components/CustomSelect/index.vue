@@ -88,6 +88,7 @@ const handleSelect = (item: SelectOption) => {
 }
 
 .select-dropdown {
+  min-width: 100rpx;
   position: absolute;
   top: 100%;
   left: 0;
@@ -102,6 +103,8 @@ const handleSelect = (item: SelectOption) => {
 }
 
 .select-option {
+  min-width: 100rpx;
+  box-sizing: border-box;
   padding: 8px 12px;
   font-size: 26rpx;
   font-weight: 400;

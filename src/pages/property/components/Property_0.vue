@@ -84,7 +84,7 @@ const listingsData = computed(() => [
     unit: "套"
   },
   {
-    value: formatThousands(props.data.roomSign),
+    value: formatThousands(props.data.roomOnSale),
     label: "在售",
     unit: "套"
   },
