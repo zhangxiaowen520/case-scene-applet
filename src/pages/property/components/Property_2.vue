@@ -66,15 +66,15 @@
         </view>
         <view class="info-item">
           <text class="label">总建筑面积:</text>
-          <text class="value">{{ `${data.totalArea}万m²` || "-" }}</text>
+          <text class="value">{{ data.totalArea ? `${data.totalArea}万m²` : "-" }}</text>
         </view>
         <view class="info-item">
           <text class="label">地上建筑面积:</text>
-          <text class="value">{{ `${data.aboveGroundArea}万m²` || "-" }}</text>
+          <text class="value">{{ data.aboveGroundArea ? `${data.aboveGroundArea}万m²` : "-" }}</text>
         </view>
         <view class="address-item">
           <text class="label">地下建筑面积:</text>
-          <text class="value">{{ `${data.undergroundArea}万m²` || "-" }}</text>
+          <text class="value">{{ data.undergroundArea ? `${data.undergroundArea}万m²` : "-" }}</text>
         </view>
         <view class="info-item">
           <text class="label">规划楼栋:</text>

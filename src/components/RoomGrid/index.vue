@@ -2,100 +2,69 @@
   <view class="room-grid">
     <scroll-view
       scroll-y
-      class="room-grid-left"
-      :scroll-top="leftScrollTop"
-      :scroll-with-animation="true"
-      ref="leftScroll">
-      <view
-        class="room-grid-left-item"
-        v-for="floor in floors"
-        :key="floor"
-        :class="{ active: floor == activeFloor }"
-        @click="handleFloorClick(floor)"
-        >{{ floor }}</view
-      >
-    </scroll-view>
-    <scroll-view
-      scroll-y
       class="room-grid-content"
       :scroll-top="scrollTop"
       :scroll-with-animation="true"
       @scroll="handleScroll">
-      <view class="room-grid-wrapper">
-        <view
-          v-for="room in rooms"
-          :key="room.id"
-          :class="['room-item', `room-status-${room.roomStatus}`]"
-          @click="handleRoomClick(room)">
-          <view class="room-number" :style="getRoomNumberStyle(room.roomNumber)">{{ room.roomNumber }}</view>
-          <view class="room-info">{{ room.roomStatusName }}</view>
-        </view>
+      <view 
+        v-for="floor in groupedRooms" 
+        :key="floor.floorNum" 
+        class="floor-section">
+        <view class="floor-label">{{ floor.floorNum }}层</view>
+        <scroll-view 
+          scroll-x 
+          class="floor-rooms">
+          <view class="rooms-wrapper">
+            <view
+              v-for="room in floor.rooms"
+              :key="room.id"
+              :class="['room-item', `room-status-${room.roomStatus}`]"
+              @click="handleRoomClick(room)">
+              <view class="room-number" :style="getRoomNumberStyle(room.roomNumber)">{{ room.roomNumber }}</view>
+              <view class="room-info">{{ room.roomStatusName }}</view>
+            </view>
+          </view>
+        </scroll-view>
       </view>
     </scroll-view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed } from "vue";
 
 const props = defineProps<{
   rooms: Array<any>;
 }>();
 
 const scrollTop = ref(0);
-const leftScrollTop = ref(0);
 const activeFloor = ref(1);
 
-// 计算所有的楼层
-const floors = computed(() => {
-  const floorSet = new Set<number>();
-
-  // 添加防护检查，确保 rooms 是数组
+// 按楼层分组房间
+const groupedRooms = computed(() => {
   if (!Array.isArray(props.rooms)) {
     return [];
   }
 
-  // 从房间号中提取楼层号并添加到 Set 中
-  props.rooms.forEach((room) => {
-    const floor = Number(String(room.roomNumber).slice(0, 2));
-    floorSet.add(floor);
+  // 创建一个Map来存储每层的房间
+  const floorMap = new Map();
+
+  // 将房间按楼层分组
+  props.rooms.forEach(room => {
+    const floor = room.floor;
+    if (!floorMap.has(floor)) {
+      floorMap.set(floor, {
+        floorNum: floor,
+        rooms: []
+      });
+    }
+    floorMap.get(floor).rooms.push(room);
   });
 
-  // 转换为数组并排序
-  return Array.from(floorSet).sort((a, b) => a - b);
+  // 将Map转换为数组并按楼层排序
+  return Array.from(floorMap.values())
+    .sort((a, b) => b.floorNum - a.floorNum); // 从高到低排序
 });
-
-// 监听activeFloor的变化，同步左侧滚动条位置
-watch(activeFloor, (newFloor) => {
-  const floorItemHeight = 36;
-  // 计算当前楼层在数组中的索引位置
-  const floorIndex = floors.value.indexOf(newFloor);
-  // 根据索引计算滚动位置，保持选中项在中间
-  leftScrollTop.value = Math.max(0, (floorIndex - 2) * floorItemHeight);
-});
-
-const handleFloorClick = (floor: number) => {
-  activeFloor.value = floor;
-
-  if (!Array.isArray(props.rooms)) {
-    return;
-  }
-
-  const floorStr = floor.toString().padStart(2, "0");
-
-  let roomsBeforeTargetFloor = 0;
-  for (const room of props.rooms) {
-    const roomFloor = Number(String(room.roomNumber).slice(0, 2));
-    if (roomFloor < floor) {
-      roomsBeforeTargetFloor++;
-    } else {
-      break;
-    }
-  }
-
-  const rowsToScroll = Math.floor(roomsBeforeTargetFloor / 4);
-  scrollTop.value = rowsToScroll * 72;
-};
 
 const handleScroll = (e: any) => {
   if (!Array.isArray(props.rooms)) {
@@ -168,49 +137,42 @@ const getRoomNumberStyle = (roomNumber: string) => {
   box-sizing: border-box;
 }
 
-.room-grid-left {
-  position: absolute;
-  left: 0;
-  top: 24rpx;
-  bottom: 24rpx;
-  width: 30rpx;
-  background: #fff;
-  z-index: 1;
-  box-sizing: border-box;
-}
-
 .room-grid-content {
   height: 100%;
   box-sizing: border-box;
 }
 
-.room-grid-wrapper {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16rpx;
-  box-sizing: border-box;
+.floor-section {
+  margin-bottom: 24rpx;
 }
 
-.room-grid-left-item {
-  font-size: 24rpx;
-  text-align: center;
-  color: rgba(0, 21, 41, 0.46);
-  height: 36rpx; /* 固定每个楼层项的高度 */
-  line-height: 36rpx;
-  box-sizing: border-box;
+.floor-label {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+  padding-left: 8rpx;
 }
 
-.room-grid-left-item.active {
-  background: #2c65f6;
-  color: #fff;
+.floor-rooms {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.rooms-wrapper {
+  display: inline-flex;
+  padding-bottom: 8rpx;
 }
 
 .room-item {
   border-radius: 8rpx;
   padding: 16rpx;
   text-align: center;
-  height: 124rpx; /* 固定房间项高度 */
+  height: 124rpx;
+  width: 160rpx;
+  margin-right: 16rpx;
   box-sizing: border-box;
+  display: inline-block;
+  flex-shrink: 0;
 }
 
 /* 认购状态 */
@@ -266,9 +228,11 @@ const getRoomNumberStyle = (roomNumber: string) => {
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-all;
+  white-space: normal;
 }
 
 .room-info {
   font-size: 24rpx;
+  white-space: normal;
 }
 </style>

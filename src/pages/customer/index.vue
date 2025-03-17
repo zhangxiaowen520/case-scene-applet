@@ -282,7 +282,7 @@ const getCustomerList = async () => {
 
   loadStatus.value = "loading";
   try {
-    const res = await requestApi.post("/customer/query/customer/list", {
+    const query = {
       pageNumber: pageNumber.value,
       pageSize: 10,
       projectId: ProjectUtil.getProjectInfo().projectId,
@@ -293,9 +293,13 @@ const getCustomerList = async () => {
       followUpTimeEnd: followUpTimeEnd.value ? dayjs(followUpTimeEnd.value).format("YYYY-MM-DD") : "",
       lastVisitTimeBegin: lastVisitTimeBegin.value ? dayjs(lastVisitTimeBegin.value).format("YYYY-MM-DD") : "",
       lastVisitTimeEnd: lastVisitTimeEnd.value ? dayjs(lastVisitTimeEnd.value).format("YYYY-MM-DD") : "",
-      realEstateConsultantName: realEstateConsultantName.value,
       customerState: customerState.value,
-      level: level.value
+      level: level.value,
+      // realEstateConsultantName: realEstateConsultantName.value,
+      realEstateConsultantName: commonName.value ? "" : (UserUtil.getDataPermissionType() === 'SELF' ? UserUtil.getUserInfo().name : realEstateConsultantName.value)
+    }
+    const res = await requestApi.post("/customer/query/customer/list", {
+      ...query
     });
 
     if (res.code === 0) {

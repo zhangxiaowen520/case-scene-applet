@@ -1,6 +1,6 @@
 <template>
   <view class="filter-container">
-    <view class="filter-item">
+    <view class="filter-item" v-if="UserUtil.getDataPermissionType() !== 'SELF'">
       <text class="filter-item-title">置业顾问</text>
       <view class="filter-item-content">
         <text class="filter-item-content-item" :class="{ active: selectedUser === '' }" @click="selectedUser = ''">
@@ -107,7 +107,7 @@
 
 <script setup lang="ts">
 import { requestApi } from "@/api/request";
-import { FilterUtil, ProjectUtil } from "@/utils/auth";
+import { FilterUtil, ProjectUtil,UserUtil } from "@/utils/auth";
 import { onMounted, ref } from "vue";
 import dayjs from "dayjs";
 

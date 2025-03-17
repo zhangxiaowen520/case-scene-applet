@@ -315,13 +315,16 @@ onShow(() => {
   width: 100%;
   height: 100rpx;
   background-color: #fff;
-  padding: 0 12px;
+  padding: 0 12rpx;
 }
 .property-filter {
   display: flex;
-  gap: 10px;
-  padding: 12rpx 30rpx;
-  background: #fff;
+  justify-content: space-between;
+  gap: 24rpx;
+  width: 100%;
+  padding: 14rpx 48rpx;
+  box-sizing: border-box;
+  background-color: #fff;
 }
 .empty-state {
   display: flex;
