@@ -44,7 +44,7 @@
         <template v-if="showMoreBasicInfo">
           <view
             class="info-item"
-            v-for="item in customerInfo?.basicInfos.slice(5, customerInfo?.basicInfos.length - 1)"
+            v-for="item in customerInfo?.basicInfos.slice(5, customerInfo?.basicInfos.length)"
             :key="item.customerFieldId">
             <text class="label">{{ item.fieldName }}:</text>
             <text class="value">{{ item.value || "-" }}</text>
@@ -73,7 +73,7 @@
         <template v-if="showMoreDemandInfo">
           <view
             class="info-item"
-            v-for="item in customerInfo?.demandInfos.slice(7, customerInfo?.demandInfos.length - 1)"
+            v-for="item in customerInfo?.demandInfos.slice(7, customerInfo?.demandInfos.length)"
             :key="item.customerFieldId">
             <text class="label">{{ item.fieldName }}:</text>
             <text class="value">{{ item.value || "-" }}</text>

@@ -1,7 +1,7 @@
 <template>
   <view class="basic-info">
     <form-input label="姓名" v-model="props.name" disabled required placeholder="请输入" />
-    <template v-for="info in infos">
+    <template v-for="(info, index) in infos" :key="index">
       <form-input
         v-if="info.type === 'TEXT'"
         :label="info.fieldName"
@@ -19,6 +19,7 @@
           :required="info.hasNecessary" />
       </view>
     </template>
+    <view class="last-form-item"></view>
 
     <view class="btn-wrapper">
       <up-button type="primary" color="#2C65F6" :loading="loading" @click="handleSave">保存</up-button>
@@ -94,6 +95,12 @@ const handleSave = () => {
   padding: 0 40rpx;
   background-color: #fff;
   padding-bottom: 100rpx;
+
+  .last-form-item {
+    width: 100%;
+    height: 80rpx;
+    margin-bottom: 80rpx;
+  }
 
   .btn-wrapper {
     position: fixed;

@@ -26,6 +26,7 @@
           :required="info.hasNecessary" />
       </view>
     </template>
+    <view class="last-form-item"></view>
     <view class="btn-wrapper">
       <up-button type="primary" color="#2C65F6" :loading="loading" @click="handleSave">保存</up-button>
     </view>
@@ -141,6 +142,11 @@ const handleSave = () => {
     padding: 50rpx 10rpx;
     background-color: #fff;
     z-index: 99;
+  }
+  .last-form-item {
+    width: 100%;
+    height: 80rpx;
+    margin-bottom: 80rpx;
   }
 }
 </style>
