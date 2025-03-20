@@ -9,14 +9,16 @@
         placeholder="请输入"
         :required="info.hasNecessary"
         @input="handleInput(info.fieldName, $event)" />
-      <view v-if="info.type === 'RADIO'" @click="handleChoose(info.fieldName, info.options)">
-        <form-input
+      <view v-if="info.type === 'RADIO'">
+        <picker :range="info.options" @change="onPickerChange(info.fieldName, $event, info.options)">
+          <form-input
           :label="info.fieldName"
           v-model="info.value"
           placeholder="请选择"
           :showArrow="true"
           :disabled="true"
           :required="info.hasNecessary" />
+        </picker>
       </view>
     </template>
     <view class="last-form-item"></view>
@@ -45,17 +47,14 @@ const handleInput = (fieldName: string, value: string) => {
   }
 };
 
-//选择
-const handleChoose = (fieldName: string, options: string[]) => {
-  uni.showActionSheet({
-    itemList: options,
-    success: (res) => {
-      const info = infos.value.find((info: any) => info.fieldName === fieldName);
-      if (info) {
-        info.value = options[res.tapIndex];
-      }
-    }
-  });
+// 选择器
+const onPickerChange = (fieldName: string, e: any, options: string[]) => { 
+  console.log(e);
+  console.log(options[Number(e.detail.value)]);
+  const info = infos.value.find((info: any) => info.fieldName === fieldName);
+  if (info) {
+    info.value = options[Number(e.detail.value)];
+  }
 };
 
 const handleSave = () => {

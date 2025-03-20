@@ -15,14 +15,10 @@
       </view>
       <view class="visit-info">
         <view
-          v-if="
-            customerInfo?.nextFollowUpTime &&
-            dayjs(customerInfo.nextFollowUpTime).isBefore(dayjs().add(24, 'hour')) &&
-            getTimeRemaining(customerInfo.nextFollowUpTime) > 0
-          "
+          v-if="shouldShowCountdown"
           class="count-down">
           <text class="stay-time">跟进倒计时</text>
-          <up-count-down :time="getTimeRemaining(customerInfo.nextFollowUpTime)" format="HH:mm:ss"></up-count-down>
+          <up-count-down :time="countdownTime" format="HH:mm:ss"></up-count-down>
         </view>
         <text v-if="customerInfo?.lastProjectCustomerVisitDateTime" class="visit-time">
           上次到访时间 {{ customerInfo?.lastProjectCustomerVisitDateTime.slice(0, 10) }}
@@ -179,7 +175,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import OwnershipChangeRecord from "./components/OwnershipChangeRecord.vue";
 import FollowUpRecord from "./components/FollowUpRecord.vue";
 import ReportingRecord from "./components/ReportingRecord.vue";
@@ -213,6 +209,18 @@ const customerFollowUpRecord = ref<CustomerFollowUpRecordInterface[]>([]);
 const customerReportingRecord = ref<CustomerReportingRecordInterface[]>([]);
 // 分配弹窗
 const showAssignPopup = ref(false);
+
+// Add computed properties for countdown logic
+const shouldShowCountdown = computed(() => {
+  if (!customerInfo.value?.nextFollowUpTime) return false;
+  return dayjs(customerInfo.value.nextFollowUpTime).isBefore(dayjs().add(24, 'hour')) &&
+        getTimeRemaining(customerInfo.value.nextFollowUpTime) > 0;
+});
+
+const countdownTime = computed(() => {
+  if (!customerInfo.value?.nextFollowUpTime) return 0;
+  return getTimeRemaining(customerInfo.value.nextFollowUpTime);
+});
 
 // 在 onLoad 中获取参数
 onLoad((options) => {
@@ -492,6 +500,7 @@ const handleCallClick = () => {
 
 .visit-info {
   display: flex;
+  align-items: center;
   margin-bottom: 16px;
   font-size: 20rpx;
   gap: 20rpx;

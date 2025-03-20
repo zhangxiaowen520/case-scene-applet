@@ -85,6 +85,11 @@ const statisticsData = ref([
   },
   {
     value: 0,
+    label: "到访",
+    unit: "组"
+  },
+  {
+    value: 0,
     label: "认购",
     unit: "组"
   },
@@ -389,6 +394,11 @@ const getBusinessData = () => {
           {
             value: res.data.countFirstCloserTask || 0,
             label: "线索数",
+            unit: "组"
+          },
+          {
+            value: res.data.countFirstVisit || 0,
+            label: "到访",
             unit: "组"
           },
           {

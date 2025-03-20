@@ -16,14 +16,16 @@
         placeholder="请输入"
         :required="info.hasNecessary"
         @input="handleInput(info.fieldName, $event)" />
-      <view v-if="info.type === 'RADIO'" @click="handleChoose(info.fieldName, info.options)">
-        <form-input
+      <view v-if="info.type === 'RADIO'">
+        <picker :range="info.options" @change="onPickerChange(info.fieldName, $event, info.options)">
+          <form-input
           :label="info.fieldName"
           v-model="info.value"
           placeholder="请选择"
           :showArrow="true"
           :disabled="true"
           :required="info.hasNecessary" />
+        </picker>
       </view>
     </template>
     <view class="last-form-item"></view>
@@ -31,6 +33,7 @@
       <up-button type="primary" color="#2C65F6" :loading="loading" @click="handleSave">保存</up-button>
     </view>
   </view>
+  
 </template>
 
 <script setup lang="ts">
@@ -46,13 +49,19 @@ const props = defineProps<{
   infos: string;
 }>();
 const infos = ref(JSON.parse(props.infos));
-console.log(infos.value);
 // 性别
 const sex = ref(props.sex);
 // 客户等级
 const level = ref(props.level);
 // 加载状态
 const loading = ref(false);
+
+// const array = ref(["男", "女"]);
+// const selected = ref("");
+
+// const onPickerChange = (e) => {
+//   selected.value = array.value[e.detail.value];
+// };
 
 //输入
 const handleInput = (fieldName: string, value: string) => {
@@ -80,17 +89,14 @@ const handleLevelChange = () => {
   });
 };
 
-//选择
-const handleChoose = (fieldName: string, options: string[]) => {
-  uni.showActionSheet({
-    itemList: options,
-    success: (res) => {
-      const info = infos.value.find((info: any) => info.fieldName === fieldName);
-      if (info) {
-        info.value = options[res.tapIndex];
-      }
-    }
-  });
+// 选择器
+const onPickerChange = (fieldName: string, e: any, options: string[]) => { 
+  console.log(e);
+  console.log(options[Number(e.detail.value)]);
+  const info = infos.value.find((info: any) => info.fieldName === fieldName);
+  if (info) {
+    info.value = options[Number(e.detail.value)];
+  }
 };
 
 const handleSave = () => {

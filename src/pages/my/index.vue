@@ -66,6 +66,7 @@ const handleLogout = () => {
         TokenUtil.removeToken();
         UserUtil.removeUserInfo();
         FilterUtil.removeFilterData();
+        ProjectUtil.removeProjectInfo();
         uni.reLaunch({ url: "/pages/login/index" });
       }
     }
