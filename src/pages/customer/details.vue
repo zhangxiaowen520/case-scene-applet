@@ -135,13 +135,7 @@
       <text
         class="btn-1"
         @click="handleAssignClick"
-        v-if="
-          UserUtil.getDataPermissionType() === 'PROJECT' &&
-          (customerInfo?.realEstateConsultant === '' ||
-            customerInfo?.realEstateConsultant === null ||
-            customerInfo?.realEstateConsultant === undefined)
-        "
-        >分配</text
+        v-if="UserUtil.getDataPermissionType() === 'PROJECT'">分配</text
       >
       <up-button
         v-if="

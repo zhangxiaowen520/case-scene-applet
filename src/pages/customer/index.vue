@@ -165,12 +165,12 @@
       @click="handleAddClick">
       <up-icon name="plus" size="20" color="#fff"></up-icon>
     </view>
-    <VisitPopup
+    <!-- <VisitPopup
       :id="customerId"
       :phone="customerPhone"
       :show="isVisitPopup"
       @close="handleVisitPopupClose"
-      @confirm="visitConfirm" />
+      @confirm="visitConfirm" /> -->
   </view>
 </template>
 
@@ -342,17 +342,48 @@ const handleWriteFollowUpClick = (item: CustomerInterface) => {
 
 // 客户到访
 const handleCustomerVisitClick = (id: number, phone: string) => {
-  // 先重置状态
-  customerId.value = 0;
-  customerPhone.value = "";
-  isVisitPopup.value = false;
+  // // 先重置状态
+  // customerId.value = 0;
+  // customerPhone.value = "";
+  // isVisitPopup.value = false;
 
-  // 然后设置新的值
-  setTimeout(() => {
-    customerId.value = id;
-    customerPhone.value = phone;
-    isVisitPopup.value = true;
-  }, 0);
+  // // 然后设置新的值
+  // setTimeout(() => {
+  //   customerId.value = id;
+  //   customerPhone.value = phone;
+  //   isVisitPopup.value = true;
+  // }, 0);
+
+  uni.showModal({
+    title: "提示",
+    content: "是否确认到访?",
+    success: (res) => {
+      if (res.confirm) {
+        requestApi.post("/customer/visit", {
+          projectCustomerId: id,
+          code: '1234'
+        }).then((res) => {
+          if (res.code === 0) {
+            uni.showToast({
+              title: "操作成功",
+              icon: "success"
+            });
+            setTimeout(() => {
+              pageNumber.value = 1;
+              pages.value = 0;
+              customerList.value = [];
+              getCustomerList();
+            }, 0);
+          }else{
+            uni.showToast({
+              title: res.msg,
+              icon: "none"
+            });
+          }
+        });
+      }
+    }
+  });
 };
 
 // 打电话
@@ -376,36 +407,36 @@ const handleCallClick = (phone: string, id?: number) => {
 };
 
 // 处理弹窗关闭
-const handleVisitPopupClose = () => {
-  isVisitPopup.value = false;
-  setTimeout(() => {
-    customerId.value = 0;
-    customerPhone.value = "";
-  }, 0);
-};
+// const handleVisitPopupClose = () => {
+//   isVisitPopup.value = false;
+//   setTimeout(() => {
+//     customerId.value = 0;
+//     customerPhone.value = "";
+//   }, 0);
+// };
 
 // 处理确认
-const visitConfirm = () => {
-  uni.showToast({
-    title: "操作成功",
-    icon: "success"
-  });
+// const visitConfirm = () => {
+//   uni.showToast({
+//     title: "操作成功",
+//     icon: "success"
+//   });
 
-  // 先关闭弹窗
-  isVisitPopup.value = false;
+//   // 先关闭弹窗
+//   isVisitPopup.value = false;
 
-  // 延迟执行其他操作
-  setTimeout(() => {
-    customerId.value = 0;
-    customerPhone.value = "";
+//   // 延迟执行其他操作
+//   setTimeout(() => {
+//     customerId.value = 0;
+//     customerPhone.value = "";
 
-    // 重新加载列表
-    pageNumber.value = 1;
-    pages.value = 0;
-    customerList.value = [];
-    getCustomerList();
-  }, 0);
-};
+//     // 重新加载列表
+//     pageNumber.value = 1;
+//     pages.value = 0;
+//     customerList.value = [];
+//     getCustomerList();
+//   }, 0);
+// };
 
 // 添加接收筛选数据的方法
 const updateFilter = (filterData: any) => {
