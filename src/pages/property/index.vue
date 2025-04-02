@@ -157,7 +157,7 @@ const getUnitStructure = () => {
       ];
       period.value = periodOptions.value[0]?.value || "";
       dong.value = dongOptions.value[0]?.value || "";
-      unit.value = "";
+      unit.value =  unitOptions.value[1]?.value || "";
       if (currentTab.value === 1) {
         getHouseSaleControl();
       }
