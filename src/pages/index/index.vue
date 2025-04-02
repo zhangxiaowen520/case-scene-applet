@@ -392,6 +392,9 @@ const onTimeStartConfirm = (event: any) => {
   isTimeStart.value = false;
   timeStart.value = event.value;
   getBusinessData();
+  getFollowTask();
+  getSelfSaleData();
+
 };
 
 //选择业务数据时间(结束)确认
@@ -399,6 +402,8 @@ const onTimeEndConfirm = (event: any) => {
   isTimeEnd.value = false;
   timeEnd.value = event.value;
   getBusinessData();
+  getFollowTask();
+  getSelfSaleData();
 };
 
 // 获取业务数据
@@ -445,7 +450,12 @@ const getBusinessData = () => {
 
 //获取客户数据
 const getCustomerData = (first: number, repeat: number) => {
-  requestApi.post("/home/query/customer/statistics", { id: selectedLocation.value.id, type: selectedLocation.value.type }).then((res) => {
+  requestApi.post("/home/query/customer/statistics", { 
+    id: selectedLocation.value.id, 
+    type: selectedLocation.value.type,
+    beginDate: dayjs(timeStart.value).format("YYYY-MM-DD"),
+    endDate: dayjs(timeEnd.value).format("YYYY-MM-DD") 
+  }).then((res) => {
     if (res.code === 0) {
       customerData.value = [
         {
@@ -495,7 +505,12 @@ const getCustomerData = (first: number, repeat: number) => {
 
 //获取自售数据、渠道数据、全民营销数据
 const getSelfSaleData = () => {
-  requestApi.post("/home/channel/stat", { id: selectedLocation.value.id, type: selectedLocation.value.type }).then((res) => {
+  requestApi.post("/home/channel/stat", { 
+    id: selectedLocation.value.id, 
+    type: selectedLocation.value.type,
+    beginDate: dayjs(timeStart.value).format("YYYY-MM-DD"),
+    endDate: dayjs(timeEnd.value).format("YYYY-MM-DD")  
+  }).then((res) => {
     if (res.code === 0) {
       allSelfSaleData.value = res.data;
       selfSaleData.value = [
