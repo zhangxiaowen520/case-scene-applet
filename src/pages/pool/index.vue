@@ -111,7 +111,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { requestApi } from "@/api/request";
-import { ProjectUtil } from "@/utils/auth";
+import { OrganizationUtil, ProjectUtil } from "@/utils/auth";
 import { onReachBottom, onShow } from "@dcloudio/uni-app";
 import type { CustomerPoolInterface } from "@/types/pool";
 import AssignPopup from "@/components/AssignPopup/index.vue";
@@ -156,7 +156,9 @@ const getCustomerPoolList = () => {
       orderBy: orderBy.value,
       pageNumber: pageNumber.value,
       pageSize: 10,
-      projectId: ProjectUtil.getProjectInfo().projectId
+      projectId: ProjectUtil.getProjectInfo().projectId,
+      id:OrganizationUtil.getOrganizationInfo().id,
+      type:OrganizationUtil.getOrganizationInfo().type,
     })
     .then((res) => {
       if (res.code === 0) {

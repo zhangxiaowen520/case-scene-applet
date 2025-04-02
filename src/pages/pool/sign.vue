@@ -45,7 +45,7 @@
 import { requestApi } from "@/api/request";
 import type { SignListInterface } from "@/types/pool";
 import type { LoadStatusType } from "@/types/request";
-import { ProjectUtil, UserUtil } from "@/utils/auth";
+import { OrganizationUtil, ProjectUtil, UserUtil } from "@/utils/auth";
 import { onReachBottom, onShow } from "@dcloudio/uni-app";
 import { ref } from "vue";
 
@@ -70,6 +70,8 @@ const getSignList = () => {
   requestApi
     .post("/home/query/project/subscription", {
       projectId: ProjectUtil.getProjectInfo().projectId,
+      id:OrganizationUtil.getOrganizationInfo().id,
+      type:OrganizationUtil.getOrganizationInfo().type,
       pageNumber: pageNumber.value,
       pageSize: 10
     })

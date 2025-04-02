@@ -1,6 +1,6 @@
 <template>
   <view class="basic-info">
-    <form-input label="姓名" v-model="props.name" disabled required placeholder="请输入" />
+    <form-input label="姓名" v-model="name" required placeholder="请输入" />
     <template v-for="(info, index) in infos" :key="index">
       <form-input
         v-if="info.type === 'TEXT'"
@@ -39,6 +39,7 @@ const props = defineProps<{
   infos: string;
 }>();
 const infos = ref(JSON.parse(props.infos));
+const name = ref(props.name);
 const loading = ref(false);
 const handleInput = (fieldName: string, value: string) => {
   const info = infos.value.find((info: any) => info.fieldName === fieldName);
@@ -62,7 +63,8 @@ const handleSave = () => {
   requestApi
     .post("/customer/update/demand", {
       id: props.id,
-      infos: infos.value
+      infos: infos.value,
+      name: name.value,
     })
     .then((res) => {
       if (res.code === 0) {

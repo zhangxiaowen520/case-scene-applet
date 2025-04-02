@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { FilterUtil, ProjectUtil, TokenUtil, UserUtil } from "@/utils/auth";
+import { FilterUtil, OrganizationUtil, ProjectUtil, TokenUtil, UserUtil } from "@/utils/auth";
 import { onMounted, ref } from "vue";
 
 const navBarHeight = ref(0);
@@ -67,6 +67,7 @@ const handleLogout = () => {
         UserUtil.removeUserInfo();
         FilterUtil.removeFilterData();
         ProjectUtil.removeProjectInfo();
+        OrganizationUtil.removeOrganizationInfo();
         uni.reLaunch({ url: "/pages/login/index" });
       }
     }

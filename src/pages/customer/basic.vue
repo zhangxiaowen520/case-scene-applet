@@ -1,6 +1,6 @@
 <template>
   <view class="basic-info">
-    <form-input label="姓名" v-model="props.name" disabled required placeholder="请输入" />
+    <form-input label="姓名" v-model="name" required placeholder="请输入" />
     <form-input label="手机号" v-model="props.phone" disabled required placeholder="请输入" />
     <view @click="handleGenderChange">
       <form-input label="客户性别" v-model="sex" required placeholder="请选择" disabled show-arrow />
@@ -49,6 +49,7 @@ const props = defineProps<{
   infos: string;
 }>();
 const infos = ref(JSON.parse(props.infos));
+const name = ref(props.name);
 // 性别
 const sex = ref(props.sex);
 // 客户等级
@@ -91,8 +92,6 @@ const handleLevelChange = () => {
 
 // 选择器
 const onPickerChange = (fieldName: string, e: any, options: string[]) => { 
-  console.log(e);
-  console.log(options[Number(e.detail.value)]);
   const info = infos.value.find((info: any) => info.fieldName === fieldName);
   if (info) {
     info.value = options[Number(e.detail.value)];
@@ -106,7 +105,8 @@ const handleSave = () => {
       id: props.id,
       infos: infos.value,
       level: level.value,
-      sex: sex.value
+      sex: sex.value,
+      name: name.value,
     })
     .then((res) => {
       if (res.code === 0) {

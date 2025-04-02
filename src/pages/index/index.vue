@@ -1,12 +1,12 @@
 <template>
-  <view class="content">
-    <CustomNavBar v-model="selectedLocation" :locations="locations" @handleSelect="handleSelect" />
+  <Transition class="content">
+    <CustomTreeNavBar :modelName="OrganizationUtil.getOrganizationInfo().name" :locations="treeLocations" @handleSelect="handleSelect" />
     <view class="page-content" :style="{ marginTop: navBarHeight + 26 + 'px' }">
       <MessageNotification :data="messageList" />
       <template v-if="UserUtil.getDataPermissionType() !== 'SELF'">
         <CustomerPool :data="poolData" @click="handlePoolClick" />
       </template>
-      <template>
+      <template v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'">
         <TaskCard :data="taskData" @click="handleTaskClick" />
       </template>
       <StatisticsCard
@@ -42,24 +42,30 @@
       :title="`结束时间`"
       @cancel="isTimeEnd = false"
       @confirm="onTimeEndConfirm($event)" />
-  </view>
+  </Transition>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import CustomNavBar from "@/components/CustomNavBar/index.vue";
+import CustomTreeNavBar from "@/components/CustomTreeNavBar/index.vue";
 import MessageNotification from "@/components/MessageNotification/index.vue";
 import TaskCard from "@/components/TaskCard/index.vue";
 import StatisticsCard from "@/components/StatisticsCard/index.vue";
 import CustomerPool from "@/components/CustomerPool/index.vue";
 import { requestApi } from "@/api/request";
-import { ProjectUtil, UserUtil } from "@/utils/auth";
+import { OrganizationUtil, ProjectUtil, UserUtil } from "@/utils/auth";
 import { onShow } from "@dcloudio/uni-app";
 import { getCurrentMonthDay } from "@/utils/tools";
 import dayjs from "dayjs";
+import type { OrganizationInfo } from "@/types/user";
 
-const selectedLocation = ref(1);
-const locations = ref([]);
+const selectedLocation = ref({
+  id: 1,
+  name: "",
+  type: "",
+});
+
+const treeLocations = ref([]);
 const navBarHeight = ref(0);
 // 消息
 const messageList = ref([]);
@@ -235,9 +241,11 @@ const timeStart = ref(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000));
 const timeEnd = ref(new Date());
 
 // 选择项目
-const handleSelect = (item: { id: number; name: string }) => {
-  selectedLocation.value = item.id;
-  ProjectUtil.setProjectInfo({ projectId: item.id, projectName: item.name });
+const handleSelect = (item: OrganizationInfo) => {
+  selectedLocation.value.id = item.id;
+  selectedLocation.value.name = item.name;
+  selectedLocation.value.type = item.type;
+  OrganizationUtil.setOrganizationInfo({ id: item.id, name: item.name, type: item.type, isProject: item.isProject, children: [] });
   if (UserUtil.getDataPermissionType() === "SELF") {
     getBusinessData();
     getFollowTask();
@@ -285,17 +293,16 @@ const getUserInfo = () => {
   });
 };
 
-// 获取项目信息
-const getProjectInfo = () => {
-  requestApi.post("/home/query/user/by/project").then((res) => {
+//获取组织项目树结构
+const getProjectTreeInfo = () => {
+  requestApi.post("/home/get/project/structure").then((res) => {
     if (res.code === 0) {
-      locations.value = res.data.map((item: { projectId: number; projectName: string }) => ({
-        id: item.projectId,
-        name: item.projectName
-      }));
-      selectedLocation.value = ProjectUtil.getProjectInfo().projectId || res.data[0].projectId;
-      if (!ProjectUtil.getProjectInfo().projectId) {
-        ProjectUtil.setProjectInfo(res.data[0]);
+      treeLocations.value = res.data;
+      selectedLocation.value.id = OrganizationUtil.getOrganizationInfo().id || res.data[0].id;
+      selectedLocation.value.name = OrganizationUtil.getOrganizationInfo().name || res.data[0].name;
+      selectedLocation.value.type = OrganizationUtil.getOrganizationInfo().type || res.data[0].type;
+      if (!OrganizationUtil.getOrganizationInfo().id) {
+        OrganizationUtil.setOrganizationInfo(res.data[0]);
       }
       //置业顾问
       if (UserUtil.getDataPermissionType() === "SELF") {
@@ -306,6 +313,20 @@ const getProjectInfo = () => {
         getBusinessData();
         getSelfSaleData();
         getFollowTask();
+      }
+    } else {
+      uni.showToast({ title: res.msg, icon: "none" });
+    }
+  });
+};
+
+
+// 获取项目信息
+const getProjectInfo = () => {
+  requestApi.post("/home/query/user/by/project").then((res) => {
+    if (res.code === 0) {
+      if (!ProjectUtil.getProjectInfo().projectId) {
+        ProjectUtil.setProjectInfo(res.data[0]);
       }
     } else {
       uni.showToast({ title: res.msg, icon: "none" });
@@ -330,7 +351,7 @@ const getMessage = () => {
 
 //获取公客池、报备池、签约提醒总条数
 const getPoolTotal = () => {
-  requestApi.post("/home/query/task/pool/statistics", { id: selectedLocation.value }).then((res) => {
+  requestApi.post("/home/query/task/pool/statistics", { id: selectedLocation.value.id, type: selectedLocation.value.type }).then((res) => {
     if (res.code === 0) {
       poolData.value = [
         {
@@ -384,7 +405,8 @@ const onTimeEndConfirm = (event: any) => {
 const getBusinessData = () => {
   requestApi
     .post("/home/query/business/statistics", {
-      id: selectedLocation.value,
+      id: selectedLocation.value.id,
+      type: selectedLocation.value.type,
       beginDate: dayjs(timeStart.value).format("YYYY-MM-DD"),
       endDate: dayjs(timeEnd.value).format("YYYY-MM-DD")
     })
@@ -412,7 +434,7 @@ const getBusinessData = () => {
             unit: "组"
           },
           {
-            value: res.data.describes || 0,
+            value: Number((res.data.describes || 0).toFixed(2)),
             label: "回款",
             unit: "万元"
           }
@@ -423,7 +445,7 @@ const getBusinessData = () => {
 
 //获取客户数据
 const getCustomerData = (first: number, repeat: number) => {
-  requestApi.post("/home/query/customer/statistics", { id: selectedLocation.value }).then((res) => {
+  requestApi.post("/home/query/customer/statistics", { id: selectedLocation.value.id, type: selectedLocation.value.type }).then((res) => {
     if (res.code === 0) {
       customerData.value = [
         {
@@ -473,7 +495,7 @@ const getCustomerData = (first: number, repeat: number) => {
 
 //获取自售数据、渠道数据、全民营销数据
 const getSelfSaleData = () => {
-  requestApi.post("/home/channel/stat", { id: selectedLocation.value }).then((res) => {
+  requestApi.post("/home/channel/stat", { id: selectedLocation.value.id, type: selectedLocation.value.type }).then((res) => {
     if (res.code === 0) {
       allSelfSaleData.value = res.data;
       selfSaleData.value = [
@@ -574,7 +596,7 @@ const handleSelfSaleTabChange = (index: number | string) => {
 
 //跟进任务（条数）
 const getFollowTask = () => {
-  requestApi.post("/home/query/closer/task", { id: selectedLocation.value }).then((res) => {
+  requestApi.post("/home/query/closer/task", { id: selectedLocation.value.id, type: selectedLocation.value.type }).then((res) => {
     if (res.code === 0) {
       taskData.value = [
         {
@@ -593,9 +615,23 @@ const getFollowTask = () => {
   });
 };
 
+onMounted(() => {
+  // 获取导航栏高度
+  const menuButtonInfo = uni.getMenuButtonBoundingClientRect();
+  if (menuButtonInfo) {
+    navBarHeight.value = (menuButtonInfo.bottom + menuButtonInfo.top) / 2 + 8;
+  }
+  // 获取用户信息
+  getUserInfo();
+  getProjectTreeInfo();
+});
+
 onShow(() => {
-  console.log(ProjectUtil.getProjectInfo().projectId);
-  selectedLocation.value = ProjectUtil.getProjectInfo().projectId;
+  if(OrganizationUtil.getOrganizationInfo().id){
+    selectedLocation.value.id = OrganizationUtil.getOrganizationInfo().id;
+    selectedLocation.value.name = OrganizationUtil.getOrganizationInfo().name;
+    selectedLocation.value.type = OrganizationUtil.getOrganizationInfo().type;
+  }
 
   //置业顾问
   if (UserUtil.getDataPermissionType() === "SELF") {
@@ -607,15 +643,5 @@ onShow(() => {
   }
   getFollowTask();
   getMessage();
-});
-
-onMounted(() => {
-  // 获取导航栏高度
-  const menuButtonInfo = uni.getMenuButtonBoundingClientRect();
-  if (menuButtonInfo) {
-    navBarHeight.value = (menuButtonInfo.bottom + menuButtonInfo.top) / 2 + 8;
-  }
-  // 获取用户信息
-  getUserInfo();
 });
 </script>

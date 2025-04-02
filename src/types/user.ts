@@ -68,3 +68,11 @@ export interface FilterData {
   isReset: boolean;
   projectId: number;
 }
+
+export interface OrganizationInfo {
+  id: number;
+  name: string;
+  type: string;
+  isProject: boolean;
+  children: OrganizationInfo[];
+}

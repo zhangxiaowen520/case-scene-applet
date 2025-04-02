@@ -1,45 +1,50 @@
 <template>
-  <view class="pool-page">
-    <view class="search-bar-box">
-      <view class="search-bar">
-        <view class="search-input">
-          <up-icon name="search" size="22" color="#979797"></up-icon>
-          <input
-            type="text"
-            v-model="commonName"
-            @input="handleCommonNameInput"
-            placeholder="请输入客户姓名、手机尾号"
-            placeholder-class="placeholder" />
+  <view>
+    <CustomNavBar
+        v-model="selectedLocation"
+        :locations="locations"
+        :customContent="true"
+        @handleSelect="handleSelect">
+        <view class="search-bar-box" >
+        <view class="search-bar">
+          <view class="search-input">
+            <up-icon name="search" size="22" color="#979797"></up-icon>
+            <input
+              type="text"
+              v-model="commonName"
+              @input="handleCommonNameInput"
+              placeholder="请输入客户姓名、手机尾号"
+              placeholder-class="placeholder" />
+          </view>
+        </view>
+        <view class="filter-bar">
+          <view class="filter-item" @click.stop="handleAllClick">
+            <text :class="{ active: sortType === 'all' }">全部</text>
+          </view>
+          <view class="filter-item" @click.stop="handIsAscendingTimeClick">
+            <text :class="{ active: sortType === 'isAscendingTime' }">{{
+              orderBy ? "创建时间升序" : "创建时间降序"
+            }}</text>
+            <up-icon
+              :name="orderBy ? 'arrow-up' : 'arrow-down'"
+              size="12"
+              :color="sortType === 'isAscendingTime' ? '#2C65F6' : '#666666'"></up-icon>
+          </view>
+          <view class="filter-item" @click.stop="handleIsAscendingLevelClick">
+            <text :class="{ active: sortType === 'isAscendingLevel' }">意向等级</text>
+            <up-icon
+              :name="orderBy ? 'arrow-up' : 'arrow-down'"
+              size="12"
+              :color="sortType === 'isAscendingLevel' ? '#2C65F6' : '#666666'"></up-icon>
+          </view>
+          <view class="filter-item" @click.stop="handleScreenClick">
+            <text :class="{ active: hasScreenFilter }">筛选</text>
+            <up-icon name="list-dot" size="12" :color="hasScreenFilter ? '#2C65F6' : '#666666'"></up-icon>
+          </view>
         </view>
       </view>
-      <view class="filter-bar">
-        <view class="filter-item" @click.stop="handleAllClick">
-          <text :class="{ active: sortType === 'all' }">全部</text>
-        </view>
-        <view class="filter-item" @click.stop="handIsAscendingTimeClick">
-          <text :class="{ active: sortType === 'isAscendingTime' }">{{
-            orderBy ? "创建时间升序" : "创建时间降序"
-          }}</text>
-          <up-icon
-            :name="orderBy ? 'arrow-up' : 'arrow-down'"
-            size="12"
-            :color="sortType === 'isAscendingTime' ? '#2C65F6' : '#666666'"></up-icon>
-        </view>
-        <view class="filter-item" @click.stop="handleIsAscendingLevelClick">
-          <text :class="{ active: sortType === 'isAscendingLevel' }">意向等级</text>
-          <up-icon
-            :name="orderBy ? 'arrow-up' : 'arrow-down'"
-            size="12"
-            :color="sortType === 'isAscendingLevel' ? '#2C65F6' : '#666666'"></up-icon>
-        </view>
-        <view class="filter-item" @click.stop="handleScreenClick">
-          <text :class="{ active: hasScreenFilter }">筛选</text>
-          <up-icon name="list-dot" size="12" :color="hasScreenFilter ? '#2C65F6' : '#666666'"></up-icon>
-        </view>
-      </view>
-    </view>
-
-    <view class="customer-list">
+    </CustomNavBar>
+    <view class="customer-list" :style="{ marginTop: navBarHeight + 130 + 'px' }">
       <view class="customer-item" v-for="(item, index) in customerList" :key="item.projectCustomerId">
         <view class="avatar">
           <view class="avatar-text">{{ item.level || "-" }}</view>
@@ -175,7 +180,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import CustomNavBar from "@/components/CustomNavBar/index.vue";
+import { onMounted, ref } from "vue";
 import { requestApi } from "@/api/request";
 import { onShow, onReachBottom, onLoad } from "@dcloudio/uni-app";
 import { FilterUtil, ProjectUtil, UserUtil } from "@/utils/auth";
@@ -185,6 +191,9 @@ import dayjs from "dayjs";
 import VisitPopup from "@/components/VisitPopup/index.vue";
 import { getTimeRemaining } from "@/utils/tools";
 
+const navBarHeight = ref(0);
+const selectedLocation = ref(ProjectUtil.getProjectInfo().projectId || 1);
+const locations = ref([]);
 //加载状态
 const loadStatus = ref<"loading" | "nomore" | "loadmore">("loadmore");
 //页码
@@ -222,6 +231,31 @@ const customerPhone = ref("");
 //筛选弹窗
 const isFilterPopup = ref(false);
 // 倒计时定时器
+
+//获取项目信息
+const getProjectInfo = () => {
+  requestApi.post("/home/query/user/by/project").then((res) => {
+    if (res.code === 0) {
+      locations.value = res.data.map((item: { projectId: number; projectName: string }) => ({
+        id: item.projectId,
+        name: item.projectName
+      }));
+    } else {
+      uni.showToast({ title: res.msg, icon: "none" });
+    }
+  });
+};
+
+// 选择项目
+const handleSelect = (item: { id: number; name: string }) => {
+  selectedLocation.value = item.id;
+  ProjectUtil.setProjectInfo({ projectId: item.id, projectName: item.name });
+  sortType.value = "all";
+  pageNumber.value = 1;
+  pages.value = 0;
+  customerList.value = [];
+  getCustomerList();
+};
 
 //搜索关键字输入
 const handleCommonNameInput = () => {
@@ -469,10 +503,19 @@ const reset = () => {
   level.value = "";
 };
 
+onMounted(() => {
+  uni.getSystemInfo({
+    success: (res) => {
+      navBarHeight.value = res.statusBarHeight ?? 0;
+    }
+  })
+  getProjectInfo();
+});
+
 onShow(() => {
+  selectedLocation.value = ProjectUtil.getProjectInfo().projectId;
   const filterData = FilterUtil.getFilterData();
   if (filterData && filterData.projectId === ProjectUtil.getProjectInfo().projectId) {
-    console.log("filterData", filterData);
     updateFilter(filterData);
   } else {
     hasScreenFilter.value = false;
@@ -511,6 +554,8 @@ onReachBottom(() => {
 
 // 添加防抖定时器变量
 let searchTimer: number | null = null;
+
+
 </script>
 
 <style lang="scss" scoped>

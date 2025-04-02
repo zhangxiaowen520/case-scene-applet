@@ -104,7 +104,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { requestApi } from "@/api/request";
-import { ProjectUtil } from "@/utils/auth";
+import { OrganizationUtil, ProjectUtil } from "@/utils/auth";
 import { onReachBottom, onShow } from "@dcloudio/uni-app";
 import type { ReportPoolInterface } from "@/types/pool";
 import AssignPopup from "@/components/AssignPopup/index.vue";
@@ -139,6 +139,8 @@ const getCustomerPoolList = () => {
   loadStatus.value = "loading";
   requestApi
     .post("/home/query/customer/report/record", {
+      id:OrganizationUtil.getOrganizationInfo().id,
+      type:OrganizationUtil.getOrganizationInfo().type,
       commonName: commonName.value,
       pageNumber: pageNumber.value,
       pageSize: 10,

@@ -1,10 +1,11 @@
-import type { DataPermissionType, FilterData, UserInfo } from "@/types/user";
+import type { DataPermissionType, FilterData, OrganizationInfo, UserInfo } from "@/types/user";
 import type { ProjectInfo } from "@/types/user";
 
 const TOKEN_KEY = "case_scene_token";
 const USER_INFO_KEY = "case_scene_userInfo";
 const PROJECT_INFO_KEY = "case_scene_projectInfo";
 const FILTER_DATA_KEY = "case_scene_filterData";
+const ORGANIZATION_INFO_KEY = "case_scene_organizationInfo";
 /**
  * Token管理工具类
  */
@@ -110,6 +111,34 @@ export const ProjectUtil = {
     uni.removeStorageSync(PROJECT_INFO_KEY);
   }
 };
+
+
+/**
+ * 获取组织信息
+ */
+export const OrganizationUtil = {
+  /**
+   * 获取组织信息
+   */
+  getOrganizationInfo(): OrganizationInfo {
+    return uni.getStorageSync(ORGANIZATION_INFO_KEY) || {};
+  },
+
+  /**
+   * 设置组织信息
+   */
+  setOrganizationInfo(organizationInfo: OrganizationInfo): void {
+    uni.setStorageSync(ORGANIZATION_INFO_KEY, organizationInfo);
+  },
+
+  /**
+   * 删除组织信息
+   */
+  removeOrganizationInfo(): void {
+    uni.removeStorageSync(ORGANIZATION_INFO_KEY);
+  }
+};
+
 
 export const FilterUtil = {
   getFilterData(): FilterData {
