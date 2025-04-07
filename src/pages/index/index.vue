@@ -91,7 +91,12 @@ const statisticsData = ref([
   },
   {
     value: 0,
-    label: "到访",
+    label: "首访",
+    unit: "组"
+  },
+  {
+    value: 0,
+    label: "复访",
     unit: "组"
   },
   {
@@ -237,7 +242,7 @@ const poolData = ref([
 
 const isTimeStart = ref(false);
 const isTimeEnd = ref(false);
-const timeStart = ref(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000));
+const timeStart = ref(new Date());
 const timeEnd = ref(new Date());
 
 // 选择项目
@@ -425,7 +430,12 @@ const getBusinessData = () => {
           },
           {
             value: res.data.countFirstVisit || 0,
-            label: "到访",
+            label: "首访",
+            unit: "组"
+          },
+          {
+            value: res.data.countRepeatVisit || 0,
+            label: "复访",
             unit: "组"
           },
           {

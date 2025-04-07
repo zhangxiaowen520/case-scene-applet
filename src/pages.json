@@ -37,7 +37,7 @@
 		{
 			"path": "pages/property/details",
 			"style": {
-				"navigationBarTitleText": "户型详情"
+				"navigationBarTitleText": "房源详情"
 			}
 		},
 		{
