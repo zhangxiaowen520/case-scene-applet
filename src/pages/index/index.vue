@@ -9,39 +9,16 @@
       <template v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'">
         <TaskCard :data="taskData" @click="handleTaskClick" />
       </template>
-      <StatisticsCard
-        title="业务数据"
-        :data="statisticsData"
-        :showTime="true"
-        :timeStart="timeStart"
-        :timeEnd="timeEnd"
-        @showTimeStart="showTimeStart"
-        @showTimeEnd="showTimeEnd" />
+      <StatisticsCard title="业务数据" :data="statisticsData" :showTime="true" :timeStart="timeStart" :timeEnd="timeEnd" @showTimeStart="showTimeStart" @showTimeEnd="showTimeEnd" />
       <template v-if="UserUtil.getDataPermissionType() === 'SELF'">
         <StatisticsCard title="客户数据" :data="customerData" />
       </template>
       <template v-else>
-        <StatisticsCard
-          :tabs="selfSaleTabs"
-          :tabIndex="selfSaleTabIndex"
-          :data="selfSaleData"
-          @tabChange="handleSelfSaleTabChange" />
+        <StatisticsCard :tabs="selfSaleTabs" :tabIndex="selfSaleTabIndex" :data="selfSaleData" @tabChange="handleSelfSaleTabChange" />
       </template>
     </view>
-    <up-datetime-picker
-      :show="isTimeStart"
-      v-model="timeStart"
-      mode="date"
-      :title="`开始时间`"
-      @cancel="isTimeStart = false"
-      @confirm="onTimeStartConfirm($event)" />
-    <up-datetime-picker
-      :show="isTimeEnd"
-      v-model="timeEnd"
-      mode="date"
-      :title="`结束时间`"
-      @cancel="isTimeEnd = false"
-      @confirm="onTimeEndConfirm($event)" />
+    <up-datetime-picker :show="isTimeStart" v-model="timeStart" mode="date" :title="`开始时间`" @cancel="isTimeStart = false" @confirm="onTimeStartConfirm($event)" />
+    <up-datetime-picker :show="isTimeEnd" v-model="timeEnd" mode="date" :title="`结束时间`" @cancel="isTimeEnd = false" @confirm="onTimeEndConfirm($event)" />
   </Transition>
 </template>
 
@@ -59,13 +36,17 @@ import { getCurrentMonthDay } from "@/utils/tools";
 import dayjs from "dayjs";
 import type { OrganizationInfo } from "@/types/user";
 
+type TreeNode = OrganizationInfo & {
+  typeKey?: string;
+};
+
 const selectedLocation = ref({
   id: 1,
   name: "",
-  type: "",
+  type: ""
 });
 
-const treeLocations = ref([]);
+const treeLocations = ref<TreeNode[]>([]);
 const navBarHeight = ref(0);
 // 消息
 const messageList = ref([]);
@@ -302,12 +283,27 @@ const getUserInfo = () => {
 const getProjectTreeInfo = () => {
   requestApi.post("/home/get/project/structure").then((res) => {
     if (res.code === 0) {
-      treeLocations.value = res.data;
-      selectedLocation.value.id = OrganizationUtil.getOrganizationInfo().id || res.data[0].id;
-      selectedLocation.value.name = OrganizationUtil.getOrganizationInfo().name || res.data[0].name;
-      selectedLocation.value.type = OrganizationUtil.getOrganizationInfo().type || res.data[0].type;
+      // 递归处理树结构
+      const processTreeData = (data: TreeNode[]): TreeNode[] => {
+        return data.map((item) => {
+          const processedItem: TreeNode = {
+            ...item,
+            typeKey: `${item.type}_${item.id}`
+          };
+          if (item.children && item.children.length > 0) {
+            processedItem.children = processTreeData(item.children);
+          }
+          return processedItem;
+        });
+      };
+
+      const processedData = processTreeData(res.data);
+      treeLocations.value = processedData;
+      selectedLocation.value.id = OrganizationUtil.getOrganizationInfo().id || processedData[0].id;
+      selectedLocation.value.name = OrganizationUtil.getOrganizationInfo().name || processedData[0].name;
+      selectedLocation.value.type = OrganizationUtil.getOrganizationInfo().type || processedData[0].type;
       if (!OrganizationUtil.getOrganizationInfo().id) {
-        OrganizationUtil.setOrganizationInfo(res.data[0]);
+        OrganizationUtil.setOrganizationInfo(processedData[0]);
       }
       //置业顾问
       if (UserUtil.getDataPermissionType() === "SELF") {
@@ -324,7 +320,6 @@ const getProjectTreeInfo = () => {
     }
   });
 };
-
 
 // 获取项目信息
 const getProjectInfo = () => {
@@ -399,7 +394,6 @@ const onTimeStartConfirm = (event: any) => {
   getBusinessData();
   getFollowTask();
   getSelfSaleData();
-
 };
 
 //选择业务数据时间(结束)确认
@@ -460,113 +454,117 @@ const getBusinessData = () => {
 
 //获取客户数据
 const getCustomerData = (first: number, repeat: number) => {
-  requestApi.post("/home/query/customer/statistics", { 
-    id: selectedLocation.value.id, 
-    type: selectedLocation.value.type,
-    beginDate: dayjs(timeStart.value).format("YYYY-MM-DD"),
-    endDate: dayjs(timeEnd.value).format("YYYY-MM-DD") 
-  }).then((res) => {
-    if (res.code === 0) {
-      customerData.value = [
-        {
-          value: first + repeat || 0,
-          label: "客户总数",
-          unit: "组"
-        },
-        {
-          value: first || 0,
-          label: "首访",
-          unit: "组"
-        },
-        {
-          value: repeat || 0,
-          label: "复访",
-          unit: "组"
-        },
-        {
-          value: res.data.countSubscription || 0,
-          label: `${getCurrentMonthDay()}预计认购`,
-          unit: "组"
-        },
-        {
-          value: res.data.a || 0,
-          label: "A",
-          unit: "组"
-        },
-        {
-          value: res.data.b || 0,
-          label: "B",
-          unit: "组"
-        },
-        {
-          value: res.data.c || 0,
-          label: "C",
-          unit: "组"
-        },
-        {
-          value: res.data.d || 0,
-          label: "D",
-          unit: "组"
-        }
-      ];
-    }
-  });
+  requestApi
+    .post("/home/query/customer/statistics", {
+      id: selectedLocation.value.id,
+      type: selectedLocation.value.type,
+      beginDate: dayjs(timeStart.value).format("YYYY-MM-DD"),
+      endDate: dayjs(timeEnd.value).format("YYYY-MM-DD")
+    })
+    .then((res) => {
+      if (res.code === 0) {
+        customerData.value = [
+          {
+            value: first + repeat || 0,
+            label: "客户总数",
+            unit: "组"
+          },
+          {
+            value: first || 0,
+            label: "首访",
+            unit: "组"
+          },
+          {
+            value: repeat || 0,
+            label: "复访",
+            unit: "组"
+          },
+          {
+            value: res.data.countSubscription || 0,
+            label: `${getCurrentMonthDay()}预计认购`,
+            unit: "组"
+          },
+          {
+            value: res.data.a || 0,
+            label: "A",
+            unit: "组"
+          },
+          {
+            value: res.data.b || 0,
+            label: "B",
+            unit: "组"
+          },
+          {
+            value: res.data.c || 0,
+            label: "C",
+            unit: "组"
+          },
+          {
+            value: res.data.d || 0,
+            label: "D",
+            unit: "组"
+          }
+        ];
+      }
+    });
 };
 
 //获取自售数据、渠道数据、全民营销数据
 const getSelfSaleData = () => {
-  requestApi.post("/home/channel/stat", { 
-    id: selectedLocation.value.id, 
-    type: selectedLocation.value.type,
-    beginDate: dayjs(timeStart.value).format("YYYY-MM-DD"),
-    endDate: dayjs(timeEnd.value).format("YYYY-MM-DD")  
-  }).then((res) => {
-    if (res.code === 0) {
-      allSelfSaleData.value = res.data;
-      selfSaleData.value = [
-        {
-          value: res.data.selfSale.customerCount || 0,
-          label: "客户总数",
-          unit: "组"
-        },
-        {
-          value: res.data.selfSale.validCount || 0,
-          label: "有效数",
-          unit: "组"
-        },
-        {
-          value: res.data.selfSale.publicPoolCount || 0,
-          label: "公客池",
-          unit: "组"
-        },
-        {
-          value: res.data.selfSale.expectedSubscriptionCount || 0,
-          label: `${getCurrentMonthDay()}预计认购`,
-          unit: "组"
-        },
-        {
-          value: res.data.selfSale.a || 0,
-          label: "A",
-          unit: "组"
-        },
-        {
-          value: res.data.selfSale.b || 0,
-          label: "B",
-          unit: "组"
-        },
-        {
-          value: res.data.selfSale.c || 0,
-          label: "C",
-          unit: "组"
-        },
-        {
-          value: res.data.selfSale.d || 0,
-          label: "D",
-          unit: "组"
-        }
-      ];
-    }
-  });
+  requestApi
+    .post("/home/channel/stat", {
+      id: selectedLocation.value.id,
+      type: selectedLocation.value.type,
+      beginDate: dayjs(timeStart.value).format("YYYY-MM-DD"),
+      endDate: dayjs(timeEnd.value).format("YYYY-MM-DD")
+    })
+    .then((res) => {
+      if (res.code === 0) {
+        allSelfSaleData.value = res.data;
+        selfSaleData.value = [
+          {
+            value: res.data.selfSale.customerCount || 0,
+            label: "客户总数",
+            unit: "组"
+          },
+          {
+            value: res.data.selfSale.validCount || 0,
+            label: "有效数",
+            unit: "组"
+          },
+          {
+            value: res.data.selfSale.publicPoolCount || 0,
+            label: "公客池",
+            unit: "组"
+          },
+          {
+            value: res.data.selfSale.expectedSubscriptionCount || 0,
+            label: `${getCurrentMonthDay()}预计认购`,
+            unit: "组"
+          },
+          {
+            value: res.data.selfSale.a || 0,
+            label: "A",
+            unit: "组"
+          },
+          {
+            value: res.data.selfSale.b || 0,
+            label: "B",
+            unit: "组"
+          },
+          {
+            value: res.data.selfSale.c || 0,
+            label: "C",
+            unit: "组"
+          },
+          {
+            value: res.data.selfSale.d || 0,
+            label: "D",
+            unit: "组"
+          }
+        ];
+      }
+    });
 };
 
 // 自售数据tab切换
@@ -652,7 +650,7 @@ onMounted(() => {
 });
 
 onShow(() => {
-  if(OrganizationUtil.getOrganizationInfo().id){
+  if (OrganizationUtil.getOrganizationInfo().id) {
     selectedLocation.value.id = OrganizationUtil.getOrganizationInfo().id;
     selectedLocation.value.name = OrganizationUtil.getOrganizationInfo().name;
     selectedLocation.value.type = OrganizationUtil.getOrganizationInfo().type;

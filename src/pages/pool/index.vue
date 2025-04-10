@@ -3,26 +3,11 @@
     <view class="search-bar">
       <view class="search-input">
         <up-icon name="search" size="22" color="#979797"></up-icon>
-        <input
-          type="text"
-          v-model="commonName"
-          placeholder="请输入客户姓名、手机尾号"
-          placeholder-class="placeholder"
-          @input="handleCommonNameInput" />
+        <input type="text" v-model="commonName" placeholder="请输入客户姓名、手机尾号" placeholder-class="placeholder" @input="handleCommonNameInput" />
       </view>
       <template v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'">
-        <up-button
-          v-if="isBatch"
-          style="width: 120rpx"
-          color="#FF3B33"
-          type="primary"
-          size="small"
-          @click="handleBatchCancel"
-          >取消选择</up-button
-        >
-        <up-button v-else style="width: 120rpx" color="#2C65F6" type="primary" size="small" @click="handleBatchCancel"
-          >批量选择</up-button
-        >
+        <up-button v-if="isBatch" style="width: 120rpx" color="#FF3B33" type="primary" size="small" @click="handleBatchCancel">取消选择</up-button>
+        <up-button v-else style="width: 120rpx" color="#2C65F6" type="primary" size="small" @click="handleBatchCancel">批量选择</up-button>
       </template>
     </view>
 
@@ -32,17 +17,11 @@
       </view>
       <view class="filter-item" @click.stop="handIsAscendingTimeClick">
         <text :class="{ active: sortType === 'isAscendingTime' }">{{ orderBy ? "创建时间升序" : "创建时间降序" }}</text>
-        <up-icon
-          :name="orderBy ? 'arrow-up' : 'arrow-down'"
-          size="12"
-          :color="sortType === 'isAscendingTime' ? '#2C65F6' : '#666666'"></up-icon>
+        <up-icon :name="orderBy ? 'arrow-up' : 'arrow-down'" size="12" :color="sortType === 'isAscendingTime' ? '#2C65F6' : '#666666'"></up-icon>
       </view>
       <view class="filter-item" @click.stop="handleIsAscendingLevelClick">
         <text :class="{ active: sortType === 'isAscendingLevel' }">意向等级</text>
-        <up-icon
-          :name="orderBy ? 'arrow-up' : 'arrow-down'"
-          size="12"
-          :color="sortType === 'isAscendingLevel' ? '#2C65F6' : '#666666'"></up-icon>
+        <up-icon :name="orderBy ? 'arrow-up' : 'arrow-down'" size="12" :color="sortType === 'isAscendingLevel' ? '#2C65F6' : '#666666'"></up-icon>
       </view>
     </view>
 
@@ -51,9 +30,7 @@
         <view class="avatar">
           <view class="avatar-text">{{ item.level || "-" }}</view>
           <template v-if="isBatch">
-            <view
-              :class="customerIds.includes(item.projectCustomerId) ? 'avatar-btn-active' : 'avatar-btn'"
-              @click="handleCustomerSelect(item.projectCustomerId)">
+            <view :class="customerIds.includes(item.projectCustomerId) ? 'avatar-btn-active' : 'avatar-btn'" @click="handleCustomerSelect(item.projectCustomerId)">
               <view class="avatar-btn-inner"></view>
             </view>
           </template>
@@ -73,15 +50,7 @@
           </view>
         </view>
         <view class="action-btn">
-          <up-button
-            v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'"
-            style="width: 120rpx"
-            color="#2C65F6"
-            type="primary"
-            size="small"
-            @click="handleDistribute(item.projectCustomerId)"
-            >分配</up-button
-          >
+          <up-button v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'" style="width: 120rpx" color="#2C65F6" type="primary" size="small" @click="handleDistribute(item.projectCustomerId)">分配</up-button>
         </view>
       </view>
       <up-loadmore :status="loadStatus" :nomore-text="`共 ${list.length} 条`" />
@@ -89,19 +58,13 @@
 
     <view class="select-all" v-if="isBatch">
       <view class="select-all-left">
-        <view
-          :class="isAllSelect || customerIds.length === list.length ? 'avatar-btn-active' : 'avatar-btn'"
-          @click="handleAllSelect">
+        <view :class="isAllSelect || customerIds.length === list.length ? 'avatar-btn-active' : 'avatar-btn'" @click="handleAllSelect">
           <view class="avatar-btn-inner"></view>
         </view>
-        <text class="select-all-text">{{
-          isAllSelect || customerIds.length === list.length ? "取消全选" : "全选"
-        }}</text>
+        <text class="select-all-text">{{ isAllSelect || customerIds.length === list.length ? "取消全选" : "全选" }}</text>
         <text class="select-all-number">已选择 {{ customerIds.length }} 组</text>
       </view>
-      <up-button style="width: 120rpx" color="#2C65F6" type="primary" size="small" @click="handleBatchDistribute"
-        >批量分配</up-button
-      >
+      <up-button style="width: 120rpx" color="#2C65F6" type="primary" size="small" @click="handleBatchDistribute">批量分配</up-button>
     </view>
 
     <AssignPopup :show="showAssignPopup" @close="showAssignPopup = false" @confirm="handleAssignConfirm" />
@@ -157,12 +120,12 @@ const getCustomerPoolList = () => {
       pageNumber: pageNumber.value,
       pageSize: 10,
       projectId: ProjectUtil.getProjectInfo().projectId,
-      id:OrganizationUtil.getOrganizationInfo().id,
-      type:OrganizationUtil.getOrganizationInfo().type,
+      id: OrganizationUtil.getOrganizationInfo().id,
+      type: OrganizationUtil.getOrganizationInfo().type
     })
     .then((res) => {
       if (res.code === 0) {
-        list.value = res.data.list;
+        list.value = [...list.value, ...res.data.list];
         pages.value = res.data.pages;
         if (res.data.pages > 1) {
           loadStatus.value = "loadmore";
