@@ -2,7 +2,7 @@
   <view>
     <!-- 项目树导航栏 -->
     <CustomTreeNavBar
-      :modelName="OrganizationUtil.getOrganizationInfo().name"
+      :modelName="selectedLocation.name"
       :locations="ProjectTreeUtil.getProjectTree()"
       :customContent="true"
       @handleSelect="handleSelect"
@@ -252,9 +252,9 @@ const realEstateConsultantNames = ref<string[]>([]);
 // VISITED("已到访"),
 // REVISIT("复访"),
 // DEAL("已成交");
-const customerStates = ref<string[]>(["REVISIT", "VISITED"]);
+const customerStates = ref<string[]>([]);
 //等级集合
-const levels = ref<string[]>(["A", "B", "C", "D"]);
+const levels = ref<string[]>([]);
 //筛选
 const hasScreenFilter = ref(false);
 //客户列表
@@ -515,8 +515,8 @@ const reset = () => {
   dateTimeBegin.value = "";
   dateTimeEnd.value = "";
   realEstateConsultantNames.value = [];
-  customerStates.value = ["REVISIT", "VISITED"];
-  levels.value = ["A", "B", "C", "D"];
+  customerStates.value = [];
+  levels.value = [];
 };
 
 onMounted(() => {
@@ -534,7 +534,6 @@ onShow(() => {
     selectedLocation.value.type = OrganizationUtil.getOrganizationInfo().type;
   }
   const filterData = FilterUtil.getFilterData();
-  console.log(filterData);
   if (filterData && filterData.selectId === selectedLocation.value.id) {
     updateFilter(filterData);
   } else {

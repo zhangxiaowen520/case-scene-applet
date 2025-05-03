@@ -8,7 +8,7 @@
     </template>
     <template v-else>
       <CustomTreeNavBar
-        :modelName="OrganizationUtil.getOrganizationInfo().name"
+        :modelName="selectedLocation.name"
         :locations="ProjectTreeUtil.getProjectTree()"
         :customContent="true"
         @handleSelect="handleSelect"

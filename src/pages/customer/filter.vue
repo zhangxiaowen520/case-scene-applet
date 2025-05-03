@@ -1,15 +1,15 @@
 <template>
   <view class="filter-container">
-    <view class="filter-item" v-if="UserUtil.getDataPermissionType() !== 'PROJECT'">
+    <view class="filter-item" v-if="UserUtil.getDataPermissionType() === 'PROJECT'">
       <text class="filter-item-title">置业顾问</text>
       <view class="filter-item-content">
-        <!-- <text
+        <text
           class="filter-item-content-item"
           :class="{ active: selectedUsers.length === 0 }"
           @click="allToggleUser"
         >
           全部
-        </text> -->
+        </text>
         <text
           v-for="(user, index) in userList"
           :key="index"
@@ -24,13 +24,13 @@
     <view class="filter-item">
       <text class="filter-item-title">客户状态</text>
       <view class="filter-item-content">
-        <!-- <text
+        <text
           class="filter-item-content-item"
           :class="{ active: selectedStatuses.length === 0 }"
-          @click="selectedStatuses = []"
+          @click="allToggleStatus"
         >
           全部
-        </text> -->
+        </text>
         <text
           v-for="(item, index) in statusList"
           :key="index"
@@ -45,13 +45,13 @@
     <view class="filter-item">
       <text class="filter-item-title">客户等级</text>
       <view class="filter-item-content">
-        <!-- <text
+        <text
           class="filter-item-content-item"
           :class="{ active: selectedLevels.length === 0 }"
-          @click="selectedLevels = []"
+          @click="allToggleLevel"
         >
           全部
-        </text> -->
+        </text>
         <text
           v-for="(levels, index) in levelList"
           :key="index"
@@ -64,7 +64,7 @@
       </view>
     </view>
     <view class="filter-item">
-      <text class="filter-item-title">开始时间</text>
+      <text class="filter-item-title">时间</text>
       <view class="filter-item-content">
         <view class="filter-item-content-time" @click="isFollowUpStart = true">
           {{ dayjs(dateTimeBegin).format("YYYY-MM-DD") }}
@@ -188,6 +188,10 @@ const onFollowUpEndConfirm = (e: any) => {
   isFollowUpEnd.value = false;
 };
 
+const allToggleUser = () => {
+  selectedUsers.value = [];
+};
+
 const toggleUser = (name: string) => {
   console.log(name);
   const idx = selectedUsers.value.indexOf(name);
@@ -198,8 +202,8 @@ const toggleUser = (name: string) => {
   }
 };
 
-const allToggleUser = () => {
-  selectedUsers.value = userList.value.map(item => item.user.name);
+const allToggleStatus = () => {
+  selectedStatuses.value = [];
 };
 
 const toggleStatus = (value: string) => {
@@ -209,6 +213,10 @@ const toggleStatus = (value: string) => {
   } else {
     selectedStatuses.value.push(value);
   }
+};
+
+const allToggleLevel = () => {
+  selectedLevels.value = [];
 };
 
 const toggleLevel = (levels: string) => {
@@ -224,8 +232,8 @@ const toggleLevel = (levels: string) => {
 const reset = () => {
   const filterData = {
     realEstateConsultantNames: [],
-    customerStates: ["REVISIT", "VISITED"],
-    levels: ["A", "B", "C", "D"],
+    customerStates: [],
+    levels: [],
     dateTimeBegin: "",
     dateTimeEnd: "",
     isReset: true,
