@@ -61,13 +61,10 @@ const handleLogout = () => {
   uni.showModal({
     title: "退出登录",
     content: "确定要退出登录吗？",
-    success: (res) => {
+    success: res => {
       if (res.confirm) {
-        TokenUtil.removeToken();
-        UserUtil.removeUserInfo();
-        FilterUtil.removeFilterData();
-        ProjectUtil.removeProjectInfo();
-        OrganizationUtil.removeOrganizationInfo();
+        //清除所有缓存
+        uni.clearStorage();
         uni.reLaunch({ url: "/pages/login/index" });
       }
     }

@@ -8,15 +8,17 @@
           <text class="name">{{ customerInfo?.name }}</text>
           <text class="phone">{{ customerInfo?.phone }}</text>
         </view>
-        <view v-if="UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant" class="edit-btn" @click="goBasic">
+        <view
+          v-if="UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant"
+          class="edit-btn"
+          @click="goBasic"
+        >
           <up-icon name="edit-pen" size="16" color="#4080ff"></up-icon>
           <text>编辑</text>
         </view>
       </view>
       <view class="visit-info">
-        <view
-          v-if="shouldShowCountdown"
-          class="count-down">
+        <view v-if="shouldShowCountdown" class="count-down">
           <text class="stay-time">跟进倒计时</text>
           <up-count-down :time="countdownTime" format="HH:mm:ss"></up-count-down>
         </view>
@@ -33,7 +35,11 @@
           <text class="label">到访次数:</text>
           <text class="value">{{ customerInfo?.visitNumber }}</text>
         </view>
-        <view class="info-item" v-for="item in customerInfo?.basicInfos.slice(0, 5)" :key="item.customerFieldId">
+        <view
+          class="info-item"
+          v-for="item in customerInfo?.basicInfos.slice(0, 5)"
+          :key="item.customerFieldId"
+        >
           <text class="label">{{ item.fieldName }}:</text>
           <text class="value">{{ item.value || "-" }}</text>
         </view>
@@ -41,13 +47,18 @@
           <view
             class="info-item"
             v-for="item in customerInfo?.basicInfos.slice(5, customerInfo?.basicInfos.length)"
-            :key="item.customerFieldId">
+            :key="item.customerFieldId"
+          >
             <text class="label">{{ item.fieldName }}:</text>
             <text class="value">{{ item.value || "-" }}</text>
           </view>
         </template>
         <view class="info-show-more" @click="handleShowMoreBasicInfo">
-          <up-icon :name="showMoreBasicInfo ? 'arrow-up' : 'arrow-down'" size="12" color="#4080ff"></up-icon>
+          <up-icon
+            :name="showMoreBasicInfo ? 'arrow-up' : 'arrow-down'"
+            size="12"
+            color="#4080ff"
+          ></up-icon>
           <text class="show-more-text">{{ showMoreBasicInfo ? "点击收起" : "点击显示更多" }}</text>
         </view>
       </view>
@@ -56,13 +67,21 @@
     <view class="demand-section">
       <view class="section-header">
         <text class="title">客户需求</text>
-        <view v-if="UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant" class="edit-btn" @click="goNeed">
+        <view
+          v-if="UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant"
+          class="edit-btn"
+          @click="goNeed"
+        >
           <up-icon name="edit-pen" size="16" color="#4080ff"></up-icon>
           <text>编辑</text>
         </view>
       </view>
       <view class="info-list">
-        <view class="info-item" v-for="item in customerInfo?.demandInfos.slice(0, 7)" :key="item.customerFieldId">
+        <view
+          class="info-item"
+          v-for="item in customerInfo?.demandInfos.slice(0, 7)"
+          :key="item.customerFieldId"
+        >
           <text class="label">{{ item.fieldName }}:</text>
           <text class="value">{{ item.value || "-" }}</text>
         </view>
@@ -70,13 +89,18 @@
           <view
             class="info-item"
             v-for="item in customerInfo?.demandInfos.slice(7, customerInfo?.demandInfos.length)"
-            :key="item.customerFieldId">
+            :key="item.customerFieldId"
+          >
             <text class="label">{{ item.fieldName }}:</text>
             <text class="value">{{ item.value || "-" }}</text>
           </view>
         </template>
         <view class="info-show-more" @click="handleShowMoreDemandInfo">
-          <up-icon :name="showMoreDemandInfo ? 'arrow-up' : 'arrow-down'" size="12" color="#4080ff"></up-icon>
+          <up-icon
+            :name="showMoreDemandInfo ? 'arrow-up' : 'arrow-down'"
+            size="12"
+            color="#4080ff"
+          ></up-icon>
           <text class="show-more-text">{{ showMoreDemandInfo ? "点击收起" : "点击显示更多" }}</text>
         </view>
       </view>
@@ -114,7 +138,8 @@
     <view class="btn-group">
       <text
         v-if="
-          (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+          (UserUtil.getDataPermissionType() === 'PROJECT' ||
+            UserUtil.getDataPermissionType() === 'SELF') &&
           UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant &&
           customerInfo?.visitNumber > 0
         "
@@ -124,7 +149,8 @@
       >
       <text
         v-if="
-          (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+          (UserUtil.getDataPermissionType() === 'PROJECT' ||
+            UserUtil.getDataPermissionType() === 'SELF') &&
           UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant &&
           customerInfo?.visitNumber > 0
         "
@@ -135,11 +161,13 @@
       <text
         class="btn-1"
         @click="handleAssignClick"
-        v-if="UserUtil.getDataPermissionType() === 'PROJECT'">分配</text
+        v-if="UserUtil.getDataPermissionType() === 'PROJECT'"
+        >分配</text
       >
       <up-button
         v-if="
-          (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+          (UserUtil.getDataPermissionType() === 'PROJECT' ||
+            UserUtil.getDataPermissionType() === 'SELF') &&
           UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant &&
           customerInfo?.visitNumber > 0
         "
@@ -152,7 +180,8 @@
       >
       <up-button
         v-if="
-          (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+          (UserUtil.getDataPermissionType() === 'PROJECT' ||
+            UserUtil.getDataPermissionType() === 'SELF') &&
           UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant &&
           customerInfo?.visitNumber > 0 &&
           customerInfo?.hasPhone
@@ -164,7 +193,11 @@
         >打电话</up-button
       >
     </view>
-    <AssignPopup :show="showAssignPopup" @close="showAssignPopup = false" @confirm="handleAssignConfirm" />
+    <AssignPopup
+      :show="showAssignPopup"
+      @close="showAssignPopup = false"
+      @confirm="handleAssignConfirm"
+    />
   </view>
 </template>
 
@@ -181,8 +214,7 @@ import type {
   CustomerFollowUpRecordInterface,
   CustomerReportingRecordInterface
 } from "@/types/customer";
-import { phoneDesensitization } from "@/utils/tools";
-import { ProjectUtil, UserUtil } from "@/utils/auth";
+import { OrganizationUtil, ProjectUtil, UserUtil } from "@/utils/auth";
 import AssignPopup from "@/components/AssignPopup/index.vue";
 import { getTimeRemaining } from "@/utils/tools";
 import dayjs from "dayjs";
@@ -207,8 +239,10 @@ const showAssignPopup = ref(false);
 // Add computed properties for countdown logic
 const shouldShowCountdown = computed(() => {
   if (!customerInfo.value?.nextFollowUpTime) return false;
-  return dayjs(customerInfo.value.nextFollowUpTime).isBefore(dayjs().add(24, 'hour')) &&
-        getTimeRemaining(customerInfo.value.nextFollowUpTime) > 0;
+  return (
+    dayjs(customerInfo.value.nextFollowUpTime).isBefore(dayjs().add(24, "hour")) &&
+    getTimeRemaining(customerInfo.value.nextFollowUpTime) > 0
+  );
 });
 
 const countdownTime = computed(() => {
@@ -217,7 +251,7 @@ const countdownTime = computed(() => {
 });
 
 // 在 onLoad 中获取参数
-onLoad((options) => {
+onLoad(options => {
   if (options?.projectCustomerId) {
     projectCustomerId.value = options.projectCustomerId;
     getCustomerDetails(options.projectCustomerId);
@@ -242,7 +276,7 @@ const getCustomerDetails = (id: string | number) => {
     .post("/customer/info", {
       id: id
     })
-    .then((res) => {
+    .then(res => {
       if (res.code === 0) {
         customerInfo.value = res.data;
       }
@@ -256,9 +290,9 @@ const getCustomerChangeRecord = (id: string | number) => {
       pageNumber: 1,
       pageSize: 99,
       projectCustomerId: id,
-      projectId: ProjectUtil.getProjectInfo().projectId
+      projectId: OrganizationUtil.getOrganizationInfo().id
     })
-    .then((res) => {
+    .then(res => {
       if (res.code === 0) {
         customerChangeRecord.value = res.data.list;
       }
@@ -272,9 +306,9 @@ const getCustomerFollowUpRecord = (id: string | number) => {
       pageNumber: 1,
       pageSize: 99,
       projectCustomerId: id,
-      projectId: ProjectUtil.getProjectInfo().projectId
+      projectId: OrganizationUtil.getOrganizationInfo().id
     })
-    .then((res) => {
+    .then(res => {
       if (res.code === 0) {
         customerFollowUpRecord.value = res.data.list;
       }
@@ -288,9 +322,9 @@ const getCustomerReportingRecord = (id: string | number) => {
       pageNumber: 1,
       pageSize: 99,
       projectCustomerId: id,
-      projectId: ProjectUtil.getProjectInfo().projectId
+      projectId: OrganizationUtil.getOrganizationInfo().id
     })
-    .then((res) => {
+    .then(res => {
       if (res.code === 0) {
         customerReportingRecord.value = res.data.list;
       }
@@ -310,20 +344,20 @@ const handleShowMoreDemandInfo = () => {
 // 跳转基础信息
 const goBasic = () => {
   uni.navigateTo({
-    url: `/pages/customer/basic?id=${customerInfo.value?.id}&level=${customerInfo.value?.level}&sex=${
-      customerInfo.value?.sex
-    }&name=${customerInfo.value?.name}&phone=${customerInfo.value?.phone}&infos=${JSON.stringify(
-      customerInfo.value?.basicInfos
-    )}`
+    url: `/pages/customer/basic?id=${customerInfo.value?.id}&level=${
+      customerInfo.value?.level
+    }&sex=${customerInfo.value?.sex}&name=${customerInfo.value?.name}&phone=${
+      customerInfo.value?.phone
+    }&infos=${JSON.stringify(customerInfo.value?.basicInfos)}`
   });
 };
 
 // 跳转客户需求
 const goNeed = () => {
   uni.navigateTo({
-    url: `/pages/customer/need?id=${customerInfo.value?.id}&name=${customerInfo.value?.name}&infos=${JSON.stringify(
-      customerInfo.value?.demandInfos
-    )}`
+    url: `/pages/customer/need?id=${customerInfo.value?.id}&name=${
+      customerInfo.value?.name
+    }&infos=${JSON.stringify(customerInfo.value?.demandInfos)}`
   });
 };
 
@@ -337,7 +371,7 @@ const goAttribution = () => {
 // 跳转跟进记录
 const goFollow = () => {
   uni.navigateTo({
-    url: `/pages/customer/follow?records=${JSON.stringify(customerFollowUpRecord.value)}`
+    url: `/pages/customer/follow?id=${projectCustomerId.value}`
   });
 };
 
@@ -346,14 +380,14 @@ const handleConfirmPurchaseClick = () => {
   uni.showModal({
     // title: "系统提示",
     content: "确认要报认购吗？",
-    success: (res) => {
+    success: res => {
       if (res.confirm) {
         requestApi
           .post("/customer/subscription", {
             projectCustomerId: projectCustomerId.value,
             projectId: ProjectUtil.getProjectInfo().projectId
           })
-          .then((res) => {
+          .then(res => {
             if (res.code === 0) {
               uni.showToast({ title: "报认购成功", icon: "none" });
               setTimeout(() => {
@@ -380,7 +414,7 @@ const handleAssignConfirm = (value: string) => {
       customerId: projectCustomerId.value,
       userId: value
     })
-    .then((res) => {
+    .then(res => {
       if (res.code === 0) {
         showAssignPopup.value = false;
         uni.showToast({ title: "分配成功", icon: "success" });
@@ -395,13 +429,13 @@ const handleGiveUpClick = () => {
   uni.showModal({
     title: "确认要解除客户归属关系吗？",
     content: "置业顾问放弃该客户后，该客户将回到客户池，可重新为客户分配置业顾问！",
-    success: (res) => {
+    success: res => {
       if (res.confirm) {
         requestApi
           .post("/customer/give/up", {
             id: customerInfo.value?.id
           })
-          .then((res) => {
+          .then(res => {
             if (res.code === 0) {
               uni.showToast({ title: "解除成功", icon: "none" });
             } else {
@@ -430,7 +464,7 @@ const handleCallClick = () => {
           .post("/customer/customer/phone", {
             id: projectCustomerId.value
           })
-          .then((res) => {
+          .then(res => {
             if (res.code === 0) {
               console.log("拨打电话成功");
             }
