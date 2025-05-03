@@ -6,12 +6,13 @@
           class="property-image"
           :src="item.houseTypeImg"
           @click="previewHouseImage(item.houseTypeImg)"
-          mode="aspectFill" />
+          mode="aspectFill"
+        />
         <view class="property-info">
           <view class="property-type">{{ item.name }}</view>
-          <view class="property-area">建面: {{ item.area }}㎡</view>
+          <view class="property-area">建面: {{ item.area }}</view>
           <view class="property-area">朝向: {{ item.roomFace }}</view>
-          <view class="property-price">{{ formatMoney(Number(item.referenceTotalPrice)) }}万起</view>
+          <view class="property-price">{{ item.referenceTotalPrice }}</view>
         </view>
       </view>
     </view>
@@ -35,7 +36,7 @@ const previewHouseImage = (url: string) => {
       success: () => {
         console.log("图片预览成功");
       },
-      fail: (err) => {
+      fail: err => {
         console.error("图片预览失败:", err);
       }
     });

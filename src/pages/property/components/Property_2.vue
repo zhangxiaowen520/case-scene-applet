@@ -70,11 +70,15 @@
         </view>
         <view class="info-item">
           <text class="label">地上建筑面积:</text>
-          <text class="value">{{ data.aboveGroundArea ? `${data.aboveGroundArea}万m²` : "-" }}</text>
+          <text class="value">{{
+            data.aboveGroundArea ? `${data.aboveGroundArea}万m²` : "-"
+          }}</text>
         </view>
         <view class="address-item">
           <text class="label">地下建筑面积:</text>
-          <text class="value">{{ data.undergroundArea ? `${data.undergroundArea}万m²` : "-" }}</text>
+          <text class="value">{{
+            data.undergroundArea ? `${data.undergroundArea}万m²` : "-"
+          }}</text>
         </view>
         <view class="info-item">
           <text class="label">规划楼栋:</text>
@@ -104,14 +108,15 @@
               class="type-image"
               :src="item.houseTypeImg"
               mode="aspectFill"
-              @click="previewHouseImage(item.houseTypeImg)"></image>
+              @click="previewHouseImage(item.houseTypeImg)"
+            ></image>
             <view class="type-info">
               <text class="type-name">{{ item.name }}</text>
-              <text class="type-area">建面 {{ item.area }}m²</text>
+              <text class="type-area">建面 {{ item.area }}</text>
               <view class="type-price">
                 <text class="price-label">参考总价：</text>
-                <text class="price-value">{{ formatMoney(Number(item.referenceTotalPrice)) }}</text>
-                <text class="price-unit">万/套</text>
+                <text class="price-value">{{ item.referenceTotalPrice }}</text>
+                <!-- <text class="price-unit">万/套</text> -->
               </view>
             </view>
           </view>
@@ -140,7 +145,7 @@ const previewImage = (index: number) => {
     success: () => {
       console.log("图片预览成功");
     },
-    fail: (err) => {
+    fail: err => {
       console.error("图片预览失败:", err);
     }
   });
@@ -154,7 +159,7 @@ const previewHouseImage = (url: string) => {
       success: () => {
         console.log("图片预览成功");
       },
-      fail: (err) => {
+      fail: err => {
         console.error("图片预览失败:", err);
       }
     });

@@ -337,6 +337,10 @@ onMounted(() => {
       navBarHeight.value = res.statusBarHeight ?? 0;
     }
   });
+});
+
+onShow(() => {
+  selectedLocation.value = OrganizationUtil.getOrganizationInfo();
   // 判断角色
   const userInfo = UserUtil.getUserInfo();
   isSelfRole.value = userInfo?.role.dataPermission === "SELF";
@@ -350,10 +354,6 @@ onMounted(() => {
     tabs.value[2].disabled = true;
     getStatisticsData();
   }
-});
-
-onShow(() => {
-  selectedLocation.value = OrganizationUtil.getOrganizationInfo();
 });
 </script>
 
