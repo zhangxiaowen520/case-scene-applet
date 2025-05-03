@@ -99,8 +99,7 @@ const request = <T = any>(options: RequestOptions): Promise<T> => {
         // 响应拦截
         if (res.data.code === 1) {
           uni.showToast({ title: "登录已过期,请重新登录", icon: "none" });
-          TokenUtil.removeToken();
-          UserUtil.removeUserInfo();
+          uni.clearStorage();
           setTimeout(() => {
             uni.reLaunch({ url: "/pages/login/index" });
           }, 1000);
