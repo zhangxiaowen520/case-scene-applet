@@ -245,7 +245,7 @@ const handleConfirm = () => {
     dateTimeBegin: dateTimeBegin.value,
     dateTimeEnd: dateTimeEnd.value,
     isReset: false,
-    selectId: ProjectUtil.getProjectInfo().projectId,
+    selectId: OrganizationUtil.getOrganizationInfo().id,
     customerStates: selectedStatuses.value,
     levels: selectedLevels.value
   };

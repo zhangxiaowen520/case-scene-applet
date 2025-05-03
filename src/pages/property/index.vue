@@ -15,7 +15,6 @@
       >
         <view class="tab-container">
           <up-tabs
-            :active="currentTab"
             :list="tabs"
             @click="handleTabClick"
             lineColor="#2C65F6"
@@ -83,15 +82,18 @@ const currentTab = ref(0);
 const tabs = ref([
   {
     name: "楼盘数据",
-    value: 0
+    value: 0,
+    disabled: false
   },
   {
     name: "房源销控",
-    value: 1
+    value: 1,
+    disabled: false
   },
   {
     name: "楼盘信息",
-    value: 2
+    value: 2,
+    disabled: false
   }
 ]);
 
@@ -154,7 +156,11 @@ const handleSelect = (item: OrganizationInfo) => {
   });
   if (item.type === "PROJECT") {
     getUnitStructure();
+    tabs.value[1].disabled = false;
+    tabs.value[2].disabled = false;
   } else {
+    tabs.value[1].disabled = true;
+    tabs.value[2].disabled = true;
     propertyInfo.value = {};
     getStatisticsData();
   }
@@ -335,8 +341,14 @@ onMounted(() => {
   const userInfo = UserUtil.getUserInfo();
   isSelfRole.value = userInfo?.role.dataPermission === "SELF";
 
-  if (!isSelfRole.value) {
+  if (!isSelfRole.value && OrganizationUtil.getOrganizationInfo().type === "PROJECT") {
     getUnitStructure();
+  }
+
+  if (OrganizationUtil.getOrganizationInfo().type !== "PROJECT") {
+    tabs.value[1].disabled = true;
+    tabs.value[2].disabled = true;
+    getStatisticsData();
   }
 });
 

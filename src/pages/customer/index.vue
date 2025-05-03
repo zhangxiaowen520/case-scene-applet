@@ -280,6 +280,8 @@ const handleSelect = (item: OrganizationInfo) => {
     isProject: item.isProject,
     children: []
   });
+  reset();
+  hasScreenFilter.value = false;
   pageNumber.value = 1;
   pages.value = 0;
   customerList.value = [];
