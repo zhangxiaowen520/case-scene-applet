@@ -15,6 +15,7 @@
       >
         <view class="tab-container">
           <up-tabs
+            :active="currentTab"
             :list="tabs"
             @click="handleTabClick"
             lineColor="#2C65F6"
@@ -117,6 +118,10 @@ const statisticsData = ref<any>({});
 
 // 切换tab
 const handleTabClick = (e: any) => {
+  if (OrganizationUtil.getOrganizationInfo().type !== "PROJECT") {
+    uni.showToast({ title: "请选择具体的项目", icon: "none" });
+    return;
+  }
   currentTab.value = e.value;
   if (currentTab.value === 0) {
     getStatisticsData();
@@ -133,7 +138,7 @@ const handleTabClick = (e: any) => {
 
 // 选择项目
 const handleSelect = (item: OrganizationInfo) => {
-  if (item.type !== "PROJECT") {
+  if (item.type !== "PROJECT" && currentTab.value !== 0) {
     uni.showToast({ title: "请选择具体的项目", icon: "none" });
     return;
   }
@@ -147,45 +152,20 @@ const handleSelect = (item: OrganizationInfo) => {
     isProject: item.isProject,
     children: []
   });
-  getTabs();
-  getUnitStructure();
+  if (item.type === "PROJECT") {
+    getUnitStructure();
+  } else {
+    propertyInfo.value = {};
+    getStatisticsData();
+  }
   if (currentTab.value === 2) {
     getPropertyInfo();
     getHouseType();
   }
 };
 
-const getTabs = () => {
-  if (OrganizationUtil.getOrganizationInfo().type === "PROJECT") {
-    tabs.value = [
-      {
-        name: "楼盘数据",
-        value: 0
-      },
-      {
-        name: "房源销控",
-        value: 1
-      },
-      {
-        name: "楼盘信息",
-        value: 2
-      }
-    ];
-  } else {
-    tabs.value = [
-      {
-        name: "楼盘数据",
-        value: 0
-      }
-    ];
-  }
-};
 //获取单元结构（期，栋，单元）
 const getUnitStructure = () => {
-  if (OrganizationUtil.getOrganizationInfo().type !== "PROJECT") {
-    uni.showToast({ title: "请选择具体的项目", icon: "none" });
-    return;
-  }
   requestApi
     .post("/room/applet/find/structure/by/project", { id: selectedLocation.value.id })
     .then(res => {
@@ -362,7 +342,6 @@ onMounted(() => {
 
 onShow(() => {
   selectedLocation.value = OrganizationUtil.getOrganizationInfo();
-  getTabs();
 });
 </script>
 

@@ -153,7 +153,7 @@ const selectedStatuses = ref<string[]>(props.customerStates ? props.customerStat
 //跟进时间
 const dateTimeBegin = ref(
   props.dateTimeBegin === "undefined" || props.dateTimeBegin === ""
-    ? Number(dayjs().subtract(1, "month"))
+    ? Number(dayjs().subtract(6, "day"))
     : Number(props.dateTimeBegin)
 );
 const dateTimeEnd = ref(

@@ -26,13 +26,13 @@
             srcset=""
           />
         </view>
-        <view v-if="props.isShowComment && step.comment" class="comment-wrapper">
-          <view class="comment-item">
+        <view v-if="props.isShowComment && step.commentList" class="comment-wrapper">
+          <view class="comment-item" v-for="comment in step.commentList" :key="comment.id">
             <view class="comment-item-title">
-              <span>2025-05-03 10:00:00</span>
-              <span>张三</span>
+              <span>{{ comment.createTime }}</span>
+              <span>{{ comment.createUserName }}</span>
             </view>
-            <view class="comment-item-content"> 客户表示对房子很满意，有意向购买 </view>
+            <view class="comment-item-content"> {{ comment.content }} </view>
           </view>
         </view>
       </view>
@@ -132,6 +132,7 @@ const handleCommentClick = (step: any) => {
   }
 
   .desc {
+    width: 90%;
     font-size: 28rpx;
     color: rgba(26, 39, 52, 0.8);
   }
@@ -160,6 +161,7 @@ const handleCommentClick = (step: any) => {
     justify-content: flex-start;
     align-items: flex-start;
     gap: 16rpx;
+    margin-top: 16rpx;
   }
 
   .comment-item-title {
@@ -167,7 +169,7 @@ const handleCommentClick = (step: any) => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16rpx;
+    gap: 12rpx;
     font-size: 28rpx;
     color: rgba(26, 39, 52, 0.5);
   }

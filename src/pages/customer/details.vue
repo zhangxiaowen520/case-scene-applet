@@ -125,7 +125,11 @@
           <u-icon name="arrow-right" size="14" color="#979797"></u-icon>
         </view>
       </view>
-      <FollowUpRecord :records="customerFollowUpRecord" />
+      <FollowUpRecord
+        :records="customerFollowUpRecord"
+        :isShowComment="UserUtil.getDataPermissionType() === 'PROJECT'"
+        @handleComment="handleComment"
+      />
     </view>
     <!-- 报备记录 -->
     <view class="info-section">
@@ -313,6 +317,38 @@ const getCustomerFollowUpRecord = (id: string | number) => {
         customerFollowUpRecord.value = res.data.list;
       }
     });
+};
+
+const handleComment = (step: any) => {
+  uni.showModal({
+    title: "点评",
+    content: "",
+    editable: true,
+    placeholderText: "请输入点评内容",
+    success: (res: UniApp.ShowModalRes) => {
+      if (res.confirm) {
+        requestApi
+          .post("/customer/follow/comment", {
+            customerFollowRecordId: step.id,
+            content: res.content
+          })
+          .then(res => {
+            if (res.code === 0) {
+              uni.showToast({
+                title: "点评成功",
+                icon: "success"
+              });
+              getCustomerFollowUpRecord(projectCustomerId.value);
+            } else {
+              uni.showToast({
+                title: res.msg,
+                icon: "none"
+              });
+            }
+          });
+      }
+    }
+  });
 };
 
 // 获取客户报备记录

@@ -1,6 +1,10 @@
 <template>
   <view class="attribution-wrapper">
-    <FollowUpRecord :records="records" :isShowComment="true" @handleComment="handleComment" />
+    <FollowUpRecord
+      :records="records"
+      :isShowComment="UserUtil.getDataPermissionType() === 'PROJECT'"
+      @handleComment="handleComment"
+    />
   </view>
 </template>
 
@@ -8,7 +12,7 @@
 import { ref } from "vue";
 import FollowUpRecord from "./components/FollowUpRecord.vue";
 import { requestApi } from "@/api/request";
-import { OrganizationUtil } from "@/utils/auth";
+import { UserUtil, OrganizationUtil } from "@/utils/auth";
 import { onLoad } from "@dcloudio/uni-app";
 import type { CustomerFollowUpRecordInterface } from "@/types/customer";
 
@@ -58,6 +62,7 @@ const handleComment = (step: any) => {
                 title: "点评成功",
                 icon: "success"
               });
+              getCustomerFollowUpRecord(props.id);
             } else {
               uni.showToast({
                 title: res.msg,
