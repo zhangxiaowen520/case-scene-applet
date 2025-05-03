@@ -5,34 +5,39 @@
       :style="{
         height: menuButtonInfo ? menuButtonInfo.height + 'px' : '32px',
         'margin-top': menuButtonInfo ? menuButtonInfo.top + 'px' : '0'
-      }">
+      }"
+    >
       <view class="location-picker" @click="showTree">
         <view class="arrow"></view>
-        <text>{{ modelName || '请选择' }}</text>
+        <text>{{ modelName || "请选择" }}</text>
       </view>
     </view>
-    <view style="width: 100%; height: 20rpx; background-color: #fff" />
-    <tki-tree 
-      ref="tkitree" 
-      :selectParent="selectParent" 
-      :multiple="multiple" 
-      :range="locations" 
-      :foldAll="flod" 
-      rangeKey="name" 
+    <view v-if="!customContent" style="width: 100%; height: 20rpx; background-color: #fff" />
+    <!-- 自定义内容 -->
+    <slot v-if="customContent"></slot>
+    <tki-tree
+      ref="tkitree"
+      :selectParent="selectParent"
+      :multiple="multiple"
+      :range="locations"
+      :foldAll="flod"
+      rangeKey="name"
       @confirm="handleSelect"
-		  @cancel="treeCancel">
+      @cancel="treeCancel"
+    >
     </tki-tree>
   </view>
 </template>
 
 <script setup lang="ts">
-import tkiTree from '@/components/tki-tree/tki-tree.vue';
+import tkiTree from "@/components/tki-tree/tki-tree.vue";
 import { ref, onMounted } from "vue";
 import type { OrganizationInfo } from "@/types/user";
 
 const props = defineProps<{
   modelName: string;
   locations: OrganizationInfo[];
+  customContent?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -64,7 +69,7 @@ const handleSelect = (e: any) => {
 
 // 取消回调事件
 const treeCancel = () => {
-  console.log('取消')
+  console.log("取消");
 };
 
 // 显示树形选择器

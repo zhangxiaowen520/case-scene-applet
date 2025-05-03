@@ -1,17 +1,22 @@
 <template>
   <view class="filter-container">
-    <view class="filter-item" v-if="UserUtil.getDataPermissionType() !== 'SELF'">
+    <view class="filter-item" v-if="UserUtil.getDataPermissionType() !== 'PROJECT'">
       <text class="filter-item-title">置业顾问</text>
       <view class="filter-item-content">
-        <text class="filter-item-content-item" :class="{ active: selectedUser === '' }" @click="selectedUser = ''">
+        <!-- <text
+          class="filter-item-content-item"
+          :class="{ active: selectedUsers.length === 0 }"
+          @click="allToggleUser"
+        >
           全部
-        </text>
+        </text> -->
         <text
           v-for="(user, index) in userList"
           :key="index"
           class="filter-item-content-item"
-          :class="{ active: selectedUser === user?.user?.name }"
-          @click="selectedUser = user?.user?.name">
+          :class="{ active: selectedUsers.includes(user?.user?.name) }"
+          @click="toggleUser(user?.user?.name)"
+        >
           {{ user?.user?.name }}
         </text>
       </view>
@@ -19,15 +24,20 @@
     <view class="filter-item">
       <text class="filter-item-title">客户状态</text>
       <view class="filter-item-content">
-        <text class="filter-item-content-item" :class="{ active: selectedStatus === '' }" @click="selectedStatus = ''">
+        <!-- <text
+          class="filter-item-content-item"
+          :class="{ active: selectedStatuses.length === 0 }"
+          @click="selectedStatuses = []"
+        >
           全部
-        </text>
+        </text> -->
         <text
           v-for="(item, index) in statusList"
           :key="index"
           class="filter-item-content-item"
-          :class="{ active: selectedStatus === item.value }"
-          @click="selectedStatus = item.value">
+          :class="{ active: selectedStatuses.includes(item.value) }"
+          @click="toggleStatus(item.value)"
+        >
           {{ item.label }}
         </text>
       </view>
@@ -35,40 +45,33 @@
     <view class="filter-item">
       <text class="filter-item-title">客户等级</text>
       <view class="filter-item-content">
-        <text class="filter-item-content-item" :class="{ active: selectedLevel === '' }" @click="selectedLevel = ''">
+        <!-- <text
+          class="filter-item-content-item"
+          :class="{ active: selectedLevels.length === 0 }"
+          @click="selectedLevels = []"
+        >
           全部
-        </text>
+        </text> -->
         <text
-          v-for="(level, index) in levelList"
+          v-for="(levels, index) in levelList"
           :key="index"
           class="filter-item-content-item"
-          :class="{ active: selectedLevel === level }"
-          @click="selectedLevel = level">
-          {{ level }}
+          :class="{ active: selectedLevels.includes(levels) }"
+          @click="toggleLevel(levels)"
+        >
+          {{ levels }}
         </text>
       </view>
     </view>
     <view class="filter-item">
-      <text class="filter-item-title">跟进时间</text>
+      <text class="filter-item-title">开始时间</text>
       <view class="filter-item-content">
         <view class="filter-item-content-time" @click="isFollowUpStart = true">
-          {{ dayjs(followUpTimeBegin).format("YYYY-MM-DD") }}
+          {{ dayjs(dateTimeBegin).format("YYYY-MM-DD") }}
         </view>
         <view class="filter-item-content-time-line"></view>
         <view class="filter-item-content-time" @click="isFollowUpEnd = true">
-          {{ dayjs(followUpTimeEnd).format("YYYY-MM-DD") }}
-        </view>
-      </view>
-    </view>
-    <view class="filter-item">
-      <text class="filter-item-title">到访时间</text>
-      <view class="filter-item-content">
-        <view class="filter-item-content-time" @click="isLastVisitStart = true">
-          {{ dayjs(lastVisitTimeBegin).format("YYYY-MM-DD") }}
-        </view>
-        <view class="filter-item-content-time-line"></view>
-        <view class="filter-item-content-time" @click="isLastVisitEnd = true">
-          {{ dayjs(lastVisitTimeEnd).format("YYYY-MM-DD") }}
+          {{ dayjs(dateTimeEnd).format("YYYY-MM-DD") }}
         </view>
       </view>
     </view>
@@ -80,45 +83,35 @@
 
     <up-datetime-picker
       :show="isFollowUpStart"
-      v-model="followUpTimeBegin"
+      v-model="dateTimeBegin"
       mode="date"
       @cancel="isFollowUpStart = false"
-      @confirm="onFollowUpStartConfirm($event)" />
+      @confirm="onFollowUpStartConfirm($event)"
+    />
     <up-datetime-picker
       :show="isFollowUpEnd"
-      v-model="followUpTimeEnd"
+      v-model="dateTimeEnd"
       mode="date"
       @cancel="isFollowUpEnd = false"
-      @confirm="onFollowUpEndConfirm($event)" />
-    <up-datetime-picker
-      :show="isLastVisitStart"
-      v-model="lastVisitTimeBegin"
-      mode="date"
-      @cancel="isLastVisitStart = false"
-      @confirm="onLastVisitStartConfirm($event)" />
-    <up-datetime-picker
-      :show="isLastVisitEnd"
-      v-model="lastVisitTimeEnd"
-      mode="date"
-      @cancel="isLastVisitEnd = false"
-      @confirm="onLastVisitEndConfirm($event)" />
+      @confirm="onFollowUpEndConfirm($event)"
+    />
   </view>
 </template>
 
 <script setup lang="ts">
 import { requestApi } from "@/api/request";
-import { FilterUtil, ProjectUtil,UserUtil } from "@/utils/auth";
+import { FilterUtil, OrganizationUtil, ProjectUtil, UserUtil } from "@/utils/auth";
 import { onMounted, ref } from "vue";
 import dayjs from "dayjs";
 
 const props = defineProps<{
-  followUpTimeBegin: string;
-  followUpTimeEnd: string;
+  dateTimeBegin: string;
+  dateTimeEnd: string;
   lastVisitTimeBegin: string;
   lastVisitTimeEnd: string;
-  realEstateConsultantName: string;
-  customerState: string;
-  level: string;
+  realEstateConsultantNames: string;
+  customerStates: string;
+  levels: string;
 }>();
 
 //职业顾问列表
@@ -126,71 +119,59 @@ const userList = ref<any[]>([]);
 // 经纪人列表
 const levelList = ref<string[]>(["A", "B", "C", "D"]);
 // 状态列表
+// NOT_VISIT("未到访"),
+// VISITED("已到访"),
+// REVISIT("复访"),
+// DEAL("已成交")
 const statusList = ref<any[]>([
   {
     label: "未到访",
-    value: "0"
+    value: "NOT_VISIT"
   },
   {
     label: "已到访",
-    value: "1"
+    value: "VISITED"
   },
   {
-    label: "复访1",
-    value: "2"
+    label: "复访",
+    value: "REVISIT"
   },
   {
-    label: "复访2",
-    value: "3"
-  },
-  {
-    label: "复访3+",
-    value: "4"
+    label: "已成交",
+    value: "DEAL"
   }
 ]);
 
 //选择的职业顾问
-const selectedUser = ref(props.realEstateConsultantName || "");
+const selectedUsers = ref<string[]>(
+  props.realEstateConsultantNames ? props.realEstateConsultantNames.split(",") : []
+);
 //选择的等级
-const selectedLevel = ref(props.level || "");
+const selectedLevels = ref<string[]>(props.levels ? props.levels.split(",") : []);
 //选择的状态
-const selectedStatus = ref(props.customerState || "");
+const selectedStatuses = ref<string[]>(props.customerStates ? props.customerStates.split(",") : []);
 //跟进时间
-const followUpTimeBegin = ref(
-  props.followUpTimeBegin === "undefined" || props.followUpTimeBegin === ""
+const dateTimeBegin = ref(
+  props.dateTimeBegin === "undefined" || props.dateTimeBegin === ""
     ? Number(dayjs().subtract(1, "month"))
-    : Number(props.followUpTimeBegin)
+    : Number(props.dateTimeBegin)
 );
-const followUpTimeEnd = ref(
-  props.followUpTimeEnd === "undefined" || props.followUpTimeEnd === ""
+const dateTimeEnd = ref(
+  props.dateTimeEnd === "undefined" || props.dateTimeEnd === ""
     ? Number(new Date())
-    : Number(props.followUpTimeEnd)
-);
-//到访时间
-const lastVisitTimeBegin = ref(
-  props.lastVisitTimeBegin === "undefined" || props.lastVisitTimeBegin === ""
-    ? Number(dayjs().subtract(1, "month"))
-    : Number(props.lastVisitTimeBegin)
-);
-const lastVisitTimeEnd = ref(
-  props.lastVisitTimeEnd === "undefined" || props.lastVisitTimeEnd === ""
-    ? Number(new Date())
-    : Number(props.lastVisitTimeEnd)
+    : Number(props.dateTimeEnd)
 );
 //是否显示跟进时间
 const isFollowUpStart = ref(false);
 const isFollowUpEnd = ref(false);
-//是否显示到访时间
-const isLastVisitStart = ref(false);
-const isLastVisitEnd = ref(false);
 
 //获取职业顾问列表
 const getUserList = () => {
   requestApi
     .post("/home/wait/distribution/users", {
-      id: ProjectUtil.getProjectInfo().projectId
+      id: OrganizationUtil.getOrganizationInfo().id
     })
-    .then((res) => {
+    .then(res => {
       if (res.code === 0) {
         userList.value = res.data;
       }
@@ -198,59 +179,77 @@ const getUserList = () => {
 };
 
 const onFollowUpStartConfirm = (e: any) => {
-  followUpTimeBegin.value = e.value;
+  dateTimeBegin.value = e.value;
   isFollowUpStart.value = false;
 };
 
 const onFollowUpEndConfirm = (e: any) => {
-  followUpTimeEnd.value = e.value;
+  dateTimeEnd.value = e.value;
   isFollowUpEnd.value = false;
 };
 
-const onLastVisitStartConfirm = (e: any) => {
-  lastVisitTimeBegin.value = e.value;
-  isLastVisitStart.value = false;
+const toggleUser = (name: string) => {
+  console.log(name);
+  const idx = selectedUsers.value.indexOf(name);
+  if (idx > -1) {
+    selectedUsers.value.splice(idx, 1);
+  } else {
+    selectedUsers.value.push(name);
+  }
 };
 
-const onLastVisitEndConfirm = (e: any) => {
-  lastVisitTimeEnd.value = e.value;
-  isLastVisitEnd.value = false;
+const allToggleUser = () => {
+  selectedUsers.value = userList.value.map(item => item.user.name);
+};
+
+const toggleStatus = (value: string) => {
+  const idx = selectedStatuses.value.indexOf(value);
+  if (idx > -1) {
+    selectedStatuses.value.splice(idx, 1);
+  } else {
+    selectedStatuses.value.push(value);
+  }
+};
+
+const toggleLevel = (levels: string) => {
+  const idx = selectedLevels.value.indexOf(levels);
+  if (idx > -1) {
+    selectedLevels.value.splice(idx, 1);
+  } else {
+    selectedLevels.value.push(levels);
+  }
 };
 
 // 重置
 const reset = () => {
   const filterData = {
-    realEstateConsultantName: "",
-    customerState: "",
-    level: "",
-    followUpTimeBegin: "",
-    followUpTimeEnd: "",
-    lastVisitTimeBegin: "",
-    lastVisitTimeEnd: "",
+    realEstateConsultantNames: [],
+    customerStates: ["REVISIT", "VISITED"],
+    levels: ["A", "B", "C", "D"],
+    dateTimeBegin: "",
+    dateTimeEnd: "",
     isReset: true,
-    projectId: ProjectUtil.getProjectInfo().projectId
+    selectId: ProjectUtil.getProjectInfo().projectId
   };
   FilterUtil.setFilterData(filterData as any);
-
-  // uni.$emit("updateFilter", filterData);
+  selectedUsers.value = [];
+  selectedStatuses.value = [];
+  selectedLevels.value = [];
   uni.navigateBack();
 };
 
 // 确认
 const handleConfirm = () => {
   const filterData = {
-    realEstateConsultantName: selectedUser.value,
-    followUpTimeBegin: followUpTimeBegin.value,
-    followUpTimeEnd: followUpTimeEnd.value,
-    lastVisitTimeBegin: lastVisitTimeBegin.value,
-    lastVisitTimeEnd: lastVisitTimeEnd.value,
+    realEstateConsultantNames: selectedUsers.value,
+    dateTimeBegin: dateTimeBegin.value,
+    dateTimeEnd: dateTimeEnd.value,
     isReset: false,
-    projectId: ProjectUtil.getProjectInfo().projectId,
-    customerState: selectedStatus.value,
-    level: selectedLevel.value
+    selectId: ProjectUtil.getProjectInfo().projectId,
+    customerStates: selectedStatuses.value,
+    levels: selectedLevels.value
   };
-
-  // uni.$emit("updateFilter", filterData);
+  console.log(filterData);
 
   FilterUtil.setFilterData(filterData as any);
   uni.navigateBack();

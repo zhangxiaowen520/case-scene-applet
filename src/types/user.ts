@@ -67,6 +67,7 @@ export interface FilterData {
   lastVisitTimeEnd: string;
   isReset: boolean;
   projectId: number;
+  selectId: number;
 }
 
 export interface OrganizationInfo {

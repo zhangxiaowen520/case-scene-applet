@@ -1,24 +1,60 @@
 <template>
   <Transition class="content">
-    <CustomTreeNavBar :modelName="OrganizationUtil.getOrganizationInfo().name" :locations="treeLocations" @handleSelect="handleSelect" />
+    <CustomTreeNavBar
+      :modelName="OrganizationUtil.getOrganizationInfo().name"
+      :locations="treeLocations"
+      @handleSelect="handleSelect"
+    />
     <view class="page-content" :style="{ marginTop: navBarHeight + 26 + 'px' }">
       <MessageNotification :data="messageList" />
       <template v-if="UserUtil.getDataPermissionType() !== 'SELF'">
         <CustomerPool :data="poolData" @click="handlePoolClick" />
       </template>
-      <template v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'">
+      <template
+        v-if="
+          UserUtil.getDataPermissionType() === 'PROJECT' ||
+          UserUtil.getDataPermissionType() === 'SELF'
+        "
+      >
         <TaskCard :data="taskData" @click="handleTaskClick" />
       </template>
-      <StatisticsCard title="业务数据" :data="statisticsData" :showTime="true" :timeStart="timeStart" :timeEnd="timeEnd" @showTimeStart="showTimeStart" @showTimeEnd="showTimeEnd" />
+      <StatisticsCard
+        title="业务数据"
+        :data="statisticsData"
+        :showTime="true"
+        :timeStart="timeStart"
+        :timeEnd="timeEnd"
+        @showTimeStart="showTimeStart"
+        @showTimeEnd="showTimeEnd"
+      />
       <template v-if="UserUtil.getDataPermissionType() === 'SELF'">
         <StatisticsCard title="客户数据" :data="customerData" />
       </template>
       <template v-else>
-        <StatisticsCard :tabs="selfSaleTabs" :tabIndex="selfSaleTabIndex" :data="selfSaleData" @tabChange="handleSelfSaleTabChange" />
+        <StatisticsCard
+          :tabs="selfSaleTabs"
+          :tabIndex="selfSaleTabIndex"
+          :data="selfSaleData"
+          @tabChange="handleSelfSaleTabChange"
+        />
       </template>
     </view>
-    <up-datetime-picker :show="isTimeStart" v-model="timeStart" mode="date" :title="`开始时间`" @cancel="isTimeStart = false" @confirm="onTimeStartConfirm($event)" />
-    <up-datetime-picker :show="isTimeEnd" v-model="timeEnd" mode="date" :title="`结束时间`" @cancel="isTimeEnd = false" @confirm="onTimeEndConfirm($event)" />
+    <up-datetime-picker
+      :show="isTimeStart"
+      v-model="timeStart"
+      mode="date"
+      :title="`开始时间`"
+      @cancel="isTimeStart = false"
+      @confirm="onTimeStartConfirm($event)"
+    />
+    <up-datetime-picker
+      :show="isTimeEnd"
+      v-model="timeEnd"
+      mode="date"
+      :title="`结束时间`"
+      @cancel="isTimeEnd = false"
+      @confirm="onTimeEndConfirm($event)"
+    />
   </Transition>
 </template>
 
@@ -30,7 +66,7 @@ import TaskCard from "@/components/TaskCard/index.vue";
 import StatisticsCard from "@/components/StatisticsCard/index.vue";
 import CustomerPool from "@/components/CustomerPool/index.vue";
 import { requestApi } from "@/api/request";
-import { OrganizationUtil, ProjectUtil, UserUtil } from "@/utils/auth";
+import { OrganizationUtil, ProjectTreeUtil, ProjectUtil, UserUtil } from "@/utils/auth";
 import { onShow } from "@dcloudio/uni-app";
 import { getCurrentMonthDay } from "@/utils/tools";
 import dayjs from "dayjs";
@@ -231,7 +267,13 @@ const handleSelect = (item: OrganizationInfo) => {
   selectedLocation.value.id = item.id;
   selectedLocation.value.name = item.name;
   selectedLocation.value.type = item.type;
-  OrganizationUtil.setOrganizationInfo({ id: item.id, name: item.name, type: item.type, isProject: item.isProject, children: [] });
+  OrganizationUtil.setOrganizationInfo({
+    id: item.id,
+    name: item.name,
+    type: item.type,
+    isProject: item.isProject,
+    children: []
+  });
   if (UserUtil.getDataPermissionType() === "SELF") {
     getBusinessData();
     getFollowTask();
@@ -270,7 +312,7 @@ const handleTaskClick = (type: 1 | 2) => {
 
 // 获取用户信息
 const getUserInfo = () => {
-  requestApi.post("/auth/user/info").then((res) => {
+  requestApi.post("/auth/user/info").then(res => {
     if (res.code === 0) {
       UserUtil.setUserInfo(res.data);
       // 获取项目信息
@@ -281,11 +323,11 @@ const getUserInfo = () => {
 
 //获取组织项目树结构
 const getProjectTreeInfo = () => {
-  requestApi.post("/home/get/project/structure").then((res) => {
+  requestApi.post("/home/get/project/structure").then(res => {
     if (res.code === 0) {
       // 递归处理树结构
       const processTreeData = (data: TreeNode[]): TreeNode[] => {
-        return data.map((item) => {
+        return data.map(item => {
           const processedItem: TreeNode = {
             ...item,
             typeKey: `${item.type}_${item.id}`
@@ -299,9 +341,12 @@ const getProjectTreeInfo = () => {
 
       const processedData = processTreeData(res.data);
       treeLocations.value = processedData;
+      ProjectTreeUtil.setProjectTree(processedData);
       selectedLocation.value.id = OrganizationUtil.getOrganizationInfo().id || processedData[0].id;
-      selectedLocation.value.name = OrganizationUtil.getOrganizationInfo().name || processedData[0].name;
-      selectedLocation.value.type = OrganizationUtil.getOrganizationInfo().type || processedData[0].type;
+      selectedLocation.value.name =
+        OrganizationUtil.getOrganizationInfo().name || processedData[0].name;
+      selectedLocation.value.type =
+        OrganizationUtil.getOrganizationInfo().type || processedData[0].type;
       if (!OrganizationUtil.getOrganizationInfo().id) {
         OrganizationUtil.setOrganizationInfo(processedData[0]);
       }
@@ -323,7 +368,7 @@ const getProjectTreeInfo = () => {
 
 // 获取项目信息
 const getProjectInfo = () => {
-  requestApi.post("/home/query/user/by/project").then((res) => {
+  requestApi.post("/home/query/user/by/project").then(res => {
     if (res.code === 0) {
       if (!ProjectUtil.getProjectInfo().projectId) {
         ProjectUtil.setProjectInfo(res.data[0]);
@@ -342,7 +387,7 @@ const getMessage = () => {
       pageSize: 3,
       userId: UserUtil.getUserInfo().id
     })
-    .then((res) => {
+    .then(res => {
       if (res.code === 0) {
         messageList.value = res.data.list;
       }
@@ -351,30 +396,35 @@ const getMessage = () => {
 
 //获取公客池、报备池、签约提醒总条数
 const getPoolTotal = () => {
-  requestApi.post("/home/query/task/pool/statistics", { id: selectedLocation.value.id, type: selectedLocation.value.type }).then((res) => {
-    if (res.code === 0) {
-      poolData.value = [
-        {
-          type: "public",
-          title: "公客池",
-          value: res.data.countCommonCustomerPool || 0,
-          bgClass: "bg-blue"
-        },
-        {
-          type: "report",
-          title: "报备池",
-          value: res.data.countCustomerReport || 0,
-          bgClass: "bg-green"
-        },
-        {
-          type: "sign",
-          title: "签约提醒",
-          value: res.data.countSubscription || 0,
-          bgClass: "bg-orange"
-        }
-      ];
-    }
-  });
+  requestApi
+    .post("/home/query/task/pool/statistics", {
+      id: selectedLocation.value.id,
+      type: selectedLocation.value.type
+    })
+    .then(res => {
+      if (res.code === 0) {
+        poolData.value = [
+          {
+            type: "public",
+            title: "公客池",
+            value: res.data.countCommonCustomerPool || 0,
+            bgClass: "bg-blue"
+          },
+          {
+            type: "report",
+            title: "报备池",
+            value: res.data.countCustomerReport || 0,
+            bgClass: "bg-green"
+          },
+          {
+            type: "sign",
+            title: "签约提醒",
+            value: res.data.countSubscription || 0,
+            bgClass: "bg-orange"
+          }
+        ];
+      }
+    });
 };
 
 //选择业务数据时间(开始)
@@ -414,7 +464,7 @@ const getBusinessData = () => {
       beginDate: dayjs(timeStart.value).format("YYYY-MM-DD"),
       endDate: dayjs(timeEnd.value).format("YYYY-MM-DD")
     })
-    .then((res) => {
+    .then(res => {
       if (res.code === 0) {
         statisticsData.value = [
           {
@@ -461,7 +511,7 @@ const getCustomerData = (first: number, repeat: number) => {
       beginDate: dayjs(timeStart.value).format("YYYY-MM-DD"),
       endDate: dayjs(timeEnd.value).format("YYYY-MM-DD")
     })
-    .then((res) => {
+    .then(res => {
       if (res.code === 0) {
         customerData.value = [
           {
@@ -518,7 +568,7 @@ const getSelfSaleData = () => {
       beginDate: dayjs(timeStart.value).format("YYYY-MM-DD"),
       endDate: dayjs(timeEnd.value).format("YYYY-MM-DD")
     })
-    .then((res) => {
+    .then(res => {
       if (res.code === 0) {
         allSelfSaleData.value = res.data;
         selfSaleData.value = [
@@ -619,23 +669,28 @@ const handleSelfSaleTabChange = (index: number | string) => {
 
 //跟进任务（条数）
 const getFollowTask = () => {
-  requestApi.post("/home/query/closer/task", { id: selectedLocation.value.id, type: selectedLocation.value.type }).then((res) => {
-    if (res.code === 0) {
-      taskData.value = [
-        {
-          name: "首访跟进",
-          current: res.data.countNotFirstCloserTask || 0,
-          total: res.data.countFirstCloserTask || 0
-        },
-        {
-          name: "复访跟进",
-          current: res.data.countNotRepetitionCloserTask || 0,
-          total: res.data.countRepetitionCloserTask || 0
-        }
-      ];
-    }
-    getCustomerData(res.data.countFirstCloserTask, res.data.countRepetitionCloserTask);
-  });
+  requestApi
+    .post("/home/query/closer/task", {
+      id: selectedLocation.value.id,
+      type: selectedLocation.value.type
+    })
+    .then(res => {
+      if (res.code === 0) {
+        taskData.value = [
+          {
+            name: "首访跟进",
+            current: res.data.countNotFirstCloserTask || 0,
+            total: res.data.countFirstCloserTask || 0
+          },
+          {
+            name: "复访跟进",
+            current: res.data.countNotRepetitionCloserTask || 0,
+            total: res.data.countRepetitionCloserTask || 0
+          }
+        ];
+      }
+      getCustomerData(res.data.countFirstCloserTask, res.data.countRepetitionCloserTask);
+    });
 };
 
 onMounted(() => {

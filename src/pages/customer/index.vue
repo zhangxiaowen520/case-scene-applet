@@ -1,11 +1,13 @@
 <template>
   <view>
-    <CustomNavBar
-        v-model="selectedLocation"
-        :locations="locations"
-        :customContent="true"
-        @handleSelect="handleSelect">
-        <view class="search-bar-box" >
+    <!-- 项目树导航栏 -->
+    <CustomTreeNavBar
+      :modelName="OrganizationUtil.getOrganizationInfo().name"
+      :locations="ProjectTreeUtil.getProjectTree()"
+      :customContent="true"
+      @handleSelect="handleSelect"
+    >
+      <view class="search-bar-box">
         <view class="search-bar">
           <view class="search-input">
             <up-icon name="search" size="22" color="#979797"></up-icon>
@@ -14,38 +16,50 @@
               v-model="commonName"
               @input="handleCommonNameInput"
               placeholder="请输入客户姓名、手机尾号"
-              placeholder-class="placeholder" />
+              placeholder-class="placeholder"
+            />
           </view>
         </view>
         <view class="filter-bar">
-          <view class="filter-item" @click.stop="handleAllClick">
-            <text :class="{ active: sortType === 'all' }">全部</text>
+          <view class="filter-item" @click.stop="handleSortClick('ALL')">
+            <text :class="{ active: sortType === 'ALL' }">全部</text>
           </view>
-          <view class="filter-item" @click.stop="handIsAscendingTimeClick">
-            <text :class="{ active: sortType === 'isAscendingTime' }">{{
-              orderBy ? "创建时间升序" : "创建时间降序"
+          <view class="filter-item" @click.stop="handleSortClick('DATE_TIME')">
+            <text :class="{ active: sortType === 'DATE_TIME' }">{{
+              sortMethod === "ASC" ? "时间升序" : "时间降序"
             }}</text>
             <up-icon
-              :name="orderBy ? 'arrow-up' : 'arrow-down'"
+              :name="sortMethod === 'ASC' ? 'arrow-up' : 'arrow-down'"
               size="12"
-              :color="sortType === 'isAscendingTime' ? '#2C65F6' : '#666666'"></up-icon>
+              :color="sortType === 'DATE_TIME' ? '#2C65F6' : '#666666'"
+            ></up-icon>
           </view>
-          <view class="filter-item" @click.stop="handleIsAscendingLevelClick">
-            <text :class="{ active: sortType === 'isAscendingLevel' }">意向等级</text>
+          <view class="filter-item" @click.stop="handleSortClick('LEVEL')">
+            <text :class="{ active: sortType === 'LEVEL' }">意向等级</text>
             <up-icon
-              :name="orderBy ? 'arrow-up' : 'arrow-down'"
+              :name="sortMethod === 'ASC' ? 'arrow-up' : 'arrow-down'"
               size="12"
-              :color="sortType === 'isAscendingLevel' ? '#2C65F6' : '#666666'"></up-icon>
+              :color="sortType === 'LEVEL' ? '#2C65F6' : '#666666'"
+            ></up-icon>
           </view>
           <view class="filter-item" @click.stop="handleScreenClick">
             <text :class="{ active: hasScreenFilter }">筛选</text>
-            <up-icon name="list-dot" size="12" :color="hasScreenFilter ? '#2C65F6' : '#666666'"></up-icon>
+            <up-icon
+              name="list-dot"
+              size="12"
+              :color="hasScreenFilter ? '#2C65F6' : '#666666'"
+            ></up-icon>
           </view>
         </view>
       </view>
-    </CustomNavBar>
+    </CustomTreeNavBar>
+    <!-- 客户列表 -->
     <view class="customer-list" :style="{ marginTop: navBarHeight + 130 + 'px' }">
-      <view class="customer-item" v-for="(item, index) in customerList" :key="item.projectCustomerId">
+      <view
+        class="customer-item"
+        v-for="(item, index) in customerList"
+        :key="item.projectCustomerId"
+      >
         <view class="avatar">
           <view class="avatar-text">{{ item.level || "-" }}</view>
         </view>
@@ -67,7 +81,8 @@
               type="success"
               bg-color="rgba(255, 59, 51, 0.1)"
               border-color="rgba(255, 59, 51, 0.1)"
-              color="#FF3B33" />
+              color="#FF3B33"
+            />
             <u-tag
               v-else-if="item.visitNumber === 0"
               text="未到访"
@@ -75,7 +90,8 @@
               type="success"
               bg-color="rgba(255, 59, 51, 0.1)"
               border-color="rgba(255, 59, 51, 0.1)"
-              color="#FF3B33" />
+              color="#FF3B33"
+            />
             <u-tag
               v-else-if="item.visitNumber === 1"
               text="已到访"
@@ -83,7 +99,8 @@
               type="success"
               bg-color="rgba(44, 101, 246, 0.1)"
               border-color="rgba(44, 101, 246, 0.1)"
-              color="#2C65F6" />
+              color="#2C65F6"
+            />
             <u-tag
               v-else-if="item.visitNumber >= 2"
               :text="item.visitNumber >= 4 ? `复访3+` : `复访${item.visitNumber - 1}`"
@@ -91,16 +108,21 @@
               type="success"
               bg-color="rgba(71, 198, 134, 0.1)"
               border-color="rgba(71, 198, 134, 0.1)"
-              color="#47C686" />
+              color="#47C686"
+            />
             <view
               v-if="
                 item.nextFollowUpTime &&
                 dayjs(item.nextFollowUpTime).isBefore(dayjs().add(24, 'hour')) &&
                 getTimeRemaining(item.nextFollowUpTime) > 0
               "
-              class="count-down">
+              class="count-down"
+            >
               <text class="status-green">跟进倒计时</text>
-              <up-count-down :time="getTimeRemaining(item.nextFollowUpTime)" format="HH:mm:ss"></up-count-down>
+              <up-count-down
+                :time="getTimeRemaining(item.nextFollowUpTime)"
+                format="HH:mm:ss"
+              ></up-count-down>
             </view>
             <text v-if="item.lastProjectCustomerTime" class="status-red"
               >上次到访 {{ item.lastProjectCustomerTime.slice(0, 10) }}</text
@@ -123,7 +145,8 @@
         <view class="action-btn">
           <up-button
             v-if="
-              (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+              (UserUtil.getDataPermissionType() === 'PROJECT' ||
+                UserUtil.getDataPermissionType() === 'SELF') &&
               UserUtil.getUserInfo().id === item?.realEstateConsultantId
             "
             plain
@@ -135,7 +158,8 @@
           >
           <up-button
             v-if="
-              (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+              (UserUtil.getDataPermissionType() === 'PROJECT' ||
+                UserUtil.getDataPermissionType() === 'SELF') &&
               item.visitNumber > 0 &&
               UserUtil.getUserInfo().id === item?.realEstateConsultantId
             "
@@ -148,7 +172,8 @@
           >
           <up-button
             v-if="
-              (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+              (UserUtil.getDataPermissionType() === 'PROJECT' ||
+                UserUtil.getDataPermissionType() === 'SELF') &&
               UserUtil.getUserInfo().id === item?.realEstateConsultantId &&
               item.visitNumber > 0 &&
               item.hasPhone
@@ -164,10 +189,15 @@
       </view>
       <up-loadmore :status="loadStatus" :nomore-text="`共 ${customerList.length} 条`" />
     </view>
+    <!-- 添加客户 -->
     <view
-      v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'"
+      v-if="
+        UserUtil.getDataPermissionType() === 'PROJECT' ||
+        UserUtil.getDataPermissionType() === 'SELF'
+      "
       class="pool-add"
-      @click="handleAddClick">
+      @click="handleAddClick"
+    >
       <up-icon name="plus" size="20" color="#fff"></up-icon>
     </view>
     <!-- <VisitPopup
@@ -180,20 +210,24 @@
 </template>
 
 <script setup lang="ts">
-import CustomNavBar from "@/components/CustomNavBar/index.vue";
+import CustomTreeNavBar from "@/components/CustomTreeNavBar/index.vue";
 import { onMounted, ref } from "vue";
 import { requestApi } from "@/api/request";
-import { onShow, onReachBottom, onLoad } from "@dcloudio/uni-app";
-import { FilterUtil, ProjectUtil, UserUtil } from "@/utils/auth";
+import { onShow, onReachBottom } from "@dcloudio/uni-app";
+import { UserUtil, OrganizationUtil, ProjectTreeUtil, FilterUtil } from "@/utils/auth";
 import type { CustomerInterface } from "@/types/customer";
-import { phoneDesensitization } from "@/utils/tools";
 import dayjs from "dayjs";
-import VisitPopup from "@/components/VisitPopup/index.vue";
 import { getTimeRemaining } from "@/utils/tools";
+import type { OrganizationInfo } from "@/types/user";
 
+// 添加防抖定时器变量
+let searchTimer: number | null = null;
 const navBarHeight = ref(0);
-const selectedLocation = ref(ProjectUtil.getProjectInfo().projectId || 1);
-const locations = ref([]);
+const selectedLocation = ref({
+  id: 1,
+  name: "",
+  type: ""
+});
 //加载状态
 const loadStatus = ref<"loading" | "nomore" | "loadmore">("loadmore");
 //页码
@@ -203,21 +237,24 @@ const pages = ref(0);
 //搜索关键字、客户名称、手机号
 const commonName = ref("");
 //排序类型
-const sortType = ref<"all" | "isAscendingLevel" | "isAscendingTime">("all");
-//排序
-const orderBy = ref<boolean>(false);
-//跟进时间
-const followUpTimeBegin = ref();
-const followUpTimeEnd = ref();
-//到访时间
-const lastVisitTimeBegin = ref();
-const lastVisitTimeEnd = ref();
-//职业顾问
-const realEstateConsultantName = ref("");
-//客户状态
-const customerState = ref("");
-//等级
-const level = ref("");
+const sortType = ref<"ALL" | "DATE_TIME" | "LEVEL">("ALL");
+//排序方法
+const sortMethod = ref<"ASC" | "DESC">("ASC");
+
+//开始时间
+const dateTimeBegin = ref();
+const dateTimeEnd = ref();
+
+//职业顾问集合
+const realEstateConsultantNames = ref<string[]>([]);
+//客户状态集合
+// NOT_VISIT("未到访"),
+// VISITED("已到访"),
+// REVISIT("复访"),
+// DEAL("已成交");
+const customerStates = ref<string[]>(["REVISIT", "VISITED"]);
+//等级集合
+const levels = ref<string[]>(["A", "B", "C", "D"]);
 //筛选
 const hasScreenFilter = ref(false);
 //客户列表
@@ -230,27 +267,19 @@ const customerId = ref(0);
 const customerPhone = ref("");
 //筛选弹窗
 const isFilterPopup = ref(false);
-// 倒计时定时器
 
-//获取项目信息
-const getProjectInfo = () => {
-  requestApi.post("/home/query/user/by/project").then((res) => {
-    if (res.code === 0) {
-      locations.value = res.data.map((item: { projectId: number; projectName: string }) => ({
-        id: item.projectId,
-        name: item.projectName
-      }));
-    } else {
-      uni.showToast({ title: res.msg, icon: "none" });
-    }
+// 选择组织项目
+const handleSelect = (item: OrganizationInfo) => {
+  selectedLocation.value.id = item.id;
+  selectedLocation.value.name = item.name;
+  selectedLocation.value.type = item.type;
+  OrganizationUtil.setOrganizationInfo({
+    id: item.id,
+    name: item.name,
+    type: item.type,
+    isProject: item.isProject,
+    children: []
   });
-};
-
-// 选择项目
-const handleSelect = (item: { id: number; name: string }) => {
-  selectedLocation.value = item.id;
-  ProjectUtil.setProjectInfo({ projectId: item.id, projectName: item.name });
-  sortType.value = "all";
   pageNumber.value = 1;
   pages.value = 0;
   customerList.value = [];
@@ -270,29 +299,14 @@ const handleCommonNameInput = () => {
   }, 300);
 };
 
-// 创建时间排序
-const handIsAscendingTimeClick = () => {
-  sortType.value = "isAscendingTime";
-  orderBy.value = !orderBy.value;
-  pageNumber.value = 1;
-  pages.value = 0;
-  customerList.value = [];
-  getCustomerList();
-};
-
-// 意向等级排序
-const handleIsAscendingLevelClick = () => {
-  sortType.value = "isAscendingLevel";
-  orderBy.value = !orderBy.value;
-  pageNumber.value = 1;
-  pages.value = 0;
-  customerList.value = [];
-  getCustomerList();
-};
-
-// 全部
-const handleAllClick = () => {
-  sortType.value = "all";
+// 排序
+const handleSortClick = (type: "ALL" | "DATE_TIME" | "LEVEL") => {
+  if (sortType.value === type) {
+    sortMethod.value = sortMethod.value === "ASC" ? "DESC" : "ASC";
+  } else {
+    sortType.value = type;
+    sortMethod.value = "ASC";
+  }
   pageNumber.value = 1;
   pages.value = 0;
   customerList.value = [];
@@ -301,11 +315,11 @@ const handleAllClick = () => {
 
 // 跳转筛选
 const handleScreenClick = () => {
-  console.log(customerState.value);
-  console.log(level.value);
+  console.log(customerStates.value);
+  console.log(levels.value);
 
   uni.navigateTo({
-    url: `/pages/customer/filter?followUpTimeBegin=${followUpTimeBegin.value}&followUpTimeEnd=${followUpTimeEnd.value}&lastVisitTimeBegin=${lastVisitTimeBegin.value}&lastVisitTimeEnd=${lastVisitTimeEnd.value}&realEstateConsultantName=${realEstateConsultantName.value}&customerState=${customerState.value}&level=${level.value}`
+    url: `/pages/customer/filter?dateTimeBegin=${dateTimeBegin.value}&dateTimeEnd=${dateTimeEnd.value}&realEstateConsultantNames=${realEstateConsultantNames.value}&customerStates=${customerStates.value}&levels=${levels.value}`
   });
 };
 
@@ -319,19 +333,21 @@ const getCustomerList = async () => {
     const query = {
       pageNumber: pageNumber.value,
       pageSize: 10,
-      projectId: ProjectUtil.getProjectInfo().projectId,
       commonName: commonName.value,
-      orderField: sortType.value,
-      orderBy: orderBy.value,
-      followUpTimeBegin: followUpTimeBegin.value ? dayjs(followUpTimeBegin.value).format("YYYY-MM-DD") : "",
-      followUpTimeEnd: followUpTimeEnd.value ? dayjs(followUpTimeEnd.value).format("YYYY-MM-DD") : "",
-      lastVisitTimeBegin: lastVisitTimeBegin.value ? dayjs(lastVisitTimeBegin.value).format("YYYY-MM-DD") : "",
-      lastVisitTimeEnd: lastVisitTimeEnd.value ? dayjs(lastVisitTimeEnd.value).format("YYYY-MM-DD") : "",
-      customerState: customerState.value,
-      level: level.value,
-      // realEstateConsultantName: realEstateConsultantName.value,
-      realEstateConsultantName: commonName.value ? "" : (UserUtil.getDataPermissionType() === 'SELF' ? UserUtil.getUserInfo().name : realEstateConsultantName.value)
-    }
+      customerStates: customerStates.value,
+      selectId: selectedLocation.value.id,
+      selectType: selectedLocation.value.type,
+      dateTimeBegin: dateTimeBegin.value ? dayjs(dateTimeBegin.value).format("YYYY-MM-DD") : "",
+      dateTimeEnd: dateTimeEnd.value ? dayjs(dateTimeEnd.value).format("YYYY-MM-DD") : "",
+      levels: levels.value,
+      sortField: sortType.value,
+      sortMethod: sortMethod.value,
+      realEstateConsultantNames: commonName.value
+        ? []
+        : UserUtil.getDataPermissionType() === "SELF"
+        ? UserUtil.getUserInfo().name
+        : realEstateConsultantNames.value
+    };
     const res = await requestApi.post("/customer/query/customer/list", {
       ...query
     });
@@ -391,30 +407,32 @@ const handleCustomerVisitClick = (id: number, phone: string) => {
   uni.showModal({
     title: "提示",
     content: "是否确认到访?",
-    success: (res) => {
+    success: res => {
       if (res.confirm) {
-        requestApi.post("/customer/visit", {
-          projectCustomerId: id,
-          code: '1234'
-        }).then((res) => {
-          if (res.code === 0) {
-            uni.showToast({
-              title: "操作成功",
-              icon: "success"
-            });
-            setTimeout(() => {
-              pageNumber.value = 1;
-              pages.value = 0;
-              customerList.value = [];
-              getCustomerList();
-            }, 0);
-          }else{
-            uni.showToast({
-              title: res.msg,
-              icon: "none"
-            });
-          }
-        });
+        requestApi
+          .post("/customer/visit", {
+            projectCustomerId: id,
+            code: "1234"
+          })
+          .then(res => {
+            if (res.code === 0) {
+              uni.showToast({
+                title: "操作成功",
+                icon: "success"
+              });
+              setTimeout(() => {
+                pageNumber.value = 1;
+                pages.value = 0;
+                customerList.value = [];
+                getCustomerList();
+              }, 0);
+            } else {
+              uni.showToast({
+                title: res.msg,
+                icon: "none"
+              });
+            }
+          });
       }
     }
   });
@@ -430,7 +448,7 @@ const handleCallClick = (phone: string, id?: number) => {
           .post("/customer/customer/phone", {
             id: id
           })
-          .then((res) => {
+          .then(res => {
             if (res.code === 0) {
               console.log("拨打电话成功");
             }
@@ -476,13 +494,11 @@ const handleCallClick = (phone: string, id?: number) => {
 const updateFilter = (filterData: any) => {
   console.log(filterData);
   hasScreenFilter.value = !filterData.isReset;
-  followUpTimeBegin.value = filterData.followUpTimeBegin;
-  followUpTimeEnd.value = filterData.followUpTimeEnd;
-  lastVisitTimeBegin.value = filterData.lastVisitTimeBegin;
-  lastVisitTimeEnd.value = filterData.lastVisitTimeEnd;
-  realEstateConsultantName.value = filterData.realEstateConsultantName;
-  customerState.value = filterData.customerState;
-  level.value = filterData.level;
+  dateTimeBegin.value = filterData.dateTimeBegin;
+  dateTimeEnd.value = filterData.dateTimeEnd;
+  realEstateConsultantNames.value = filterData.realEstateConsultantNames;
+  customerStates.value = filterData.customerStates;
+  levels.value = filterData.levels;
 
   pageNumber.value = 1;
   pages.value = 0;
@@ -494,28 +510,30 @@ const reset = () => {
   pageNumber.value = 1;
   pages.value = 0;
   customerList.value = [];
-  followUpTimeBegin.value = "";
-  followUpTimeEnd.value = "";
-  lastVisitTimeBegin.value = "";
-  lastVisitTimeEnd.value = "";
-  realEstateConsultantName.value = "";
-  customerState.value = "";
-  level.value = "";
+  dateTimeBegin.value = "";
+  dateTimeEnd.value = "";
+  realEstateConsultantNames.value = [];
+  customerStates.value = ["REVISIT", "VISITED"];
+  levels.value = ["A", "B", "C", "D"];
 };
 
 onMounted(() => {
   uni.getSystemInfo({
-    success: (res) => {
+    success: res => {
       navBarHeight.value = res.statusBarHeight ?? 0;
     }
-  })
-  getProjectInfo();
+  });
 });
 
 onShow(() => {
-  selectedLocation.value = ProjectUtil.getProjectInfo().projectId;
+  if (OrganizationUtil.getOrganizationInfo().id) {
+    selectedLocation.value.id = OrganizationUtil.getOrganizationInfo().id;
+    selectedLocation.value.name = OrganizationUtil.getOrganizationInfo().name;
+    selectedLocation.value.type = OrganizationUtil.getOrganizationInfo().type;
+  }
   const filterData = FilterUtil.getFilterData();
-  if (filterData && filterData.projectId === ProjectUtil.getProjectInfo().projectId) {
+  console.log(filterData);
+  if (filterData && filterData.selectId === selectedLocation.value.id) {
     updateFilter(filterData);
   } else {
     hasScreenFilter.value = false;
@@ -551,11 +569,6 @@ onReachBottom(() => {
 //   FilterUtil.removeFilterData();
 //   // uni.$off("updateFilter");
 // });
-
-// 添加防抖定时器变量
-let searchTimer: number | null = null;
-
-
 </script>
 
 <style lang="scss" scoped>

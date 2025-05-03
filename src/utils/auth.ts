@@ -6,6 +6,7 @@ const USER_INFO_KEY = "case_scene_userInfo";
 const PROJECT_INFO_KEY = "case_scene_projectInfo";
 const FILTER_DATA_KEY = "case_scene_filterData";
 const ORGANIZATION_INFO_KEY = "case_scene_organizationInfo";
+const PROJECT_TREE_KEY = "case_scene_projectTree";
 /**
  * Token管理工具类
  */
@@ -112,7 +113,6 @@ export const ProjectUtil = {
   }
 };
 
-
 /**
  * 获取组织信息
  */
@@ -139,7 +139,6 @@ export const OrganizationUtil = {
   }
 };
 
-
 export const FilterUtil = {
   getFilterData(): FilterData {
     return uni.getStorageSync(FILTER_DATA_KEY) || {};
@@ -151,5 +150,20 @@ export const FilterUtil = {
 
   removeFilterData(): void {
     uni.removeStorageSync(FILTER_DATA_KEY);
+  }
+};
+
+/** 项目树*/
+export const ProjectTreeUtil = {
+  getProjectTree(): any {
+    return uni.getStorageSync(PROJECT_TREE_KEY) || {};
+  },
+
+  setProjectTree(projectTree: any): void {
+    uni.setStorageSync(PROJECT_TREE_KEY, projectTree);
+  },
+
+  removeProjectTree(): void {
+    uni.removeStorageSync(PROJECT_TREE_KEY);
   }
 };
