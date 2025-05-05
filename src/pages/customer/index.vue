@@ -344,11 +344,7 @@ const getCustomerList = async () => {
       levels: levels.value,
       sortField: sortType.value,
       sortMethod: sortMethod.value,
-      realEstateConsultantNames: commonName.value
-        ? []
-        : UserUtil.getDataPermissionType() === "SELF"
-        ? UserUtil.getUserInfo().name
-        : realEstateConsultantNames.value
+      realEstateConsultantNames: realEstateConsultantNames.value
     };
     const res = await requestApi.post("/customer/query/customer/list", {
       ...query
