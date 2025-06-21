@@ -6,16 +6,12 @@
       @handleSelect="handleSelect"
     />
     <view class="page-content" :style="{ marginTop: navBarHeight + 26 + 'px' }">
+      <TrendAnalysis />
       <MessageNotification :data="messageList" />
       <template v-if="UserUtil.getDataPermissionType() !== 'SELF'">
         <CustomerPool :data="poolData" @click="handlePoolClick" />
       </template>
-      <template
-        v-if="
-          UserUtil.getDataPermissionType() === 'PROJECT' ||
-          UserUtil.getDataPermissionType() === 'SELF'
-        "
-      >
+      <template v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'">
         <TaskCard :data="taskData" @click="handleTaskClick" />
       </template>
       <StatisticsCard
@@ -26,6 +22,7 @@
         :timeEnd="timeEnd"
         @showTimeStart="showTimeStart"
         @showTimeEnd="showTimeEnd"
+        @toNavigate="handleBusinessTableClick"
       />
       <template v-if="UserUtil.getDataPermissionType() === 'SELF'">
         <StatisticsCard title="客户数据" :data="customerData" />
@@ -71,6 +68,7 @@ import { onShow } from "@dcloudio/uni-app";
 import { getCurrentMonthDay } from "@/utils/tools";
 import dayjs from "dayjs";
 import type { OrganizationInfo } from "@/types/user";
+import TrendAnalysis from "./components/trend-analysis.vue";
 
 type TreeNode = OrganizationInfo & {
   typeKey?: string;
@@ -310,6 +308,13 @@ const handleTaskClick = (type: 1 | 2) => {
   });
 };
 
+// 业务数据
+const handleBusinessTableClick = () => {
+  uni.navigateTo({
+    url: "/pages/index/businessTable"
+  });
+};
+
 // 获取用户信息
 const getUserInfo = () => {
   requestApi.post("/auth/user/info").then(res => {
@@ -343,10 +348,8 @@ const getProjectTreeInfo = () => {
       treeLocations.value = processedData;
       ProjectTreeUtil.setProjectTree(processedData);
       selectedLocation.value.id = OrganizationUtil.getOrganizationInfo().id || processedData[0].id;
-      selectedLocation.value.name =
-        OrganizationUtil.getOrganizationInfo().name || processedData[0].name;
-      selectedLocation.value.type =
-        OrganizationUtil.getOrganizationInfo().type || processedData[0].type;
+      selectedLocation.value.name = OrganizationUtil.getOrganizationInfo().name || processedData[0].name;
+      selectedLocation.value.type = OrganizationUtil.getOrganizationInfo().type || processedData[0].type;
       if (!OrganizationUtil.getOrganizationInfo().id) {
         OrganizationUtil.setOrganizationInfo(processedData[0]);
       }

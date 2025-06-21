@@ -11,7 +11,7 @@
       >
     </view>
     <view class="header" v-else>
-      <text class="header-title">{{ title }}</text>
+      <text class="header-title" @click="handleToNavigateClick">{{ title }}</text>
       <view class="header-right" v-if="showTime">
         <text class="header-time" @click="showTimeStart">{{ dayjs(timeStart).format("YYYY/MM/DD") }}</text>
         <text>-</text>
@@ -58,6 +58,7 @@ const emit = defineEmits<{
   (e: "tabChange", index: number | string): void;
   (e: "showTimeStart"): void;
   (e: "showTimeEnd"): void;
+  (e: "toNavigate"): void;
 }>();
 
 const getValueStyle = (value: string | number) => {
@@ -82,6 +83,10 @@ const showTimeStart = () => {
 
 const showTimeEnd = () => {
   emit("showTimeEnd");
+};
+
+const handleToNavigateClick = () => {
+  emit("toNavigate");
 };
 </script>
 
