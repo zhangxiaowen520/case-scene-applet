@@ -14,14 +14,14 @@
 <script setup lang="ts">
 const props = defineProps<{
   tabList: any;
-  activeId: number;
+  activeId: any;
 }>();
 
 const emit = defineEmits<{
-  (e: "click", id: number): void;
+  (e: "click", id: any): void;
 }>();
 
-const handleClick = (id: number) => {
+const handleClick = (id: any) => {
   emit("click", id);
 };
 </script>
