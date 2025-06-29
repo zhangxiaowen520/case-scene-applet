@@ -165,7 +165,7 @@ onMounted(() => {
 .trend-analysis {
   width: 100%;
   box-sizing: border-box;
-  padding: 16rpx;
+  padding: 30rpx;
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.001), rgba(0, 0, 0, 0.001)), #ffffff;
   margin-bottom: 20rpx;
 }

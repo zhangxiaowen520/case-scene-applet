@@ -237,35 +237,34 @@ const selfSaleTabs = ref([
 //统计-总计数据
 const quantityData = ref<any[]>([]);
 //统计-总计index
-const quantityTabIndex = ref("selfSale");
+const quantityTabIndex = ref(0);
 //统计-总计tabs
 const quantityTabs = ref([
   {
     name: "总计",
-    value: "selfSale"
+    value: 0
   },
   {
     name: "销售",
-    value: "channel"
+    value: 1
   },
   {
     name: "策划",
-    value: "nationalMarketing1"
+    value: 2
   },
   {
     name: "渠道",
-    value: "nationalMarketing2"
+    value: 3
   },
   {
     name: "全民",
-    value: "nationalMarketing3"
+    value: 4
   },
   {
     name: "物业",
-    value: "nationalMarketing4"
+    value: 5
   }
 ]);
-const allQuantityData = ref([]);
 
 // 公客池、报备池、签约提醒总条数
 const poolData = ref([
@@ -694,99 +693,53 @@ const handleSelfSaleTabChange = (index: number | string) => {
   ];
 };
 
-//获取统计-总计数据
-const getQuantityData = () => {
+// 统计-总计tab切换
+const handleQuantityTabChange = (index: number | string) => {
   requestApi
     .post("/v2/home/quantity/stat", {
       id: selectedLocation.value.id,
-      type: selectedLocation.value.type
+      type: selectedLocation.value.type,
+      queryType: index
     })
     .then(res => {
       if (res.code === 0) {
-        allQuantityData.value = res.data;
+        // @ts-expect-error 忽略索引类型检查
+        quantityTabIndex.value = index;
         quantityData.value = [
           {
-            value: res.data.selfSale.customerCount || 0,
-            label: "客户总数",
+            value: res.data.numberOfValidClue || 0,
+            label: "有效线索数",
+            unit: "组",
+            url: "/pages/index/effectiveClueTable"
+          },
+          {
+            value: res.data.numberOfValidCustomer || 0,
+            label: "有效客户数",
             unit: "组"
           },
           {
-            value: res.data.selfSale.validCount || 0,
-            label: "有效数",
+            value: res.data.expectedToVisit || 0,
+            label: `${getCurrentMonthDay()}预计到访`,
             unit: "组"
           },
           {
-            value: res.data.selfSale.publicPoolCount || 0,
-            label: "公客池",
-            unit: "组"
-          },
-          {
-            value: res.data.selfSale.expectedSubscriptionCount || 0,
+            value: res.data.expectedToSubscription || 0,
             label: `${getCurrentMonthDay()}预计认购`,
             unit: "组"
           },
           {
-            value: res.data.selfSale.a || 0,
-            label: "A",
+            value: res.data.expectedToSign || 0,
+            label: `${getCurrentMonthDay()}预计签字`,
             unit: "组"
           },
           {
-            value: res.data.selfSale.b || 0,
-            label: "B",
-            unit: "组"
-          },
-          {
-            value: res.data.selfSale.c || 0,
-            label: "C",
-            unit: "组"
-          },
-          {
-            value: res.data.selfSale.d || 0,
-            label: "D",
+            value: res.data.numberOfPersonnel || 0,
+            label: "人员数量",
             unit: "组"
           }
         ];
       }
     });
-};
-
-// 统计-总计tab切换
-const handleQuantityTabChange = (index: number | string) => {
-  // @ts-expect-error 忽略索引类型检查
-  quantityTabIndex.value = index;
-  quantityData.value = [
-    {
-      value: 1 || 0,
-      label: "有效线索数",
-      unit: "组",
-      url: "/pages/index/effectiveClueTable"
-    },
-    {
-      value: 1 || 0,
-      label: "有效客户数",
-      unit: "组"
-    },
-    {
-      value: 1 || 0,
-      label: `${getCurrentMonthDay()}预计到访`,
-      unit: "组"
-    },
-    {
-      value: 1 || 0,
-      label: `${getCurrentMonthDay()}预计认购`,
-      unit: "组"
-    },
-    {
-      value: 1 || 0,
-      label: `${getCurrentMonthDay()}预计签字`,
-      unit: "组"
-    },
-    {
-      value: 1 || 0,
-      label: "人员数量",
-      unit: "组"
-    }
-  ];
 };
 
 //预计相关数据页面 - 跳转
@@ -849,7 +802,7 @@ onShow(() => {
     getPoolTotal();
     getBusinessData();
     getSelfSaleData();
-    // getQuantityData();
+    handleQuantityTabChange(0);
   }
   getFollowTask();
   getMessage();
