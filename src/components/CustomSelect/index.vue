@@ -6,7 +6,12 @@
     </view>
 
     <view v-if="isOpen" class="select-dropdown">
-      <view v-for="item in options" :key="item.value" class="select-option" @click="handleSelect(item)">
+      <view
+        v-for="item in options"
+        :key="item.value"
+        class="select-option"
+        @click="handleSelect(item)"
+      >
         {{ item.label }}
       </view>
     </view>
@@ -15,11 +20,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from "vue";
-import emitter from '@/utils/eventBus';
+import emitter from "@/utils/eventBus";
 
 interface SelectOption {
   label: string;
   value: any;
+  [key: string]: any; // 允许任意额外的字段
 }
 
 // 定义事件类型
@@ -48,14 +54,14 @@ const isOpen = ref(false);
 const selectId = ref(`select-${Date.now()}-${Math.random()}`);
 
 const selectedLabel = computed(() => {
-  const selected = props.options.find((item) => item.value === props.modelValue);
+  const selected = props.options.find(item => item.value === props.modelValue);
   return selected ? selected.label : "";
 });
 
 const toggleDropdown = () => {
   if (!isOpen.value) {
     // 发送关闭其他下拉框的事件
-    emitter.emit('closeOtherDropdowns', selectId.value);
+    emitter.emit("closeOtherDropdowns", selectId.value);
   }
   isOpen.value = !isOpen.value;
 };
@@ -68,17 +74,17 @@ const handleSelect = (item: SelectOption) => {
 
 // 监听关闭其他下拉框的事件
 const handleCloseOthers = (currentId: unknown) => {
-  if (typeof currentId === 'string' && currentId !== selectId.value) {
+  if (typeof currentId === "string" && currentId !== selectId.value) {
     isOpen.value = false;
   }
 };
 
 onMounted(() => {
-  emitter.on('closeOtherDropdowns', handleCloseOthers);
+  emitter.on("closeOtherDropdowns", handleCloseOthers);
 });
 
 onUnmounted(() => {
-  emitter.off('closeOtherDropdowns', handleCloseOthers);
+  emitter.off("closeOtherDropdowns", handleCloseOthers);
 });
 </script>
 

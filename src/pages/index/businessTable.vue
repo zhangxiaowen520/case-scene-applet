@@ -55,8 +55,6 @@ import BasicTable from "@/components/basic-table/basic-table.vue";
 import CustomSelect from "@/components/CustomSelect/index.vue";
 import TimeSelection from "@/components/TimeSelection/index.vue";
 import { OrganizationUtil, TokenUtil } from "@/utils/auth";
-import { onLaunch } from "@dcloudio/uni-app";
-import dayjs from "dayjs";
 import { onMounted, ref } from "vue";
 
 const props = defineProps<{
@@ -67,26 +65,13 @@ const props = defineProps<{
 // 选项
 const typeOptions = ref<any[]>([
   {
-    label: "集团合计",
-    value: "ALL"
-  },
-  {
-    label: "公司合计",
-    value: "COMPANY"
-  },
-  {
-    label: "区域合计",
-    value: "AREA"
-  },
-  {
-    label: "项目合计",
-    value: "PROJECT"
+    label: "合计",
+    value: "0"
   }
 ]);
-//类型 ALL,COMPANY,AREA,PROJECT
-const typeId = ref("ALL");
+const typeId = ref("0");
 /**
- * 时间选择 - 设置默认值为6天前到今天
+ * 时间选择
  */
 const beginDate = ref(props.beginDate);
 const endDate = ref(props.endDate);
@@ -142,6 +127,11 @@ const getBusinessInfo = () => {
     .then(res => {
       if (res.code === 0) {
         tableData.value = res.data;
+        typeOptions.value = res.data.map((item: any) => ({
+          label: item.dataName,
+          value: item.dataId,
+          type: item.dataType
+        }));
       } else {
         uni.showToast({ title: res.msg, icon: "none" });
       }
@@ -154,13 +144,18 @@ const handleNameClick = (scope: any, index: number) => {
   }
 
   uni.navigateTo({
-    url: `/pages/index/childTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}&beginDate=${beginDate.value}&endDate=${endDate.value}`
+    url: `/pages/index/businessChildTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}&beginDate=${beginDate.value}&endDate=${endDate.value}`
   });
 };
 // 选择类型
 const handleTypeChange = (item: any) => {
-  typeId.value = item.value;
-  getBusinessInfo();
+  if (item.label === "合计") {
+    return;
+  }
+
+  uni.navigateTo({
+    url: `/pages/index/businessChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}&beginDate=${beginDate.value}&endDate=${endDate.value}`
+  });
 };
 // 开始时间
 const handleBeginDate = (time: string) => {
