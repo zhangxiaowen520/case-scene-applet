@@ -288,7 +288,7 @@ const poolData = ref([
   }
 ]);
 
-const timeStart = ref(dayjs().subtract(6, "day").format("YYYY-MM-DD"));
+const timeStart = ref(dayjs().subtract(30, "day").format("YYYY-MM-DD"));
 const timeEnd = ref(dayjs().format("YYYY-MM-DD"));
 
 // 选择项目
@@ -341,6 +341,7 @@ const handleTaskClick = (type: 1 | 2) => {
 
 // 业务数据 - 跳转
 const handleBusinessTableClick = (url: string) => {
+  console.log(url);
   if (url) {
     uni.navigateTo({
       url: `${url}?beginDate=${timeStart.value}&endDate=${timeEnd.value}`
@@ -496,27 +497,32 @@ const getBusinessData = () => {
           {
             value: res.data.countFirstCloserTask || 0,
             label: "线索数",
-            unit: "组"
+            unit: "组",
+            url: "/pages/index/clueTable"
           },
           {
             value: res.data.countFirstVisit || 0,
             label: "首访",
-            unit: "组"
+            unit: "组",
+            url: "/pages/index/firstVisitTable"
           },
           {
             value: res.data.countRepeatVisit || 0,
             label: "复访",
-            unit: "组"
+            unit: "组",
+            url: "/pages/index/revisitTable"
           },
           {
             value: res.data.subscription || 0,
             label: `认购`,
-            unit: "组"
+            unit: "组",
+            url: "/pages/index/subscriptionTable"
           },
           {
             value: res.data.sign || 0,
             label: "签约",
-            unit: "组"
+            unit: "组",
+            url: "/pages/index/signTable"
           },
           {
             value: Number((res.data.describes || 0).toFixed(2)),

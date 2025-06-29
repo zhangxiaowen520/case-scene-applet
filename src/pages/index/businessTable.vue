@@ -149,7 +149,7 @@ const handleNameClick = (scope: any, index: number) => {
 };
 // 选择类型
 const handleTypeChange = (item: any) => {
-  if (item.label === "合计") {
+  if (item.label === "合计" || item.type === null) {
     return;
   }
 
