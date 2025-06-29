@@ -35,26 +35,9 @@ import { OrganizationUtil } from "@/utils/auth";
 import { onMounted, ref } from "vue";
 
 // 选项
-const typeOptions = ref<any[]>([
-  {
-    label: "集团合计",
-    value: "ALL"
-  },
-  {
-    label: "公司合计",
-    value: "COMPANY"
-  },
-  {
-    label: "区域合计",
-    value: "AREA"
-  },
-  {
-    label: "项目合计",
-    value: "PROJECT"
-  }
-]);
+const typeOptions = ref<any[]>([]);
 //类型
-const typeId = ref("ALL");
+const typeId = ref("0");
 //表格数据
 const tableData = ref([]);
 //表格名称
@@ -83,6 +66,11 @@ const getBusinessInfo = () => {
     .then(res => {
       if (res.code === 0) {
         tableData.value = res.data;
+        typeOptions.value = res.data.map((item: any) => ({
+          label: item.dataName,
+          value: item.dataId,
+          type: item.dataType
+        }));
       } else {
         uni.showToast({ title: res.msg, icon: "none" });
       }
@@ -100,8 +88,13 @@ const handleNameClick = (scope: any, index: number) => {
 };
 // 选择类型
 const handleTypeChange = (item: any) => {
-  typeId.value = item.value;
-  getBusinessInfo();
+  if (item.label === "合计" || item.type === null) {
+    return;
+  }
+
+  uni.navigateTo({
+    url: `/pages/index/businessChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}`
+  });
 };
 //导出
 const exportClick = () => {
