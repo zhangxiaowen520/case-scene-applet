@@ -1,6 +1,6 @@
 <template>
   <view>
-    <CustomHeader :title="`${props.dataName}` || '有效线索数'" />
+    <CustomHeader :title="`${props.dataName}` || '有效客户数'" />
     <view class="table-select" :style="{ marginTop: navBarHeight + 26 + 'px' }">
       <CustomSelect v-model="typeId" :options="typeOptions" @change="handleTypeChange" />
       <view class="table-select-time">
@@ -59,7 +59,7 @@ const columns = [
   },
   {
     fieldName: "quantity",
-    fieldDesc: "有效线索数",
+    fieldDesc: "有效客户数",
     fieldType: "slot"
   }
 ];
@@ -67,7 +67,7 @@ const columns = [
 const getBusinessInfo = () => {
   uni.showLoading({ title: "正在加载..." });
   requestApi
-    .post("/v2/home/quantity/stat/clue", {
+    .post("/v2/home/quantity/stat/customer", {
       pageNumber: 1,
       pageSize: 99,
       id: props.dataId,
@@ -104,7 +104,7 @@ const handleTypeChange = (item: any) => {
   }
 
   uni.navigateTo({
-    url: `/pages/index/businessChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}`
+    url: `/pages/index/effectiveCustomerChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}`
   });
 };
 
@@ -113,13 +113,13 @@ const exportClick = () => {
   const params = {
     pageNumber: 1,
     pageSize: 999,
-    description: `${props.dataName}-有效线索数`,
+    description: `${props.dataName}-有效客户数`,
     id: props.dataId,
     type: props.dataType
   };
   // 显示加载提示
   uni.showLoading({ title: "正在导出..." });
-  requestApi.post("/v2/home/quantity/stat/clue/export", { ...params }).then(res => {
+  requestApi.post("/v2/home/quantity/stat/customer/export", { ...params }).then(res => {
     if (res.code === 0) {
       downloadFileClick(res.data);
     } else {

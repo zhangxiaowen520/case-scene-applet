@@ -721,7 +721,8 @@ const handleQuantityTabChange = (index: number | string) => {
           {
             value: res.data.numberOfValidCustomer || 0,
             label: "有效客户数",
-            unit: "组"
+            unit: "组",
+            url: "/pages/index/effectiveCustomerTable"
           },
           {
             value: res.data.expectedToVisit || 0,

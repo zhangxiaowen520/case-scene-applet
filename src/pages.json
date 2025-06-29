@@ -112,6 +112,19 @@
       }
     },
     {
+      "path": "pages/index/effectiveCustomerTable",
+      "style": {
+        "navigationBarTitleText": "有效客户"
+      }
+    },
+    {
+      "path": "pages/index/effectiveCustomerChildTable",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "有效客户-区域"
+      }
+    },
+    {
       "path": "pages/property/index",
       "style": {
         "navigationBarTitleText": "楼盘",

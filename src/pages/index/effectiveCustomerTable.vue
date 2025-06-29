@@ -1,7 +1,6 @@
 <template>
   <view>
-    <CustomHeader :title="`${props.dataName}` || '有效线索数'" />
-    <view class="table-select" :style="{ marginTop: navBarHeight + 26 + 'px' }">
+    <view class="table-select">
       <CustomSelect v-model="typeId" :options="typeOptions" @change="handleTypeChange" />
       <view class="table-select-time">
         <img
@@ -13,13 +12,13 @@
         />
       </view>
     </view>
-    <basic-table :columns="columns" :data="tableData" :min-item-width="150" align="center">
+    <basic-table :columns="columns" :data="tableData" align="center">
       <template #item="{ column, scope, index }">
         <!-- 区域 -->
         <view v-if="column.fieldName === 'dataName'" @click="handleNameClick(scope, index)">
           {{ scope.dataName }}
         </view>
-        <!-- 有效线索 -->
+        <!-- 有效客户数 -->
         <view v-else-if="column.fieldName === 'quantity'">
           {{ scope.quantity }}
         </view>
@@ -32,16 +31,8 @@
 import { requestApi } from "@/api/request";
 import BasicTable from "@/components/basic-table/basic-table.vue";
 import CustomSelect from "@/components/CustomSelect/index.vue";
+import { OrganizationUtil } from "@/utils/auth";
 import { onMounted, ref } from "vue";
-import CustomHeader from "@/components/CustomHeader/index.vue";
-
-const props = defineProps<{
-  dataId: string;
-  dataName: string;
-  dataType: string;
-}>();
-
-const navBarHeight = ref(0);
 
 // 选项
 const typeOptions = ref<any[]>([]);
@@ -54,12 +45,11 @@ const columns = [
   {
     fieldName: "dataName",
     fieldDesc: "区域",
-    fieldType: "slot",
-    fixed: "left"
+    fieldType: "slot"
   },
   {
     fieldName: "quantity",
-    fieldDesc: "有效线索数",
+    fieldDesc: "有效客户数",
     fieldType: "slot"
   }
 ];
@@ -67,11 +57,11 @@ const columns = [
 const getBusinessInfo = () => {
   uni.showLoading({ title: "正在加载..." });
   requestApi
-    .post("/v2/home/quantity/stat/clue", {
+    .post("/v2/home/quantity/stat/customer", {
       pageNumber: 1,
       pageSize: 99,
-      id: props.dataId,
-      type: props.dataType
+      id: OrganizationUtil.getOrganizationInfo().id,
+      type: OrganizationUtil.getOrganizationInfo().type
     })
     .then(res => {
       if (res.code === 0) {
@@ -81,7 +71,6 @@ const getBusinessInfo = () => {
           value: item.dataId,
           type: item.dataType
         }));
-        typeId.value = res.data[0].dataId;
       } else {
         uni.showToast({ title: res.msg, icon: "none" });
       }
@@ -104,22 +93,21 @@ const handleTypeChange = (item: any) => {
   }
 
   uni.navigateTo({
-    url: `/pages/index/businessChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}`
+    url: `/pages/index/effectiveCustomerChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}`
   });
 };
-
 //导出
 const exportClick = () => {
   const params = {
     pageNumber: 1,
     pageSize: 999,
-    description: `${props.dataName}-有效线索数`,
-    id: props.dataId,
-    type: props.dataType
+    description: "有效客户数",
+    id: OrganizationUtil.getOrganizationInfo().id,
+    type: OrganizationUtil.getOrganizationInfo().type
   };
   // 显示加载提示
   uni.showLoading({ title: "正在导出..." });
-  requestApi.post("/v2/home/quantity/stat/clue/export", { ...params }).then(res => {
+  requestApi.post("/v2/home/quantity/stat/customer/export", { ...params }).then(res => {
     if (res.code === 0) {
       downloadFileClick(res.data);
     } else {
@@ -133,7 +121,6 @@ const downloadFileClick = (url: string) => {
   uni.downloadFile({
     url: url,
     success: downloadResult => {
-      console.log(downloadResult);
       if (downloadResult.statusCode === 200) {
         uni.openDocument({
           filePath: downloadResult.tempFilePath,
@@ -148,11 +135,6 @@ const downloadFileClick = (url: string) => {
 };
 
 onMounted(() => {
-  // 获取导航栏高度
-  const menuButtonInfo = uni.getMenuButtonBoundingClientRect();
-  if (menuButtonInfo) {
-    navBarHeight.value = (menuButtonInfo.bottom + menuButtonInfo.top) / 2 + 8;
-  }
   getBusinessInfo();
 });
 </script>
