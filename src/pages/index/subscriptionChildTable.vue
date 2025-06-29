@@ -29,47 +29,145 @@
         <view v-else-if="column.fieldName === 'quantity'">
           {{ scope.quantity }}
         </view>
-        <!-- 合计（信息完整度） -->
-        <view v-else-if="column.fieldName === 'completionRate'"> {{ scope.completionRate }}% </view>
+        <!-- 合计（平均成交周期） -->
+        <view v-else-if="column.fieldName === 'averageTransactionCycle'">
+          {{ scope.averageTransactionCycle }}天
+        </view>
+        <!-- 合计（平均复访次数） -->
+        <view v-else-if="column.fieldName === 'averageNumberOfRevisits'">
+          {{ scope.averageNumberOfRevisits }}
+        </view>
+        <!-- 合计（新访成交率） -->
+        <view v-else-if="column.fieldName === 'newVisitTransactionRate'">
+          {{ scope.newVisitTransactionRate }}%
+        </view>
+        <!-- 合计（复访成交率） -->
+        <view v-else-if="column.fieldName === 'revisitTransactionRate'">
+          {{ scope.revisitTransactionRate }}%
+        </view>
+        <!-- 合计（老带新率） -->
+        <view v-else-if="column.fieldName === 'oldBringsNewRate'">
+          {{ scope.oldBringsNewRate }}%
+        </view>
         <!-- 销售（数量） -->
         <view v-else-if="column.fieldName === 'quantityXs'">
           {{ scope.quantityXs }}
         </view>
-        <!-- 销售（信息完整度） -->
-        <view v-else-if="column.fieldName === 'completionRateXs'">
-          {{ scope.completionRateXs }}%
+        <!-- 销售（平均成交周期） -->
+        <view v-else-if="column.fieldName === 'averageTransactionCycleXs'">
+          {{ scope.averageTransactionCycleXs }}天
+        </view>
+        <!-- 销售（平均复访次数） -->
+        <view v-else-if="column.fieldName === 'averageNumberOfRevisitsXs'">
+          {{ scope.averageNumberOfRevisitsXs }}
+        </view>
+        <!-- 销售（新访成交率） -->
+        <view v-else-if="column.fieldName === 'newVisitTransactionRateXs'">
+          {{ scope.newVisitTransactionRateXs }}%
+        </view>
+        <!-- 销售（复访成交率） -->
+        <view v-else-if="column.fieldName === 'revisitTransactionRateXs'">
+          {{ scope.revisitTransactionRateXs }}%
+        </view>
+        <!-- 销售（老带新率） -->
+        <view v-else-if="column.fieldName === 'oldBringsNewRateXs'">
+          {{ scope.oldBringsNewRateXs }}%
         </view>
         <!-- 策划（数量） -->
         <view v-else-if="column.fieldName === 'quantityCh'">
-          {{ scope.quantityXs }}
+          {{ scope.quantityCh }}
         </view>
-        <!-- 策划（信息完整度） -->
-        <view v-else-if="column.fieldName === 'completionRateCh'">
-          {{ scope.completionRateXs }}%
+        <!-- 策划（平均成交周期） -->
+        <view v-else-if="column.fieldName === 'averageTransactionCycleCh'">
+          {{ scope.averageTransactionCycleCh }}天
+        </view>
+        <!-- 策划（平均复访次数） -->
+        <view v-else-if="column.fieldName === 'averageNumberOfRevisitsCh'">
+          {{ scope.averageNumberOfRevisitsCh }}
+        </view>
+        <!-- 策划（新访成交率） -->
+        <view v-else-if="column.fieldName === 'newVisitTransactionRateCh'">
+          {{ scope.newVisitTransactionRateCh }}%
+        </view>
+        <!-- 策划（复访成交率） -->
+        <view v-else-if="column.fieldName === 'revisitTransactionRateCh'">
+          {{ scope.revisitTransactionRateCh }}%
+        </view>
+        <!-- 策划（老带新率） -->
+        <view v-else-if="column.fieldName === 'oldBringsNewRateCh'">
+          {{ scope.oldBringsNewRateCh }}%
         </view>
         <!-- 渠道（数量） -->
         <view v-else-if="column.fieldName === 'quantityQd'">
-          {{ scope.quantityXs }}
+          {{ scope.quantityQd }}
         </view>
-        <!-- 渠道（信息完整度） -->
-        <view v-else-if="column.fieldName === 'completionRateQd'">
-          {{ scope.completionRateXs }}%
+        <!-- 渠道（平均成交周期） -->
+        <view v-else-if="column.fieldName === 'averageTransactionCycleQd'">
+          {{ scope.averageTransactionCycleQd }}天
+        </view>
+        <!-- 渠道（平均复访次数） -->
+        <view v-else-if="column.fieldName === 'averageNumberOfRevisitsQd'">
+          {{ scope.averageNumberOfRevisitsQd }}
+        </view>
+        <!-- 渠道（新访成交率） -->
+        <view v-else-if="column.fieldName === 'newVisitTransactionRateQd'">
+          {{ scope.newVisitTransactionRateQd }}%
+        </view>
+        <!-- 渠道（复访成交率） -->
+        <view v-else-if="column.fieldName === 'revisitTransactionRateQd'">
+          {{ scope.revisitTransactionRateQd }}%
+        </view>
+        <!-- 渠道（老带新率） -->
+        <view v-else-if="column.fieldName === 'oldBringsNewRateQd'">
+          {{ scope.oldBringsNewRateQd }}%
         </view>
         <!-- 全民（数量） -->
         <view v-else-if="column.fieldName === 'quantityQm'">
-          {{ scope.quantityXs }}
+          {{ scope.quantityQm }}
         </view>
-        <!-- 全民（信息完整度） -->
-        <view v-else-if="column.fieldName === 'completionRateQm'">
-          {{ scope.completionRateXs }}%
+        <!-- 全民（平均成交周期） -->
+        <view v-else-if="column.fieldName === 'averageTransactionCycleQm'">
+          {{ scope.averageTransactionCycleQm }}天
+        </view>
+        <!-- 全民（平均复访次数） -->
+        <view v-else-if="column.fieldName === 'averageNumberOfRevisitsQm'">
+          {{ scope.averageNumberOfRevisitsQm }}
+        </view>
+        <!-- 全民（新访成交率） -->
+        <view v-else-if="column.fieldName === 'newVisitTransactionRateQm'">
+          {{ scope.newVisitTransactionRateQm }}%
+        </view>
+        <!-- 全民（复访成交率） -->
+        <view v-else-if="column.fieldName === 'revisitTransactionRateQm'">
+          {{ scope.revisitTransactionRateQm }}%
+        </view>
+        <!-- 全民（老带新率） -->
+        <view v-else-if="column.fieldName === 'oldBringsNewRateQm'">
+          {{ scope.oldBringsNewRateQm }}%
         </view>
         <!-- 物业（数量） -->
         <view v-else-if="column.fieldName === 'quantityWy'">
-          {{ scope.quantityXs }}
+          {{ scope.quantityWy }}
         </view>
-        <!-- 物业（信息完整度） -->
-        <view v-else-if="column.fieldName === 'completionRateWy'">
-          {{ scope.completionRateXs }}%
+        <!-- 物业（平均成交周期） -->
+        <view v-else-if="column.fieldName === 'averageTransactionCycleWy'">
+          {{ scope.averageTransactionCycleWy }}天
+        </view>
+        <!-- 物业（平均复访次数） -->
+        <view v-else-if="column.fieldName === 'averageNumberOfRevisitsWy'">
+          {{ scope.averageNumberOfRevisitsWy }}
+        </view>
+        <!-- 物业（新访成交率） -->
+        <view v-else-if="column.fieldName === 'newVisitTransactionRateWy'">
+          {{ scope.newVisitTransactionRateWy }}%
+        </view>
+        <!-- 物业（复访成交率） -->
+        <view v-else-if="column.fieldName === 'revisitTransactionRateWy'">
+          {{ scope.revisitTransactionRateWy }}%
+        </view>
+        <!-- 物业（老带新率） -->
+        <view v-else-if="column.fieldName === 'oldBringsNewRateWy'">
+          {{ scope.oldBringsNewRateWy }}%
         </view>
       </template>
     </basic-table>
@@ -133,62 +231,187 @@ const columns = [
   },
   {
     fieldName: "quantity",
-    fieldDesc: "合计 （数量）",
+    fieldDesc: "合计（数量）",
     fieldType: "slot"
   },
   {
-    fieldName: "completionRate",
-    fieldDesc: "合计（信息完整度）",
+    fieldName: "averageTransactionCycle",
+    fieldDesc: "合计（平均成交周期）",
     fieldType: "slot"
   },
+  {
+    fieldName: "averageNumberOfRevisits",
+    fieldDesc: "合计（平均复访次数）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "newVisitTransactionRate",
+    fieldDesc: "合计（新访成交率）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "revisitTransactionRate",
+    fieldDesc: "合计（复访成交率）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "oldBringsNewRate",
+    fieldDesc: "合计（老带新率）",
+    fieldType: "slot"
+  },
+  // 销售相关字段
   {
     fieldName: "quantityXs",
     fieldDesc: "销售（数量）",
     fieldType: "slot"
   },
   {
-    fieldName: "completionRateXs",
-    fieldDesc: "销售（信息完整度）",
+    fieldName: "averageTransactionCycleXs",
+    fieldDesc: "销售（平均成交周期）",
     fieldType: "slot"
   },
+  {
+    fieldName: "averageNumberOfRevisitsXs",
+    fieldDesc: "销售（平均复访次数）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "newVisitTransactionRateXs",
+    fieldDesc: "销售（新访成交率）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "revisitTransactionRateXs",
+    fieldDesc: "销售（复访成交率）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "oldBringsNewRateXs",
+    fieldDesc: "销售（老带新率）",
+    fieldType: "slot"
+  },
+  // 策划相关字段
   {
     fieldName: "quantityCh",
     fieldDesc: "策划（数量）",
     fieldType: "slot"
   },
   {
-    fieldName: "completionRateCh",
-    fieldDesc: "策划（信息完整度）",
+    fieldName: "averageTransactionCycleCh",
+    fieldDesc: "策划（平均成交周期）",
     fieldType: "slot"
   },
+  {
+    fieldName: "averageNumberOfRevisitsCh",
+    fieldDesc: "策划（平均复访次数）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "newVisitTransactionRateCh",
+    fieldDesc: "策划（新访成交率）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "revisitTransactionRateCh",
+    fieldDesc: "策划（复访成交率）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "oldBringsNewRateCh",
+    fieldDesc: "策划（老带新率）",
+    fieldType: "slot"
+  },
+  // 渠道相关字段
   {
     fieldName: "quantityQd",
     fieldDesc: "渠道（数量）",
     fieldType: "slot"
   },
   {
-    fieldName: "completionRateQd",
-    fieldDesc: "渠道（信息完整度）",
+    fieldName: "averageTransactionCycleQd",
+    fieldDesc: "渠道（平均成交周期）",
     fieldType: "slot"
   },
+  {
+    fieldName: "averageNumberOfRevisitsQd",
+    fieldDesc: "渠道（平均复访次数）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "newVisitTransactionRateQd",
+    fieldDesc: "渠道（新访成交率）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "revisitTransactionRateQd",
+    fieldDesc: "渠道（复访成交率）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "oldBringsNewRateQd",
+    fieldDesc: "渠道（老带新率）",
+    fieldType: "slot"
+  },
+  // 全民相关字段
   {
     fieldName: "quantityQm",
     fieldDesc: "全民（数量）",
     fieldType: "slot"
   },
   {
-    fieldName: "completionRateQm",
-    fieldDesc: "全民（信息完整度）",
+    fieldName: "averageTransactionCycleQm",
+    fieldDesc: "全民（平均成交周期）",
     fieldType: "slot"
   },
+  {
+    fieldName: "averageNumberOfRevisitsQm",
+    fieldDesc: "全民（平均复访次数）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "newVisitTransactionRateQm",
+    fieldDesc: "全民（新访成交率）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "revisitTransactionRateQm",
+    fieldDesc: "全民（复访成交率）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "oldBringsNewRateQm",
+    fieldDesc: "全民（老带新率）",
+    fieldType: "slot"
+  },
+  // 物业相关字段
   {
     fieldName: "quantityWy",
     fieldDesc: "物业（数量）",
     fieldType: "slot"
   },
   {
-    fieldName: "completionRateXs",
-    fieldDesc: "物业（信息完整度）",
+    fieldName: "averageTransactionCycleWy",
+    fieldDesc: "物业（平均成交周期）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "averageNumberOfRevisitsWy",
+    fieldDesc: "物业（平均复访次数）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "newVisitTransactionRateWy",
+    fieldDesc: "物业（新访成交率）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "revisitTransactionRateWy",
+    fieldDesc: "物业（复访成交率）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "oldBringsNewRateWy",
+    fieldDesc: "物业（老带新率）",
     fieldType: "slot"
   }
 ];
