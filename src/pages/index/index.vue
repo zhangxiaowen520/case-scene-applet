@@ -727,17 +727,20 @@ const handleQuantityTabChange = (index: number | string) => {
           {
             value: res.data.expectedToVisit || 0,
             label: `${getCurrentMonthDay()}预计到访`,
-            unit: "组"
+            unit: "组",
+            url: "/pages/index/effectiveVisitTable"
           },
           {
             value: res.data.expectedToSubscription || 0,
             label: `${getCurrentMonthDay()}预计认购`,
-            unit: "组"
+            unit: "组",
+            url: "/pages/index/effectiveSubscriptionTable"
           },
           {
             value: res.data.expectedToSign || 0,
-            label: `${getCurrentMonthDay()}预计签字`,
-            unit: "组"
+            label: `${getCurrentMonthDay()}预计签约`,
+            unit: "组",
+            url: "/pages/index/effectiveSignTable"
           },
           {
             value: res.data.numberOfPersonnel || 0,

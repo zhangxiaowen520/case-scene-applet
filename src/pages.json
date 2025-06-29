@@ -125,6 +125,45 @@
       }
     },
     {
+      "path": "pages/index/effectiveVisitTable",
+      "style": {
+        "navigationBarTitleText": "预计到访"
+      }
+    },
+    {
+      "path": "pages/index/effectiveVisitChildTable",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "预计到访-区域"
+      }
+    },
+    {
+      "path": "pages/index/effectiveSubscriptionTable",
+      "style": {
+        "navigationBarTitleText": "预计认购"
+      }
+    },
+    {
+      "path": "pages/index/effectiveSubscriptionChildTable",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "预计认购-区域"
+      }
+    },
+    {
+      "path": "pages/index/effectiveSignTable",
+      "style": {
+        "navigationBarTitleText": "预计签约"
+      }
+    },
+    {
+      "path": "pages/index/effectiveSignChildTable",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "预计签约-区域"
+      }
+    },
+    {
       "path": "pages/index/effectivePersonnelTable",
       "style": {
         "navigationBarTitleText": "五位一体团队"
