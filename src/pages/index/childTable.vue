@@ -1,6 +1,7 @@
 <template>
   <view>
-    <view class="table-select">
+    <CustomHeader />
+    <view class="table-select" :style="{ marginTop: navBarHeight + 26 + 'px' }">
       <CustomSelect v-model="typeId" :options="typeOptions" @change="handleTypeChange" />
       <view class="table-select-time">
         <TimeSelection
@@ -18,13 +19,7 @@
         />
       </view>
     </view>
-    <basic-table
-      :columns="columns"
-      :data="tableData"
-      @row-click="handleRowClick"
-      :min-item-width="100"
-      align="center"
-    >
+    <basic-table :columns="columns" :data="tableData" @row-click="handleRowClick">
       <template #item="{ column, scope, index }">
         <!-- 区域 -->
         <view v-if="column.fieldName === 'dataName'" @click="handleNameClick(scope, index)">
@@ -36,7 +31,7 @@
         </view>
         <!-- 线索转换率 -->
         <view v-else-if="column.fieldName === 'clueConversionRate'">
-          {{ scope.clue.conversionRate }}%
+          {{ scope.clue.conversionRate }}
         </view>
         <!-- 新访 -->
         <view v-else-if="column.fieldName === 'subscriptionQuantity'">
@@ -44,7 +39,7 @@
         </view>
         <!-- 信息完整率 -->
         <view v-else-if="column.fieldName === 'firstVisitCompletionRate'">
-          {{ scope.firstVisit.completionRate }}%
+          {{ scope.firstVisit.completionRate }}
         </view>
         <!-- 复访数量 -->
         <view v-else-if="column.fieldName === 'revisitQuantity'">
@@ -62,7 +57,11 @@ import CustomSelect from "@/components/CustomSelect/index.vue";
 import TimeSelection from "@/components/TimeSelection/index.vue";
 import { OrganizationUtil, TokenUtil } from "@/utils/auth";
 import dayjs from "dayjs";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, onUnmounted } from "vue";
+import CustomHeader from "@/components/CustomHeader/index.vue";
+
+const navBarHeight = ref(0);
+
 // 选项
 const typeOptions = ref<any[]>([
   {
@@ -108,7 +107,8 @@ const columns = [
   {
     fieldName: "clueConversionRate",
     fieldDesc: "线索转换率",
-    fieldType: "slot"
+    fieldType: "slot",
+    width: 100
   },
   {
     fieldName: "subscriptionQuantity",
@@ -118,7 +118,8 @@ const columns = [
   {
     fieldName: "firstVisitCompletionRate",
     fieldDesc: "信息完整率",
-    fieldType: "slot"
+    fieldType: "slot",
+    width: 100
   },
   {
     fieldName: "revisitQuantity",
@@ -128,7 +129,6 @@ const columns = [
 ];
 //获取列表数据
 const getBusinessInfo = () => {
-  uni.showLoading({ title: "正在加载..." });
   requestApi
     .post("/v2/home/business/info", {
       pageNumber: 1,
@@ -144,9 +144,9 @@ const getBusinessInfo = () => {
       } else {
         uni.showToast({ title: res.msg, icon: "none" });
       }
-      uni.hideLoading();
     });
 };
+
 const handleNameClick = (scope: any, index: number) => {
   console.log(scope, index);
 };
@@ -173,7 +173,7 @@ const exportClick = () => {
   const params = {
     pageNumber: 1,
     pageSize: 999,
-    description: "集团合计导出",
+    description: "导出",
     beginDate: beginDate.value,
     endDate: endDate.value,
     id: OrganizationUtil.getOrganizationInfo().id,
@@ -210,6 +210,12 @@ const downloadFileClick = (url: string) => {
 };
 
 onMounted(() => {
+  // 获取导航栏高度
+  const menuButtonInfo = uni.getMenuButtonBoundingClientRect();
+  if (menuButtonInfo) {
+    navBarHeight.value = (menuButtonInfo.bottom + menuButtonInfo.top) / 2 + 8;
+  }
+
   getBusinessInfo();
 });
 </script>

@@ -27,6 +27,13 @@
       }
     },
     {
+      "path": "pages/index/childTable",
+      "style": {
+        "navigationBarTitleText": "业务数据",
+        "navigationStyle": "custom"
+      }
+    },
+    {
       "path": "pages/property/index",
       "style": {
         "navigationBarTitleText": "楼盘",
@@ -182,7 +189,7 @@
       },
       {
         "name": "业务数据",
-        "path": "pages/index/businessTable"
+        "path": "pages/index/childTable"
       }
     ]
   },

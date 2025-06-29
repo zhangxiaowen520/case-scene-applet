@@ -11,11 +11,28 @@
       >
     </view>
     <view class="header" v-else>
-      <text class="header-title" @click="handleToNavigateClick">{{ title }}</text>
+      <text class="header-title">{{ title }}</text>
+      <view class="header-subtitle" @click="handleToNavigateClick">
+        <text>查看详情 </text>
+        <up-icon name="arrow-right" size="12" color="#979797"></up-icon>
+      </view>
+      <!-- <view v-if="showTime">
+        <TimeSelection
+          :timeStart="timeStart"
+          :timeEnd="timeEnd"
+          @timeStart="showTimeStart"
+          @timeEnd="showTimeEnd"
+        />
+      </view> -->
+
       <view class="header-right" v-if="showTime">
-        <text class="header-time" @click="showTimeStart">{{ dayjs(timeStart).format("YYYY/MM/DD") }}</text>
+        <text class="header-time" @click="showTimeStart">{{
+          dayjs(timeStart).format("YYYY/MM/DD")
+        }}</text>
         <text>-</text>
-        <text class="header-time" @click="showTimeEnd">{{ dayjs(timeEnd).format("YYYY/MM/DD") }}</text>
+        <text class="header-time" @click="showTimeEnd">{{
+          dayjs(timeEnd).format("YYYY/MM/DD")
+        }}</text>
         <up-icon name="arrow-down" size="14" color="#7F7F7F"></up-icon>
       </view>
     </view>
@@ -32,8 +49,10 @@
 </template>
 
 <script setup lang="ts">
+import TimeSelection from "@/components/TimeSelection/index.vue";
 import { ref } from "vue";
 import dayjs from "dayjs";
+
 interface StatisticsItem {
   value: string | number;
   label: string;
@@ -118,6 +137,17 @@ const handleToNavigateClick = () => {
   font-weight: bold;
   line-height: 48rpx;
   color: $uni-text-color;
+}
+
+.header-subtitle {
+  display: flex;
+  align-items: center;
+  justify-items: flex-start;
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #979797;
+  margin-left: -10rpx;
+  line-height: 36rpx;
 }
 
 .header-right {

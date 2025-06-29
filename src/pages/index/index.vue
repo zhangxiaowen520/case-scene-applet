@@ -11,7 +11,12 @@
       <template v-if="UserUtil.getDataPermissionType() !== 'SELF'">
         <CustomerPool :data="poolData" @click="handlePoolClick" />
       </template>
-      <template v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'">
+      <template
+        v-if="
+          UserUtil.getDataPermissionType() === 'PROJECT' ||
+          UserUtil.getDataPermissionType() === 'SELF'
+        "
+      >
         <TaskCard :data="taskData" @click="handleTaskClick" />
       </template>
       <StatisticsCard
@@ -348,8 +353,10 @@ const getProjectTreeInfo = () => {
       treeLocations.value = processedData;
       ProjectTreeUtil.setProjectTree(processedData);
       selectedLocation.value.id = OrganizationUtil.getOrganizationInfo().id || processedData[0].id;
-      selectedLocation.value.name = OrganizationUtil.getOrganizationInfo().name || processedData[0].name;
-      selectedLocation.value.type = OrganizationUtil.getOrganizationInfo().type || processedData[0].type;
+      selectedLocation.value.name =
+        OrganizationUtil.getOrganizationInfo().name || processedData[0].name;
+      selectedLocation.value.type =
+        OrganizationUtil.getOrganizationInfo().type || processedData[0].type;
       if (!OrganizationUtil.getOrganizationInfo().id) {
         OrganizationUtil.setOrganizationInfo(processedData[0]);
       }
@@ -461,7 +468,7 @@ const onTimeEndConfirm = (event: any) => {
 // 获取业务数据
 const getBusinessData = () => {
   requestApi
-    .post("/home/query/business/statistics", {
+    .post("/v2/home/business", {
       id: selectedLocation.value.id,
       type: selectedLocation.value.type,
       beginDate: dayjs(timeStart.value).format("YYYY-MM-DD"),

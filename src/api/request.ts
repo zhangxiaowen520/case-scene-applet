@@ -6,7 +6,7 @@ export const BASE_URL = "https://customer-dev.focuson.cc"; //测试环境
 // export const BASE_URL = "https://driving-dassie-clean.ngrok-free.app"; //测试环境
 // export const BASE_URL = "https://customer.focuson.cc"; //生产环境
 
-const TIMEOUT = 60000;
+const TIMEOUT = 600000;
 
 // 请求拦截器
 const requestInterceptor = (config: RequestOptions) => {

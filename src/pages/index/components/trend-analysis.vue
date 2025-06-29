@@ -3,11 +3,18 @@
     <Tabs :tabList="tabList" :activeId="activeId" @click="handleClick" />
     <view class="trend-analysis-title">
       <text>趋势分析</text>
-      <TimeSelection :timeStart="timeStart" :timeEnd="timeEnd" @timeStart="handleTimeStart" @timeEnd="handleTimeEnd" />
+      <TimeSelection
+        :timeStart="timeStart"
+        :timeEnd="timeEnd"
+        @timeStart="handleTimeStart"
+        @timeEnd="handleTimeEnd"
+      />
     </view>
     <view class="trend-analysis-tabs">
       <template v-for="item in groupTypeList" :key="item.id">
-        <text :class="groupType === item.id ? 'active' : ''" @click="handleTabClick(item.id)">{{ item.name }}</text>
+        <text :class="groupType === item.id ? 'active' : ''" @click="handleTabClick(item.id)">{{
+          item.name
+        }}</text>
       </template>
     </view>
     <view class="charts-box">
@@ -91,8 +98,6 @@ const getServerData = (newGroupType?: string, newActiveId?: string) => {
       endDate: timeEnd.value,
       groupType: newGroupType || groupType.value,
       id: OrganizationUtil.getOrganizationInfo().id,
-      pageNumber: 1,
-      pageSize: 1000,
       requestType: newActiveId || activeId.value,
       type: OrganizationUtil.getOrganizationInfo().type
     })
@@ -106,7 +111,8 @@ const getServerData = (newGroupType?: string, newActiveId?: string) => {
         }
         let newData = {
           categories: res.data.xx.map(
-            (item: string) => item.slice(5) + groupTypeList.find(item => item.id === groupType.value)?.name
+            (item: string) =>
+              item.slice(5) + groupTypeList.find(item => item.id === groupType.value)?.name
           ),
           series: [
             {
