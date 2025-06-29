@@ -70,11 +70,10 @@ const returnHomeClick = () => {
 }
 
 .title {
-  width: 100%;
+  width: 60%;
   position: absolute;
   text-align: center;
-  left: 0;
-  right: 0;
-  z-index: 0;
+  left: 20%;
+  right: 20%;
 }
 </style>

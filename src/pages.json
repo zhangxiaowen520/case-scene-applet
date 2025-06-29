@@ -29,7 +29,7 @@
     {
       "path": "pages/index/businessChildTable",
       "style": {
-        "navigationBarTitleText": "业务数据",
+        "navigationBarTitleText": "业务数据-区域",
         "navigationStyle": "custom"
       }
     },
@@ -37,6 +37,13 @@
       "path": "pages/index/clueTable",
       "style": {
         "navigationBarTitleText": "有效线索"
+      }
+    },
+    {
+      "path": "pages/index/clueChildTable",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "有效线索-区域"
       }
     },
     {

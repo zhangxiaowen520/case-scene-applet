@@ -1,6 +1,7 @@
 <template>
   <view>
-    <view class="table-select">
+    <CustomHeader :title="`${props.dataName}` || '有效线索'" />
+    <view class="table-select" :style="{ marginTop: navBarHeight + 26 + 'px' }">
       <CustomSelect v-model="typeId" :options="typeOptions" @change="handleTypeChange" />
       <view class="table-select-time">
         <TimeSelection
@@ -82,11 +83,17 @@ import CustomSelect from "@/components/CustomSelect/index.vue";
 import TimeSelection from "@/components/TimeSelection/index.vue";
 import { OrganizationUtil } from "@/utils/auth";
 import { onMounted, ref } from "vue";
+import CustomHeader from "@/components/CustomHeader/index.vue";
 
 const props = defineProps<{
+  dataId: string;
+  dataName: string;
+  dataType: string;
   beginDate: string;
   endDate: string;
 }>();
+
+const navBarHeight = ref(0);
 
 // 选项
 const typeOptions = ref<any[]>([
@@ -195,8 +202,8 @@ const getBusinessInfo = () => {
       pageSize: 99,
       beginDate: beginDate.value,
       endDate: endDate.value,
-      id: OrganizationUtil.getOrganizationInfo().id,
-      type: typeId.value
+      id: props.dataId,
+      type: props.dataType
     })
     .then(res => {
       if (res.code === 0) {
@@ -236,11 +243,11 @@ const exportClick = () => {
   const params = {
     pageNumber: 1,
     pageSize: 999,
-    description: "集团合计-线索",
+    description: `${props.dataName}-线索`,
     beginDate: beginDate.value,
     endDate: endDate.value,
-    id: OrganizationUtil.getOrganizationInfo().id,
-    type: typeId.value
+    id: props.dataId,
+    type: props.dataType
   };
   // 显示加载提示
   uni.showLoading({ title: "正在导出..." });
@@ -273,6 +280,11 @@ const downloadFileClick = (url: string) => {
 };
 
 onMounted(() => {
+  // 获取导航栏高度
+  const menuButtonInfo = uni.getMenuButtonBoundingClientRect();
+  if (menuButtonInfo) {
+    navBarHeight.value = (menuButtonInfo.bottom + menuButtonInfo.top) / 2 + 8;
+  }
   getBusinessInfo();
 });
 </script>
