@@ -36,8 +36,13 @@
       </view> -->
     </view>
     <view class="card-content">
-      <view class="data-item" v-for="(item, index) in data" :key="index">
-        <view class="data-main" @click="handleToNavigateClick(item.url || '')">
+      <view
+        class="data-item"
+        v-for="(item, index) in data"
+        :key="index"
+        @click="handleToNavigateClick(item.url || '')"
+      >
+        <view class="data-main">
           <text class="data-value" :style="getValueStyle(item.value)">{{ item.value }}</text>
           <text class="data-unit">{{ item.unit }}</text>
         </view>
@@ -118,7 +123,7 @@ const handleToNavigateClick = (url: string) => {
 
 .tabs {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   gap: 40rpx;
   align-items: center;
 }

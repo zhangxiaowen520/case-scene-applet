@@ -7,10 +7,10 @@
     />
     <view class="page-content" :style="{ marginTop: navBarHeight + 26 + 'px' }">
       <TrendAnalysis />
-      <MessageNotification :data="messageList" />
-      <template v-if="UserUtil.getDataPermissionType() !== 'SELF'">
+      <!-- <MessageNotification :data="messageList" /> -->
+      <!-- <template v-if="UserUtil.getDataPermissionType() !== 'SELF'">
         <CustomerPool :data="poolData" @click="handlePoolClick" />
-      </template>
+      </template> -->
       <template
         v-if="
           UserUtil.getDataPermissionType() === 'PROJECT' ||
@@ -33,11 +33,18 @@
         <StatisticsCard title="客户数据" :data="customerData" />
       </template>
       <template v-else>
-        <StatisticsCard
+        <!-- <StatisticsCard
           :tabs="selfSaleTabs"
           :tabIndex="selfSaleTabIndex"
           :data="selfSaleData"
           @tabChange="handleSelfSaleTabChange"
+        /> -->
+        <StatisticsCard
+          :tabs="quantityTabs"
+          :tabIndex="quantityTabIndex"
+          :data="quantityData"
+          @tabChange="handleQuantityTabChange"
+          @toNavigate="handleEffectiveTableClick($event)"
         />
       </template>
     </view>
@@ -227,6 +234,39 @@ const selfSaleTabs = ref([
     value: "nationalMarketing"
   }
 ]);
+//统计-总计数据
+const quantityData = ref<any[]>([]);
+//统计-总计index
+const quantityTabIndex = ref("selfSale");
+//统计-总计tabs
+const quantityTabs = ref([
+  {
+    name: "总计",
+    value: "selfSale"
+  },
+  {
+    name: "销售",
+    value: "channel"
+  },
+  {
+    name: "策划",
+    value: "nationalMarketing1"
+  },
+  {
+    name: "渠道",
+    value: "nationalMarketing2"
+  },
+  {
+    name: "全民",
+    value: "nationalMarketing3"
+  },
+  {
+    name: "物业",
+    value: "nationalMarketing4"
+  }
+]);
+const allQuantityData = ref([]);
+
 // 公客池、报备池、签约提醒总条数
 const poolData = ref([
   {
@@ -300,9 +340,8 @@ const handleTaskClick = (type: 1 | 2) => {
   });
 };
 
-// 业务数据
+// 业务数据 - 跳转
 const handleBusinessTableClick = (url: string) => {
-  console.log(url);
   if (url) {
     uni.navigateTo({
       url: `${url}?beginDate=${timeStart.value}&endDate=${timeEnd.value}`
@@ -655,6 +694,110 @@ const handleSelfSaleTabChange = (index: number | string) => {
   ];
 };
 
+//获取统计-总计数据
+const getQuantityData = () => {
+  requestApi
+    .post("/v2/home/quantity/stat", {
+      id: selectedLocation.value.id,
+      type: selectedLocation.value.type
+    })
+    .then(res => {
+      if (res.code === 0) {
+        allQuantityData.value = res.data;
+        quantityData.value = [
+          {
+            value: res.data.selfSale.customerCount || 0,
+            label: "客户总数",
+            unit: "组"
+          },
+          {
+            value: res.data.selfSale.validCount || 0,
+            label: "有效数",
+            unit: "组"
+          },
+          {
+            value: res.data.selfSale.publicPoolCount || 0,
+            label: "公客池",
+            unit: "组"
+          },
+          {
+            value: res.data.selfSale.expectedSubscriptionCount || 0,
+            label: `${getCurrentMonthDay()}预计认购`,
+            unit: "组"
+          },
+          {
+            value: res.data.selfSale.a || 0,
+            label: "A",
+            unit: "组"
+          },
+          {
+            value: res.data.selfSale.b || 0,
+            label: "B",
+            unit: "组"
+          },
+          {
+            value: res.data.selfSale.c || 0,
+            label: "C",
+            unit: "组"
+          },
+          {
+            value: res.data.selfSale.d || 0,
+            label: "D",
+            unit: "组"
+          }
+        ];
+      }
+    });
+};
+
+// 统计-总计tab切换
+const handleQuantityTabChange = (index: number | string) => {
+  // @ts-expect-error 忽略索引类型检查
+  quantityTabIndex.value = index;
+  quantityData.value = [
+    {
+      value: 1 || 0,
+      label: "有效线索数",
+      unit: "组",
+      url: "/pages/index/effectiveClueTable"
+    },
+    {
+      value: 1 || 0,
+      label: "有效客户数",
+      unit: "组"
+    },
+    {
+      value: 1 || 0,
+      label: `${getCurrentMonthDay()}预计到访`,
+      unit: "组"
+    },
+    {
+      value: 1 || 0,
+      label: `${getCurrentMonthDay()}预计认购`,
+      unit: "组"
+    },
+    {
+      value: 1 || 0,
+      label: `${getCurrentMonthDay()}预计签字`,
+      unit: "组"
+    },
+    {
+      value: 1 || 0,
+      label: "人员数量",
+      unit: "组"
+    }
+  ];
+};
+
+//预计相关数据页面 - 跳转
+const handleEffectiveTableClick = (url: string) => {
+  if (url) {
+    uni.navigateTo({
+      url: url
+    });
+  }
+};
+
 //跟进任务（条数）
 const getFollowTask = () => {
   requestApi
@@ -706,6 +849,7 @@ onShow(() => {
     getPoolTotal();
     getBusinessData();
     getSelfSaleData();
+    // getQuantityData();
   }
   getFollowTask();
   getMessage();

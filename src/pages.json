@@ -36,14 +36,14 @@
     {
       "path": "pages/index/clueTable",
       "style": {
-        "navigationBarTitleText": "有效线索"
+        "navigationBarTitleText": "线索"
       }
     },
     {
       "path": "pages/index/clueChildTable",
       "style": {
         "navigationStyle": "custom",
-        "navigationBarTitleText": "有效线索-区域"
+        "navigationBarTitleText": "线索-区域"
       }
     },
     {
@@ -96,6 +96,19 @@
       "style": {
         "navigationStyle": "custom",
         "navigationBarTitleText": "签约-区域"
+      }
+    },
+    {
+      "path": "pages/index/effectiveClueTable",
+      "style": {
+        "navigationBarTitleText": "有效线索"
+      }
+    },
+    {
+      "path": "pages/index/effectiveClueChildTable",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "有效线索-区域"
       }
     },
     {

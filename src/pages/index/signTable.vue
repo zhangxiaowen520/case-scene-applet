@@ -267,7 +267,7 @@ const getBusinessInfo = () => {
     });
 };
 const handleNameClick = (scope: any, index: number) => {
-  if (scope.dataName === "合计") {
+  if (scope.dataName === "合计" || scope.dataType === null) {
     return;
   }
 
