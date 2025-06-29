@@ -27,7 +27,7 @@
         :timeEnd="timeEnd"
         @showTimeStart="showTimeStart"
         @showTimeEnd="showTimeEnd"
-        @toNavigate="handleBusinessTableClick"
+        @toNavigate="handleBusinessTableClick($event)"
       />
       <template v-if="UserUtil.getDataPermissionType() === 'SELF'">
         <StatisticsCard title="客户数据" :data="customerData" />
@@ -91,7 +91,8 @@ const statisticsData = ref([
   {
     value: 0,
     label: "线索数",
-    unit: "组"
+    unit: "组",
+    url: "/pages/index/clueTable"
   },
   {
     value: 0,
@@ -296,10 +297,12 @@ const handleTaskClick = (type: 1 | 2) => {
 };
 
 // 业务数据
-const handleBusinessTableClick = () => {
-  uni.navigateTo({
-    url: `/pages/index/businessTable?beginDate=${timeStart.value}&endDate=${timeEnd.value}`
-  });
+const handleBusinessTableClick = (url: string) => {
+  if (url) {
+    uni.navigateTo({
+      url: `${url}?beginDate=${timeStart.value}&endDate=${timeEnd.value}`
+    });
+  }
 };
 
 // 获取用户信息

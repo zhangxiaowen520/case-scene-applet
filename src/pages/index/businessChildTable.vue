@@ -163,7 +163,7 @@ const handleNameClick = (scope: any, index: number) => {
   }
 
   uni.navigateTo({
-    url: `/pages/index/childTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}&beginDate=${beginDate.value}&endDate=${endDate.value}`
+    url: `/pages/index/businessChildTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}&beginDate=${beginDate.value}&endDate=${endDate.value}`
   });
 };
 // 选择类型
@@ -194,7 +194,7 @@ const exportClick = () => {
   };
   // 显示加载提示
   uni.showLoading({ title: "正在导出..." });
-  requestApi.post("/v2/home/business/info/clue/export", { ...params }).then(res => {
+  requestApi.post("/v2/home/business/info/export", { ...params }).then(res => {
     if (res.code === 0) {
       downloadFileClick(res.data);
     } else {

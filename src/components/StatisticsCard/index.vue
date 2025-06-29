@@ -12,8 +12,8 @@
     </view>
     <view class="header" v-else>
       <text class="header-title">{{ title }}</text>
-      <view class="header-subtitle" @click="handleToNavigateClick">
-        <text>查看详情 </text>
+      <view class="header-subtitle" @click="handleToNavigateClick('/pages/index/businessTable')">
+        <text>查看详情</text>
         <up-icon name="arrow-right" size="12" color="#979797"></up-icon>
       </view>
       <view v-if="showTime">
@@ -37,7 +37,7 @@
     </view>
     <view class="card-content">
       <view class="data-item" v-for="(item, index) in data" :key="index">
-        <view class="data-main">
+        <view class="data-main" @click="handleToNavigateClick(item.url || '')">
           <text class="data-value" :style="getValueStyle(item.value)">{{ item.value }}</text>
           <text class="data-unit">{{ item.unit }}</text>
         </view>
@@ -53,6 +53,7 @@ interface StatisticsItem {
   value: string | number;
   label: string;
   unit: string;
+  url?: string;
 }
 
 interface Props {
@@ -73,7 +74,7 @@ const emit = defineEmits<{
   (e: "tabChange", index: number | string): void;
   (e: "showTimeStart", time: string): void;
   (e: "showTimeEnd", time: string): void;
-  (e: "toNavigate"): void;
+  (e: "toNavigate", url: string): void;
 }>();
 
 const getValueStyle = (value: string | number) => {
@@ -100,8 +101,8 @@ const showTimeEnd = (time: string) => {
   emit("showTimeEnd", time);
 };
 
-const handleToNavigateClick = () => {
-  emit("toNavigate");
+const handleToNavigateClick = (url: string) => {
+  emit("toNavigate", url);
 };
 </script>
 

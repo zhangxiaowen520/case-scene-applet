@@ -24,25 +24,19 @@
         <view v-if="column.fieldName === 'dataName'" @click="handleNameClick(scope, index)">
           {{ scope.dataName }}
         </view>
-        <!-- 线索数量 -->
-        <view v-else-if="column.fieldName === 'clueQuantity'">
-          {{ scope.clue.quantity }}
+        <!-- 合计（数量） -->
+        <view v-else-if="column.fieldName === 'quantity'">
+          {{ scope.quantity }}
         </view>
-        <!-- 线索转换率 -->
-        <view v-else-if="column.fieldName === 'clueConversionRate'">
-          {{ scope.clue.conversionRate }}%
+        <!-- 合计（转化率） -->
+        <view v-else-if="column.fieldName === 'conversionRate'"> {{ scope.conversionRate }}% </view>
+        <!-- 销售（数量） -->
+        <view v-else-if="column.fieldName === 'quantityXs'">
+          {{ scope.quantityXs }}
         </view>
-        <!-- 新访 -->
-        <view v-else-if="column.fieldName === 'subscriptionQuantity'">
-          {{ scope.subscription.quantity }}
-        </view>
-        <!-- 信息完整率 -->
-        <view v-else-if="column.fieldName === 'firstVisitCompletionRate'">
-          {{ scope.firstVisit.completionRate }}%
-        </view>
-        <!-- 复访数量 -->
-        <view v-else-if="column.fieldName === 'revisitQuantity'">
-          {{ scope.revisit.quantity }}
+        <!-- 销售（转化率） -->
+        <view v-else-if="column.fieldName === 'conversionRateXs'">
+          {{ scope.conversionRateXs }}%
         </view>
       </template>
     </basic-table>
@@ -54,9 +48,7 @@ import { requestApi } from "@/api/request";
 import BasicTable from "@/components/basic-table/basic-table.vue";
 import CustomSelect from "@/components/CustomSelect/index.vue";
 import TimeSelection from "@/components/TimeSelection/index.vue";
-import { OrganizationUtil, TokenUtil } from "@/utils/auth";
-import { onLaunch } from "@dcloudio/uni-app";
-import dayjs from "dayjs";
+import { OrganizationUtil } from "@/utils/auth";
 import { onMounted, ref } from "vue";
 
 const props = defineProps<{
@@ -102,28 +94,23 @@ const columns = [
     rowClick: true
   },
   {
-    fieldName: "clueQuantity",
-    fieldDesc: "线索数量",
+    fieldName: "quantity",
+    fieldDesc: "合计 （数量）",
     fieldType: "slot"
   },
   {
-    fieldName: "clueConversionRate",
-    fieldDesc: "线索转换率",
+    fieldName: "conversionRate",
+    fieldDesc: "合计（转化率）",
     fieldType: "slot"
   },
   {
-    fieldName: "subscriptionQuantity",
-    fieldDesc: "新访",
+    fieldName: "quantityXs",
+    fieldDesc: "销售（数量）",
     fieldType: "slot"
   },
   {
-    fieldName: "firstVisitCompletionRate",
-    fieldDesc: "信息完整率",
-    fieldType: "slot"
-  },
-  {
-    fieldName: "revisitQuantity",
-    fieldDesc: "复访数量",
+    fieldName: "conversionRateXs",
+    fieldDesc: "销售（转化率）",
     fieldType: "slot"
   }
 ];
@@ -131,7 +118,7 @@ const columns = [
 const getBusinessInfo = () => {
   uni.showLoading({ title: "正在加载..." });
   requestApi
-    .post("/v2/home/business/info", {
+    .post("/v2/home/business/info/clue", {
       pageNumber: 1,
       pageSize: 99,
       beginDate: beginDate.value,
@@ -154,7 +141,7 @@ const handleNameClick = (scope: any, index: number) => {
   }
 
   uni.navigateTo({
-    url: `/pages/index/childTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}&beginDate=${beginDate.value}&endDate=${endDate.value}`
+    url: `/pages/index/clueChildTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}&beginDate=${beginDate.value}&endDate=${endDate.value}`
   });
 };
 // 选择类型
@@ -177,7 +164,7 @@ const exportClick = () => {
   const params = {
     pageNumber: 1,
     pageSize: 999,
-    description: "集团合计-业务数据",
+    description: "集团合计-线索",
     beginDate: beginDate.value,
     endDate: endDate.value,
     id: OrganizationUtil.getOrganizationInfo().id,
@@ -185,7 +172,7 @@ const exportClick = () => {
   };
   // 显示加载提示
   uni.showLoading({ title: "正在导出..." });
-  requestApi.post("/v2/home/business/info/export", { ...params }).then(res => {
+  requestApi.post("/v2/home/business/info/clue/export", { ...params }).then(res => {
     if (res.code === 0) {
       downloadFileClick(res.data);
     } else {

@@ -27,10 +27,16 @@
       }
     },
     {
-      "path": "pages/index/childTable",
+      "path": "pages/index/businessChildTable",
       "style": {
         "navigationBarTitleText": "业务数据",
         "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/index/clueTable",
+      "style": {
+        "navigationBarTitleText": "有效线索"
       }
     },
     {
