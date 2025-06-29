@@ -196,7 +196,7 @@ const getBusinessInfo = () => {
       beginDate: beginDate.value,
       endDate: endDate.value,
       id: OrganizationUtil.getOrganizationInfo().id,
-      type: typeId.value
+      type: OrganizationUtil.getOrganizationInfo().type
     })
     .then(res => {
       if (res.code === 0) {
@@ -240,7 +240,7 @@ const exportClick = () => {
     beginDate: beginDate.value,
     endDate: endDate.value,
     id: OrganizationUtil.getOrganizationInfo().id,
-    type: typeId.value
+    type: OrganizationUtil.getOrganizationInfo().type
   };
   // 显示加载提示
   uni.showLoading({ title: "正在导出..." });

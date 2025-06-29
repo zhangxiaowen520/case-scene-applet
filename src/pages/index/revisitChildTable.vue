@@ -196,7 +196,7 @@ const columns = [
 const getBusinessInfo = () => {
   uni.showLoading({ title: "正在加载..." });
   requestApi
-    .post("/v2/home/business/info/first-visit", {
+    .post("/v2/home/business/info/revisit", {
       pageNumber: 1,
       pageSize: 99,
       beginDate: beginDate.value,
@@ -219,7 +219,7 @@ const handleNameClick = (scope: any, index: number) => {
   }
 
   uni.navigateTo({
-    url: `/pages/index/firstVisitChildTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}&beginDate=${beginDate.value}&endDate=${endDate.value}`
+    url: `/pages/index/revisitChildTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}&beginDate=${beginDate.value}&endDate=${endDate.value}`
   });
 };
 // 选择类型
@@ -250,7 +250,7 @@ const exportClick = () => {
   };
   // 显示加载提示
   uni.showLoading({ title: "正在导出..." });
-  requestApi.post("/v2/home/business/info/first-visit/export", { ...params }).then(res => {
+  requestApi.post("/v2/home/business/info/revisit/export", { ...params }).then(res => {
     if (res.code === 0) {
       downloadFileClick(res.data);
     } else {

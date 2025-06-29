@@ -73,6 +73,19 @@
       }
     },
     {
+      "path": "pages/index/subscriptionTable",
+      "style": {
+        "navigationBarTitleText": "认购"
+      }
+    },
+    {
+      "path": "pages/index/subscriptionChildTable",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "认购-区域"
+      }
+    },
+    {
       "path": "pages/property/index",
       "style": {
         "navigationBarTitleText": "楼盘",

@@ -109,7 +109,8 @@ const statisticsData = ref([
   {
     value: 0,
     label: "认购",
-    unit: "组"
+    unit: "组",
+    url: "/pages/index/subscriptionTable"
   },
   {
     value: 0,
