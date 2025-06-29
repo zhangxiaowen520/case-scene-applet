@@ -7,8 +7,9 @@
         'margin-top': menuButtonInfo ? menuButtonInfo.top + 'px' : '0'
       }"
     >
-      <up-icon name="arrow-left" size="22" color="#1A2734" @click="returnClick"></up-icon>
+      <up-icon name="arrow-left" size="20" color="#1A2734" @click="returnClick"></up-icon>
       <img src="@/static/images/home.png" class="icon-home" alt="" @click="returnHomeClick" />
+      <span class="title">{{ props.title }}</span>
     </view>
   </view>
 </template>
@@ -16,12 +17,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 
-const emit = defineEmits<{
-  (e: "update:modelValue", value: number): void;
-  (e: "handleSelect", value: { id: number; name: string }): void;
+const props = defineProps<{
+  title: string;
 }>();
 
-const showDropdown = ref(false);
 const navBarHeight = ref(0);
 const menuButtonInfo = ref<UniApp.GetMenuButtonBoundingClientRectRes | null>(null);
 
@@ -59,7 +58,7 @@ const returnHomeClick = () => {
     position: relative;
     display: flex;
     align-items: center;
-    padding: 0 15px;
+    padding: 0 16rpx;
     background-color: #fff;
   }
 }
@@ -68,5 +67,14 @@ const returnHomeClick = () => {
   width: 48rpx;
   height: 48rpx;
   margin-left: 12rpx;
+}
+
+.title {
+  width: 100%;
+  position: absolute;
+  text-align: center;
+  left: 0;
+  right: 0;
+  z-index: 0;
 }
 </style>

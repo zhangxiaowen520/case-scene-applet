@@ -316,7 +316,7 @@ const handleTaskClick = (type: 1 | 2) => {
 // 业务数据
 const handleBusinessTableClick = () => {
   uni.navigateTo({
-    url: "/pages/index/businessTable"
+    url: `/pages/index/businessTable?beginDate=${timeStart.value}&endDate=${timeEnd.value}`
   });
 };
 

@@ -24,7 +24,6 @@
           @timeEnd="showTimeEnd"
         />
       </view> -->
-
       <view class="header-right" v-if="showTime">
         <text class="header-time" @click="showTimeStart">{{
           dayjs(timeStart).format("YYYY/MM/DD")

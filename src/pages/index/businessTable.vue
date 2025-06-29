@@ -18,13 +18,7 @@
         />
       </view>
     </view>
-    <basic-table
-      :columns="columns"
-      :data="tableData"
-      @row-click="handleRowClick"
-      :min-item-width="100"
-      align="center"
-    >
+    <basic-table :columns="columns" :data="tableData" :min-item-width="100" align="center">
       <template #item="{ column, scope, index }">
         <!-- 区域 -->
         <view v-if="column.fieldName === 'dataName'" @click="handleNameClick(scope, index)">
@@ -61,8 +55,15 @@ import BasicTable from "@/components/basic-table/basic-table.vue";
 import CustomSelect from "@/components/CustomSelect/index.vue";
 import TimeSelection from "@/components/TimeSelection/index.vue";
 import { OrganizationUtil, TokenUtil } from "@/utils/auth";
+import { onLaunch } from "@dcloudio/uni-app";
 import dayjs from "dayjs";
 import { onMounted, ref } from "vue";
+
+const props = defineProps<{
+  beginDate: string;
+  endDate: string;
+}>();
+
 // 选项
 const typeOptions = ref<any[]>([
   {
@@ -87,8 +88,8 @@ const typeId = ref("ALL");
 /**
  * 时间选择 - 设置默认值为6天前到今天
  */
-const beginDate = ref(dayjs().subtract(6, "day").format("YYYY-MM-DD"));
-const endDate = ref(dayjs().format("YYYY-MM-DD"));
+const beginDate = ref(props.beginDate);
+const endDate = ref(props.endDate);
 //表格数据
 const tableData = ref([]);
 //表格名称
@@ -148,10 +149,13 @@ const getBusinessInfo = () => {
     });
 };
 const handleNameClick = (scope: any, index: number) => {
-  console.log(scope, index);
-};
-const handleRowClick = (scope: any, index: number) => {
-  console.log(scope, index);
+  if (scope.dataName === "合计") {
+    return;
+  }
+
+  uni.navigateTo({
+    url: `/pages/index/childTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}&beginDate=${beginDate.value}&endDate=${endDate.value}`
+  });
 };
 // 选择类型
 const handleTypeChange = (item: any) => {
@@ -173,7 +177,7 @@ const exportClick = () => {
   const params = {
     pageNumber: 1,
     pageSize: 999,
-    description: "集团合计导出",
+    description: "集团合计-业务数据",
     beginDate: beginDate.value,
     endDate: endDate.value,
     id: OrganizationUtil.getOrganizationInfo().id,

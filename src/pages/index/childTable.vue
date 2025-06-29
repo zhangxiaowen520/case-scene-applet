@@ -1,6 +1,6 @@
 <template>
   <view>
-    <CustomHeader />
+    <CustomHeader :title="`${props.dataName}` || '业务数据'" />
     <view class="table-select" :style="{ marginTop: navBarHeight + 26 + 'px' }">
       <CustomSelect v-model="typeId" :options="typeOptions" @change="handleTypeChange" />
       <view class="table-select-time">
@@ -19,7 +19,7 @@
         />
       </view>
     </view>
-    <basic-table :columns="columns" :data="tableData" @row-click="handleRowClick">
+    <basic-table :columns="columns" :data="tableData" :min-item-width="100" align="center">
       <template #item="{ column, scope, index }">
         <!-- 区域 -->
         <view v-if="column.fieldName === 'dataName'" @click="handleNameClick(scope, index)">
@@ -31,7 +31,7 @@
         </view>
         <!-- 线索转换率 -->
         <view v-else-if="column.fieldName === 'clueConversionRate'">
-          {{ scope.clue.conversionRate }}
+          {{ scope.clue.conversionRate }}%
         </view>
         <!-- 新访 -->
         <view v-else-if="column.fieldName === 'subscriptionQuantity'">
@@ -39,7 +39,7 @@
         </view>
         <!-- 信息完整率 -->
         <view v-else-if="column.fieldName === 'firstVisitCompletionRate'">
-          {{ scope.firstVisit.completionRate }}
+          {{ scope.firstVisit.completionRate }}%
         </view>
         <!-- 复访数量 -->
         <view v-else-if="column.fieldName === 'revisitQuantity'">
@@ -55,10 +55,18 @@ import { requestApi } from "@/api/request";
 import BasicTable from "@/components/basic-table/basic-table.vue";
 import CustomSelect from "@/components/CustomSelect/index.vue";
 import TimeSelection from "@/components/TimeSelection/index.vue";
-import { OrganizationUtil, TokenUtil } from "@/utils/auth";
+import { OrganizationUtil } from "@/utils/auth";
 import dayjs from "dayjs";
-import { onMounted, ref, onUnmounted } from "vue";
+import { onMounted, ref } from "vue";
 import CustomHeader from "@/components/CustomHeader/index.vue";
+
+const props = defineProps<{
+  dataId: string;
+  dataName: string;
+  dataType: string;
+  beginDate: string;
+  endDate: string;
+}>();
 
 const navBarHeight = ref(0);
 
@@ -86,8 +94,8 @@ const typeId = ref("ALL");
 /**
  * 时间选择 - 设置默认值为6天前到今天
  */
-const beginDate = ref(dayjs().subtract(6, "day").format("YYYY-MM-DD"));
-const endDate = ref(dayjs().format("YYYY-MM-DD"));
+const beginDate = ref(props.beginDate);
+const endDate = ref(props.endDate);
 //表格数据
 const tableData = ref([]);
 //表格名称
@@ -129,14 +137,15 @@ const columns = [
 ];
 //获取列表数据
 const getBusinessInfo = () => {
+  uni.showLoading({ title: "正在加载..." });
   requestApi
     .post("/v2/home/business/info", {
       pageNumber: 1,
       pageSize: 99,
       beginDate: beginDate.value,
       endDate: endDate.value,
-      id: OrganizationUtil.getOrganizationInfo().id,
-      type: typeId.value
+      id: props.dataId,
+      type: props.dataType
     })
     .then(res => {
       if (res.code === 0) {
@@ -144,14 +153,18 @@ const getBusinessInfo = () => {
       } else {
         uni.showToast({ title: res.msg, icon: "none" });
       }
+      uni.hideLoading();
     });
 };
 
 const handleNameClick = (scope: any, index: number) => {
-  console.log(scope, index);
-};
-const handleRowClick = (scope: any, index: number) => {
-  console.log(scope, index);
+  if (scope.dataName === "合计") {
+    return;
+  }
+
+  uni.navigateTo({
+    url: `/pages/index/childTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}&beginDate=${beginDate.value}&endDate=${endDate.value}`
+  });
 };
 // 选择类型
 const handleTypeChange = (item: any) => {
@@ -173,11 +186,11 @@ const exportClick = () => {
   const params = {
     pageNumber: 1,
     pageSize: 999,
-    description: "导出",
+    description: `${props.dataName}-业务数据`,
     beginDate: beginDate.value,
     endDate: endDate.value,
-    id: OrganizationUtil.getOrganizationInfo().id,
-    type: typeId.value
+    id: props.dataId,
+    type: props.dataType
   };
   // 显示加载提示
   uni.showLoading({ title: "正在导出..." });
