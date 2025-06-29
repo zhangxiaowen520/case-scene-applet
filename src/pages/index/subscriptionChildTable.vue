@@ -465,7 +465,7 @@ const exportClick = () => {
   const params = {
     pageNumber: 1,
     pageSize: 999,
-    description: `${props.dataName}-复访`,
+    description: `${props.dataName}-认购`,
     beginDate: beginDate.value,
     endDate: endDate.value,
     id: props.dataId,

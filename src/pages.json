@@ -86,6 +86,19 @@
       }
     },
     {
+      "path": "pages/index/signTable",
+      "style": {
+        "navigationBarTitleText": "签约"
+      }
+    },
+    {
+      "path": "pages/index/signChildTable",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "签约-区域"
+      }
+    },
+    {
       "path": "pages/property/index",
       "style": {
         "navigationBarTitleText": "楼盘",

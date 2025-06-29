@@ -115,7 +115,8 @@ const statisticsData = ref([
   {
     value: 0,
     label: "签约",
-    unit: "组"
+    unit: "组",
+    url: "/pages/index/signTable"
   },
   {
     value: 0,
