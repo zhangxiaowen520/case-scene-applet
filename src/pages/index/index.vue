@@ -742,7 +742,8 @@ const handleQuantityTabChange = (index: number | string) => {
           {
             value: res.data.numberOfPersonnel || 0,
             label: "人员数量",
-            unit: "组"
+            unit: "组",
+            url: "/pages/index/effectivePersonnelTable"
           }
         ];
       }

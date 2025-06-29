@@ -125,6 +125,19 @@
       }
     },
     {
+      "path": "pages/index/effectivePersonnelTable",
+      "style": {
+        "navigationBarTitleText": "五位一体团队"
+      }
+    },
+    {
+      "path": "pages/index/effectivePersonnelChildTable",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "五位一体团队-区域"
+      }
+    },
+    {
       "path": "pages/property/index",
       "style": {
         "navigationBarTitleText": "楼盘",
