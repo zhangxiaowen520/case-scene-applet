@@ -1,6 +1,6 @@
 <template>
   <view>
-    <CustomHeader :title="`${props.dataName}` || '有效线索'" />
+    <CustomHeader :title="`${props.dataName}` || '线索'" />
     <view class="table-select" :style="{ marginTop: navBarHeight + 26 + 'px' }">
       <CustomSelect v-model="typeId" :options="typeOptions" @change="handleTypeChange" />
       <view class="table-select-time">
@@ -188,7 +188,7 @@ const columns = [
     fieldType: "slot"
   },
   {
-    fieldName: "conversionRateXs",
+    fieldName: "conversionRateWy",
     fieldDesc: "物业（转化率）",
     fieldType: "slot"
   }

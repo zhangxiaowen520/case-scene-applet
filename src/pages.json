@@ -60,6 +60,19 @@
       }
     },
     {
+      "path": "pages/index/revisitTable",
+      "style": {
+        "navigationBarTitleText": "复访"
+      }
+    },
+    {
+      "path": "pages/index/revisitChildTable",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "复访-区域"
+      }
+    },
+    {
       "path": "pages/property/index",
       "style": {
         "navigationBarTitleText": "楼盘",

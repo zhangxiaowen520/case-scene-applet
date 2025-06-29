@@ -181,7 +181,7 @@ const columns = [
     fieldType: "slot"
   },
   {
-    fieldName: "completionRateXs",
+    fieldName: "completionRateWy",
     fieldDesc: "物业（信息完整度）",
     fieldType: "slot"
   }
@@ -213,7 +213,7 @@ const handleNameClick = (scope: any, index: number) => {
   }
 
   uni.navigateTo({
-    url: `/pages/index/clueChildTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}&beginDate=${beginDate.value}&endDate=${endDate.value}`
+    url: `/pages/index/firstVisitChildTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}&beginDate=${beginDate.value}&endDate=${endDate.value}`
   });
 };
 // 选择类型

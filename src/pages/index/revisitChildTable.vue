@@ -1,6 +1,6 @@
 <template>
   <view>
-    <CustomHeader :title="`${props.dataName}` || '首访'" />
+    <CustomHeader :title="`${props.dataName}` || '复访'" />
     <view class="table-select" :style="{ marginTop: navBarHeight + 26 + 'px' }">
       <CustomSelect v-model="typeId" :options="typeOptions" @change="handleTypeChange" />
       <view class="table-select-time">
@@ -187,7 +187,7 @@ const columns = [
     fieldType: "slot"
   },
   {
-    fieldName: "completionRateWy",
+    fieldName: "completionRateXs",
     fieldDesc: "物业（信息完整度）",
     fieldType: "slot"
   }
@@ -242,7 +242,7 @@ const exportClick = () => {
   const params = {
     pageNumber: 1,
     pageSize: 999,
-    description: `${props.dataName}-首访`,
+    description: `${props.dataName}-复访`,
     beginDate: beginDate.value,
     endDate: endDate.value,
     id: props.dataId,

@@ -181,7 +181,7 @@ const columns = [
     fieldType: "slot"
   },
   {
-    fieldName: "conversionRateXs",
+    fieldName: "conversionRateWy",
     fieldDesc: "物业（转化率）",
     fieldType: "slot"
   }
