@@ -47,6 +47,19 @@
       }
     },
     {
+      "path": "pages/index/firstVisitTable",
+      "style": {
+        "navigationBarTitleText": "首访"
+      }
+    },
+    {
+      "path": "pages/index/firstVisitChildTable",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "首访-区域"
+      }
+    },
+    {
       "path": "pages/property/index",
       "style": {
         "navigationBarTitleText": "楼盘",

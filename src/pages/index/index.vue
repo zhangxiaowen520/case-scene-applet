@@ -97,7 +97,8 @@ const statisticsData = ref([
   {
     value: 0,
     label: "首访",
-    unit: "组"
+    unit: "组",
+    url: "/pages/index/firstVisitTable"
   },
   {
     value: 0,
@@ -298,6 +299,7 @@ const handleTaskClick = (type: 1 | 2) => {
 
 // 业务数据
 const handleBusinessTableClick = (url: string) => {
+  console.log(url);
   if (url) {
     uni.navigateTo({
       url: `${url}?beginDate=${timeStart.value}&endDate=${timeEnd.value}`
