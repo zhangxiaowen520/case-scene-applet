@@ -16,15 +16,15 @@
         <text>查看详情 </text>
         <up-icon name="arrow-right" size="12" color="#979797"></up-icon>
       </view>
-      <!-- <view v-if="showTime">
+      <view v-if="showTime">
         <TimeSelection
           :timeStart="timeStart"
           :timeEnd="timeEnd"
           @timeStart="showTimeStart"
           @timeEnd="showTimeEnd"
         />
-      </view> -->
-      <view class="header-right" v-if="showTime">
+      </view>
+      <!-- <view class="header-right" v-if="showTime">
         <text class="header-time" @click="showTimeStart">{{
           dayjs(timeStart).format("YYYY/MM/DD")
         }}</text>
@@ -33,7 +33,7 @@
           dayjs(timeEnd).format("YYYY/MM/DD")
         }}</text>
         <up-icon name="arrow-down" size="14" color="#7F7F7F"></up-icon>
-      </view>
+      </view> -->
     </view>
     <view class="card-content">
       <view class="data-item" v-for="(item, index) in data" :key="index">
@@ -49,9 +49,6 @@
 
 <script setup lang="ts">
 import TimeSelection from "@/components/TimeSelection/index.vue";
-import { ref } from "vue";
-import dayjs from "dayjs";
-
 interface StatisticsItem {
   value: string | number;
   label: string;
@@ -74,8 +71,8 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits<{
   (e: "tabChange", index: number | string): void;
-  (e: "showTimeStart"): void;
-  (e: "showTimeEnd"): void;
+  (e: "showTimeStart", time: string): void;
+  (e: "showTimeEnd", time: string): void;
   (e: "toNavigate"): void;
 }>();
 
@@ -95,12 +92,12 @@ const handleTabClick = (index: number | string) => {
   emit("tabChange", index);
 };
 
-const showTimeStart = () => {
-  emit("showTimeStart");
+const showTimeStart = (time: string) => {
+  emit("showTimeStart", time);
 };
 
-const showTimeEnd = () => {
-  emit("showTimeEnd");
+const showTimeEnd = (time: string) => {
+  emit("showTimeEnd", time);
 };
 
 const handleToNavigateClick = () => {
@@ -145,7 +142,7 @@ const handleToNavigateClick = () => {
   font-size: 24rpx;
   font-weight: 400;
   color: #979797;
-  margin-left: -10rpx;
+  margin-left: -46rpx;
   line-height: 36rpx;
 }
 

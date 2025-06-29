@@ -41,22 +41,6 @@
         />
       </template>
     </view>
-    <up-datetime-picker
-      :show="isTimeStart"
-      v-model="timeStart"
-      mode="date"
-      :title="`开始时间`"
-      @cancel="isTimeStart = false"
-      @confirm="onTimeStartConfirm($event)"
-    />
-    <up-datetime-picker
-      :show="isTimeEnd"
-      v-model="timeEnd"
-      mode="date"
-      :title="`结束时间`"
-      @cancel="isTimeEnd = false"
-      @confirm="onTimeEndConfirm($event)"
-    />
   </Transition>
 </template>
 
@@ -260,10 +244,8 @@ const poolData = ref([
   }
 ]);
 
-const isTimeStart = ref(false);
-const isTimeEnd = ref(false);
-const timeStart = ref(new Date());
-const timeEnd = ref(new Date());
+const timeStart = ref(dayjs().subtract(6, "day").format("YYYY-MM-DD"));
+const timeEnd = ref(dayjs().format("YYYY-MM-DD"));
 
 // 选择项目
 const handleSelect = (item: OrganizationInfo) => {
@@ -438,28 +420,16 @@ const getPoolTotal = () => {
 };
 
 //选择业务数据时间(开始)
-const showTimeStart = () => {
-  isTimeStart.value = true;
-};
-
-//选择业务数据时间(结束)
-const showTimeEnd = () => {
-  isTimeEnd.value = true;
-};
-
-//选择业务数据时间(开始)确认
-const onTimeStartConfirm = (event: any) => {
-  isTimeStart.value = false;
-  timeStart.value = event.value;
+const showTimeStart = (time: string) => {
+  timeStart.value = time;
   getBusinessData();
   getFollowTask();
   getSelfSaleData();
 };
 
-//选择业务数据时间(结束)确认
-const onTimeEndConfirm = (event: any) => {
-  isTimeEnd.value = false;
-  timeEnd.value = event.value;
+//选择业务数据时间(结束)
+const showTimeEnd = (time: string) => {
+  timeEnd.value = time;
   getBusinessData();
   getFollowTask();
   getSelfSaleData();
@@ -471,8 +441,8 @@ const getBusinessData = () => {
     .post("/v2/home/business", {
       id: selectedLocation.value.id,
       type: selectedLocation.value.type,
-      beginDate: dayjs(timeStart.value).format("YYYY-MM-DD"),
-      endDate: dayjs(timeEnd.value).format("YYYY-MM-DD")
+      beginDate: timeStart.value,
+      endDate: timeEnd.value
     })
     .then(res => {
       if (res.code === 0) {
@@ -518,8 +488,8 @@ const getCustomerData = (first: number, repeat: number) => {
     .post("/home/query/customer/statistics", {
       id: selectedLocation.value.id,
       type: selectedLocation.value.type,
-      beginDate: dayjs(timeStart.value).format("YYYY-MM-DD"),
-      endDate: dayjs(timeEnd.value).format("YYYY-MM-DD")
+      beginDate: timeStart.value,
+      endDate: timeEnd.value
     })
     .then(res => {
       if (res.code === 0) {
@@ -575,8 +545,8 @@ const getSelfSaleData = () => {
     .post("/home/channel/stat", {
       id: selectedLocation.value.id,
       type: selectedLocation.value.type,
-      beginDate: dayjs(timeStart.value).format("YYYY-MM-DD"),
-      endDate: dayjs(timeEnd.value).format("YYYY-MM-DD")
+      beginDate: timeStart.value,
+      endDate: timeEnd.value
     })
     .then(res => {
       if (res.code === 0) {
