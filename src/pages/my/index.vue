@@ -26,7 +26,13 @@
       <!-- 操作按钮列表 -->
       <view class="action-list">
         <view class="action-item" @tap="handleResetPassword">
-          <text>重置密码</text>
+          <text>任务下发</text>
+        </view>
+        <view class="action-item" @tap="handleFiveInOnePersonnel">
+          <text>五位一体人员填报</text>
+        </view>
+        <view class="action-item" @tap="handleResetPassword">
+          <text>我的任务</text>
         </view>
         <view class="action-item" @tap="handleLogout">
           <text>退出登录</text>
@@ -53,6 +59,11 @@ const userInfo = ref({
 // 重置密码
 const handleResetPassword = () => {
   uni.navigateTo({ url: "/pages/my/resetPassword" });
+};
+
+// 五位一体人员填报
+const handleFiveInOnePersonnel = () => {
+  uni.navigateTo({ url: "/pages/my/fiveInOnePersonnel" });
 };
 
 // 退出登录

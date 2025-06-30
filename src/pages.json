@@ -273,6 +273,12 @@
       }
     },
     {
+      "path": "pages/my/fiveInOnePersonnel",
+      "style": {
+        "navigationBarTitleText": "五位一体人员填报"
+      }
+    },
+    {
       "path": "pages/message/index",
       "style": {
         "navigationBarTitleText": "消息通知"
@@ -333,8 +339,8 @@
         "path": "pages/people/index"
       },
       {
-        "name": "写跟进",
-        "path": "pages/customer/addFollow"
+        "name": "五位一体人员填报",
+        "path": "pages/my/fiveInOnePersonnel"
       },
       {
         "name": "预计到访客户",
