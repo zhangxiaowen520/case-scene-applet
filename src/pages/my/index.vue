@@ -32,7 +32,7 @@
           <text>五位一体人员填报</text>
         </view>
         <view class="action-item" @tap="handleResetPassword">
-          <text>我的任务</text>
+          <text>重置密码</text>
         </view>
         <view class="action-item" @tap="handleLogout">
           <text>退出登录</text>

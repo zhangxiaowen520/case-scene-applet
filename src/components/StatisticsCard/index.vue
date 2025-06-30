@@ -123,7 +123,7 @@ const handleToNavigateClick = (url: string) => {
 
 .tabs {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 40rpx;
   align-items: center;
 }

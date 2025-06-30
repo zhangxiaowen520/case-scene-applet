@@ -6,13 +6,13 @@
       @handleSelect="handleSelect"
     />
     <view class="page-content" :style="{ marginTop: navBarHeight + 26 + 'px' }">
-      <TrendAnalysis />
-      <!-- <MessageNotification :data="messageList" /> -->
-      <!-- <template v-if="UserUtil.getDataPermissionType() !== 'SELF'">
+      <template v-if="UserUtil.getDataPermissionType() === 'SELF'">
+        <MessageNotification :data="messageList" />
         <CustomerPool :data="poolData" @click="handlePoolClick" />
-      </template> -->
-      <template v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'">
         <TaskCard :data="taskData" @click="handleTaskClick" />
+      </template>
+      <template v-else>
+        <TrendAnalysis />
       </template>
       <StatisticsCard
         title="业务数据"
@@ -24,24 +24,13 @@
         @showTimeEnd="showTimeEnd"
         @toNavigate="handleBusinessTableClick($event)"
       />
-      <template v-if="UserUtil.getDataPermissionType() === 'SELF'">
-        <StatisticsCard title="客户数据" :data="customerData" />
-      </template>
-      <template v-else>
-        <!-- <StatisticsCard
-          :tabs="selfSaleTabs"
-          :tabIndex="selfSaleTabIndex"
-          :data="selfSaleData"
-          @tabChange="handleSelfSaleTabChange"
-        /> -->
-        <StatisticsCard
-          :tabs="quantityTabs"
-          :tabIndex="quantityTabIndex"
-          :data="quantityData"
-          @tabChange="handleQuantityTabChange"
-          @toNavigate="handleEffectiveTableClick($event)"
-        />
-      </template>
+      <StatisticsCard
+        :tabs="quantityTabs"
+        :tabIndex="quantityTabIndex"
+        :data="quantityData"
+        @tabChange="handleQuantityTabChange"
+        @toNavigate="handleEffectiveTableClick($event)"
+      />
     </view>
   </Transition>
 </template>
@@ -126,109 +115,6 @@ const statisticsData = ref([
     unit: "万元"
   }
 ]);
-// 客户数据
-const customerData = ref([
-  {
-    value: 0,
-    label: "客户总数",
-    unit: "组"
-  },
-  {
-    value: 0,
-    label: "首访",
-    unit: "组"
-  },
-  {
-    value: 0,
-    label: "复访",
-    unit: "组"
-  },
-  {
-    value: 0,
-    label: "预计认购",
-    unit: "组"
-  },
-  {
-    value: 0,
-    label: "A",
-    unit: "组"
-  },
-  {
-    value: 0,
-    label: "B",
-    unit: "组"
-  },
-  {
-    value: 0,
-    label: "C",
-    unit: "组"
-  },
-  {
-    value: 0,
-    label: "D",
-    unit: "组"
-  }
-]);
-const selfSaleTabIndex = ref("selfSale");
-const allSelfSaleData = ref([]);
-//自售数据、渠道数据、全民营销
-const selfSaleData = ref([
-  {
-    value: 0,
-    label: "客户总数",
-    unit: "组"
-  },
-  {
-    value: 0,
-    label: "有效数",
-    unit: "组"
-  },
-  {
-    value: 0,
-    label: "公客池",
-    unit: "组"
-  },
-  {
-    value: 0,
-    label: "预计认购",
-    unit: "组"
-  },
-  {
-    value: 0,
-    label: "A",
-    unit: "组"
-  },
-  {
-    value: 0,
-    label: "B",
-    unit: "组"
-  },
-  {
-    value: 0,
-    label: "C",
-    unit: "组"
-  },
-  {
-    value: 0,
-    label: "D",
-    unit: "组"
-  }
-]);
-//自售数据tabs
-const selfSaleTabs = ref([
-  {
-    name: "自售数据",
-    value: "selfSale"
-  },
-  {
-    name: "渠道数据",
-    value: "channel"
-  },
-  {
-    name: "全民营销",
-    value: "nationalMarketing"
-  }
-]);
 //统计-总计数据
 const quantityData = ref<any[]>([]);
 //统计-总计index
@@ -302,10 +188,8 @@ const handleSelect = (item: OrganizationInfo) => {
     getBusinessData();
     getFollowTask();
   } else {
-    selfSaleTabIndex.value = "selfSale";
     getPoolTotal();
     getBusinessData();
-    getSelfSaleData();
     getFollowTask();
   }
 };
@@ -377,8 +261,10 @@ const getProjectTreeInfo = () => {
       treeLocations.value = processedData;
       ProjectTreeUtil.setProjectTree(processedData);
       selectedLocation.value.id = OrganizationUtil.getOrganizationInfo().id || processedData[0].id;
-      selectedLocation.value.name = OrganizationUtil.getOrganizationInfo().name || processedData[0].name;
-      selectedLocation.value.type = OrganizationUtil.getOrganizationInfo().type || processedData[0].type;
+      selectedLocation.value.name =
+        OrganizationUtil.getOrganizationInfo().name || processedData[0].name;
+      selectedLocation.value.type =
+        OrganizationUtil.getOrganizationInfo().type || processedData[0].type;
       if (!OrganizationUtil.getOrganizationInfo().id) {
         OrganizationUtil.setOrganizationInfo(processedData[0]);
       }
@@ -389,7 +275,6 @@ const getProjectTreeInfo = () => {
       } else {
         getPoolTotal();
         getBusinessData();
-        getSelfSaleData();
         getFollowTask();
       }
     } else {
@@ -464,7 +349,6 @@ const showTimeStart = (time: string) => {
   timeStart.value = time;
   getBusinessData();
   getFollowTask();
-  getSelfSaleData();
 };
 
 //选择业务数据时间(结束)
@@ -472,7 +356,6 @@ const showTimeEnd = (time: string) => {
   timeEnd.value = time;
   getBusinessData();
   getFollowTask();
-  getSelfSaleData();
 };
 
 // 获取业务数据
@@ -488,19 +371,19 @@ const getBusinessData = () => {
       if (res.code === 0) {
         statisticsData.value = [
           {
-            value: res.data.countFirstCloserTask || 0,
+            value: res.data.clue || 0,
             label: "线索数",
             unit: "组",
             url: "/pages/index/clueTable"
           },
           {
-            value: res.data.countFirstVisit || 0,
+            value: res.data.firstVisit || 0,
             label: "首访",
             unit: "组",
             url: "/pages/index/firstVisitTable"
           },
           {
-            value: res.data.countRepeatVisit || 0,
+            value: res.data.revisit || 0,
             label: "复访",
             unit: "组",
             url: "/pages/index/revisitTable"
@@ -512,184 +395,19 @@ const getBusinessData = () => {
             url: "/pages/index/subscriptionTable"
           },
           {
-            value: res.data.sign || 0,
+            value: Number((res.data.signAmount / 10000).toFixed(2)),
             label: "签约",
-            unit: "组",
+            unit: "万元",
             url: "/pages/index/signTable"
           },
           {
-            value: Number((res.data.describes || 0).toFixed(2)),
+            value: Number((res.data.refundAmount / 10000).toFixed(2)),
             label: "回款",
             unit: "万元"
           }
         ];
       }
     });
-};
-
-//获取客户数据
-const getCustomerData = (first: number, repeat: number) => {
-  requestApi
-    .post("/home/query/customer/statistics", {
-      id: selectedLocation.value.id,
-      type: selectedLocation.value.type,
-      beginDate: timeStart.value,
-      endDate: timeEnd.value
-    })
-    .then(res => {
-      if (res.code === 0) {
-        customerData.value = [
-          {
-            value: first + repeat || 0,
-            label: "客户总数",
-            unit: "组"
-          },
-          {
-            value: first || 0,
-            label: "首访",
-            unit: "组"
-          },
-          {
-            value: repeat || 0,
-            label: "复访",
-            unit: "组"
-          },
-          {
-            value: res.data.countSubscription || 0,
-            label: `${getCurrentMonthDay()}预计认购`,
-            unit: "组"
-          },
-          {
-            value: res.data.a || 0,
-            label: "A",
-            unit: "组"
-          },
-          {
-            value: res.data.b || 0,
-            label: "B",
-            unit: "组"
-          },
-          {
-            value: res.data.c || 0,
-            label: "C",
-            unit: "组"
-          },
-          {
-            value: res.data.d || 0,
-            label: "D",
-            unit: "组"
-          }
-        ];
-      }
-    });
-};
-
-//获取自售数据、渠道数据、全民营销数据
-const getSelfSaleData = () => {
-  requestApi
-    .post("/home/channel/stat", {
-      id: selectedLocation.value.id,
-      type: selectedLocation.value.type,
-      beginDate: timeStart.value,
-      endDate: timeEnd.value
-    })
-    .then(res => {
-      if (res.code === 0) {
-        allSelfSaleData.value = res.data;
-        selfSaleData.value = [
-          {
-            value: res.data.selfSale.customerCount || 0,
-            label: "客户总数",
-            unit: "组"
-          },
-          {
-            value: res.data.selfSale.validCount || 0,
-            label: "有效数",
-            unit: "组"
-          },
-          {
-            value: res.data.selfSale.publicPoolCount || 0,
-            label: "公客池",
-            unit: "组"
-          },
-          {
-            value: res.data.selfSale.expectedSubscriptionCount || 0,
-            label: `${getCurrentMonthDay()}预计认购`,
-            unit: "组"
-          },
-          {
-            value: res.data.selfSale.a || 0,
-            label: "A",
-            unit: "组"
-          },
-          {
-            value: res.data.selfSale.b || 0,
-            label: "B",
-            unit: "组"
-          },
-          {
-            value: res.data.selfSale.c || 0,
-            label: "C",
-            unit: "组"
-          },
-          {
-            value: res.data.selfSale.d || 0,
-            label: "D",
-            unit: "组"
-          }
-        ];
-      }
-    });
-};
-
-// 自售数据tab切换
-const handleSelfSaleTabChange = (index: number | string) => {
-  // @ts-expect-error 忽略索引类型检查
-  selfSaleTabIndex.value = index;
-  // @ts-expect-error 忽略索引类型检查
-  const currentData = allSelfSaleData.value[index];
-  selfSaleData.value = [
-    {
-      value: currentData.customerCount || 0,
-      label: "客户总数",
-      unit: "组"
-    },
-    {
-      value: currentData.validCount || 0,
-      label: "有效数",
-      unit: "组"
-    },
-    {
-      value: currentData.publicPoolCount || 0,
-      label: "公客池",
-      unit: "组"
-    },
-    {
-      value: currentData.expectedSubscriptionCount || 0,
-      label: `${getCurrentMonthDay()}预计认购`,
-      unit: "组"
-    },
-    {
-      value: currentData.a || 0,
-      label: "A",
-      unit: "组"
-    },
-    {
-      value: currentData.b || 0,
-      label: "B",
-      unit: "组"
-    },
-    {
-      value: currentData.c || 0,
-      label: "C",
-      unit: "组"
-    },
-    {
-      value: currentData.d || 0,
-      label: "D",
-      unit: "组"
-    }
-  ];
 };
 
 // 统计-总计tab切换
@@ -781,7 +499,6 @@ const getFollowTask = () => {
           }
         ];
       }
-      getCustomerData(res.data.countFirstCloserTask, res.data.countRepetitionCloserTask);
     });
 };
 
@@ -809,7 +526,6 @@ onShow(() => {
   } else {
     getPoolTotal();
     getBusinessData();
-    getSelfSaleData();
     handleQuantityTabChange(0);
   }
   getFollowTask();
