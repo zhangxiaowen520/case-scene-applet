@@ -14,7 +14,9 @@
           {{ scope.column1DataName }}
         </view>
         <view v-else-if="column.fieldName === 'column2DataName'">
-          {{ scope.column2DataName }}
+          <span v-if="column.dataTag < 2">{{ scope.column2DataName }}</span>
+          <span v-else-if="column.dataTag === 2" style="color: #e35bfb">{{ scope.column2DataName }}</span>
+          <span v-else style="color: #ff3b33">{{ scope.column2DataName }}</span>
         </view>
         <view v-else-if="column.fieldName === 'quantity'">
           {{ scope.quantity }}
