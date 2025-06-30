@@ -11,12 +11,7 @@
       <!-- <template v-if="UserUtil.getDataPermissionType() !== 'SELF'">
         <CustomerPool :data="poolData" @click="handlePoolClick" />
       </template> -->
-      <template
-        v-if="
-          UserUtil.getDataPermissionType() === 'PROJECT' ||
-          UserUtil.getDataPermissionType() === 'SELF'
-        "
-      >
+      <template v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'">
         <TaskCard :data="taskData" @click="handleTaskClick" />
       </template>
       <StatisticsCard
@@ -382,10 +377,8 @@ const getProjectTreeInfo = () => {
       treeLocations.value = processedData;
       ProjectTreeUtil.setProjectTree(processedData);
       selectedLocation.value.id = OrganizationUtil.getOrganizationInfo().id || processedData[0].id;
-      selectedLocation.value.name =
-        OrganizationUtil.getOrganizationInfo().name || processedData[0].name;
-      selectedLocation.value.type =
-        OrganizationUtil.getOrganizationInfo().type || processedData[0].type;
+      selectedLocation.value.name = OrganizationUtil.getOrganizationInfo().name || processedData[0].name;
+      selectedLocation.value.type = OrganizationUtil.getOrganizationInfo().type || processedData[0].type;
       if (!OrganizationUtil.getOrganizationInfo().id) {
         OrganizationUtil.setOrganizationInfo(processedData[0]);
       }
@@ -701,6 +694,9 @@ const handleSelfSaleTabChange = (index: number | string) => {
 
 // 统计-总计tab切换
 const handleQuantityTabChange = (index: number | string) => {
+  uni.showLoading({
+    title: "加载中..."
+  });
   requestApi
     .post("/v2/home/quantity/stat", {
       id: selectedLocation.value.id,
@@ -749,6 +745,7 @@ const handleQuantityTabChange = (index: number | string) => {
             url: "/pages/index/effectivePersonnelTable"
           }
         ];
+        uni.hideLoading();
       }
     });
 };

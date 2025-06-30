@@ -10,13 +10,7 @@
           @timeStart="handleBeginDate"
           @timeEnd="handleEndDate"
         />
-        <img
-          class="export-icon"
-          src="@/static/images/export.png"
-          alt=""
-          srcset=""
-          @click="exportClick"
-        />
+        <img class="export-icon" src="@/static/images/export.png" alt="" srcset="" @click="exportClick" />
       </view>
     </view>
     <basic-table :columns="columns" :data="tableData" :min-item-width="150" align="center">
@@ -36,41 +30,31 @@
           {{ scope.quantityXs }}
         </view>
         <!-- 销售（信息完整度） -->
-        <view v-else-if="column.fieldName === 'completionRateXs'">
-          {{ scope.completionRateXs }}%
-        </view>
+        <view v-else-if="column.fieldName === 'completionRateXs'"> {{ scope.completionRateXs }}% </view>
         <!-- 策划（数量） -->
         <view v-else-if="column.fieldName === 'quantityCh'">
           {{ scope.quantityXs }}
         </view>
         <!-- 策划（信息完整度） -->
-        <view v-else-if="column.fieldName === 'completionRateCh'">
-          {{ scope.completionRateXs }}%
-        </view>
+        <view v-else-if="column.fieldName === 'completionRateCh'"> {{ scope.completionRateXs }}% </view>
         <!-- 渠道（数量） -->
         <view v-else-if="column.fieldName === 'quantityQd'">
           {{ scope.quantityXs }}
         </view>
         <!-- 渠道（信息完整度） -->
-        <view v-else-if="column.fieldName === 'completionRateQd'">
-          {{ scope.completionRateXs }}%
-        </view>
+        <view v-else-if="column.fieldName === 'completionRateQd'"> {{ scope.completionRateXs }}% </view>
         <!-- 全民（数量） -->
         <view v-else-if="column.fieldName === 'quantityQm'">
           {{ scope.quantityXs }}
         </view>
         <!-- 全民（信息完整度） -->
-        <view v-else-if="column.fieldName === 'completionRateQm'">
-          {{ scope.completionRateXs }}%
-        </view>
+        <view v-else-if="column.fieldName === 'completionRateQm'"> {{ scope.completionRateXs }}% </view>
         <!-- 物业（数量） -->
         <view v-else-if="column.fieldName === 'quantityWy'">
           {{ scope.quantityXs }}
         </view>
         <!-- 物业（信息完整度） -->
-        <view v-else-if="column.fieldName === 'completionRateWy'">
-          {{ scope.completionRateXs }}%
-        </view>
+        <view v-else-if="column.fieldName === 'completionRateWy'"> {{ scope.completionRateXs }}% </view>
       </template>
     </basic-table>
   </view>
@@ -218,7 +202,7 @@ const handleTypeChange = (item: any) => {
   }
 
   uni.navigateTo({
-    url: `/pages/index/businessChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}&beginDate=${beginDate.value}&endDate=${endDate.value}`
+    url: `/pages/index/firstVisitChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}&beginDate=${beginDate.value}&endDate=${endDate.value}`
   });
 };
 // 开始时间

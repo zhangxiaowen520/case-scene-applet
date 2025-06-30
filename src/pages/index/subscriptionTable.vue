@@ -9,13 +9,7 @@
           @timeStart="handleBeginDate"
           @timeEnd="handleEndDate"
         />
-        <img
-          class="export-icon"
-          src="@/static/images/export.png"
-          alt=""
-          srcset=""
-          @click="exportClick"
-        />
+        <img class="export-icon" src="@/static/images/export.png" alt="" srcset="" @click="exportClick" />
       </view>
     </view>
     <basic-table :columns="columns" :data="tableData" :min-item-width="150" align="center">
@@ -29,25 +23,17 @@
           {{ scope.quantity }}
         </view>
         <!-- 合计（平均成交周期） -->
-        <view v-else-if="column.fieldName === 'averageTransactionCycle'">
-          {{ scope.averageTransactionCycle }}天
-        </view>
+        <view v-else-if="column.fieldName === 'averageTransactionCycle'"> {{ scope.averageTransactionCycle }}天 </view>
         <!-- 合计（平均复访次数） -->
         <view v-else-if="column.fieldName === 'averageNumberOfRevisits'">
           {{ scope.averageNumberOfRevisits }}
         </view>
         <!-- 合计（新访成交率） -->
-        <view v-else-if="column.fieldName === 'newVisitTransactionRate'">
-          {{ scope.newVisitTransactionRate }}%
-        </view>
+        <view v-else-if="column.fieldName === 'newVisitTransactionRate'"> {{ scope.newVisitTransactionRate }}% </view>
         <!-- 合计（复访成交率） -->
-        <view v-else-if="column.fieldName === 'revisitTransactionRate'">
-          {{ scope.revisitTransactionRate }}%
-        </view>
+        <view v-else-if="column.fieldName === 'revisitTransactionRate'"> {{ scope.revisitTransactionRate }}% </view>
         <!-- 合计（老带新率） -->
-        <view v-else-if="column.fieldName === 'oldBringsNewRate'">
-          {{ scope.oldBringsNewRate }}%
-        </view>
+        <view v-else-if="column.fieldName === 'oldBringsNewRate'"> {{ scope.oldBringsNewRate }}% </view>
         <!-- 销售（数量） -->
         <view v-else-if="column.fieldName === 'quantityXs'">
           {{ scope.quantityXs }}
@@ -65,13 +51,9 @@
           {{ scope.newVisitTransactionRateXs }}%
         </view>
         <!-- 销售（复访成交率） -->
-        <view v-else-if="column.fieldName === 'revisitTransactionRateXs'">
-          {{ scope.revisitTransactionRateXs }}%
-        </view>
+        <view v-else-if="column.fieldName === 'revisitTransactionRateXs'"> {{ scope.revisitTransactionRateXs }}% </view>
         <!-- 销售（老带新率） -->
-        <view v-else-if="column.fieldName === 'oldBringsNewRateXs'">
-          {{ scope.oldBringsNewRateXs }}%
-        </view>
+        <view v-else-if="column.fieldName === 'oldBringsNewRateXs'"> {{ scope.oldBringsNewRateXs }}% </view>
         <!-- 策划（数量） -->
         <view v-else-if="column.fieldName === 'quantityCh'">
           {{ scope.quantityCh }}
@@ -89,13 +71,9 @@
           {{ scope.newVisitTransactionRateCh }}%
         </view>
         <!-- 策划（复访成交率） -->
-        <view v-else-if="column.fieldName === 'revisitTransactionRateCh'">
-          {{ scope.revisitTransactionRateCh }}%
-        </view>
+        <view v-else-if="column.fieldName === 'revisitTransactionRateCh'"> {{ scope.revisitTransactionRateCh }}% </view>
         <!-- 策划（老带新率） -->
-        <view v-else-if="column.fieldName === 'oldBringsNewRateCh'">
-          {{ scope.oldBringsNewRateCh }}%
-        </view>
+        <view v-else-if="column.fieldName === 'oldBringsNewRateCh'"> {{ scope.oldBringsNewRateCh }}% </view>
         <!-- 渠道（数量） -->
         <view v-else-if="column.fieldName === 'quantityQd'">
           {{ scope.quantityQd }}
@@ -113,13 +91,9 @@
           {{ scope.newVisitTransactionRateQd }}%
         </view>
         <!-- 渠道（复访成交率） -->
-        <view v-else-if="column.fieldName === 'revisitTransactionRateQd'">
-          {{ scope.revisitTransactionRateQd }}%
-        </view>
+        <view v-else-if="column.fieldName === 'revisitTransactionRateQd'"> {{ scope.revisitTransactionRateQd }}% </view>
         <!-- 渠道（老带新率） -->
-        <view v-else-if="column.fieldName === 'oldBringsNewRateQd'">
-          {{ scope.oldBringsNewRateQd }}%
-        </view>
+        <view v-else-if="column.fieldName === 'oldBringsNewRateQd'"> {{ scope.oldBringsNewRateQd }}% </view>
         <!-- 全民（数量） -->
         <view v-else-if="column.fieldName === 'quantityQm'">
           {{ scope.quantityQm }}
@@ -137,13 +111,9 @@
           {{ scope.newVisitTransactionRateQm }}%
         </view>
         <!-- 全民（复访成交率） -->
-        <view v-else-if="column.fieldName === 'revisitTransactionRateQm'">
-          {{ scope.revisitTransactionRateQm }}%
-        </view>
+        <view v-else-if="column.fieldName === 'revisitTransactionRateQm'"> {{ scope.revisitTransactionRateQm }}% </view>
         <!-- 全民（老带新率） -->
-        <view v-else-if="column.fieldName === 'oldBringsNewRateQm'">
-          {{ scope.oldBringsNewRateQm }}%
-        </view>
+        <view v-else-if="column.fieldName === 'oldBringsNewRateQm'"> {{ scope.oldBringsNewRateQm }}% </view>
         <!-- 物业（数量） -->
         <view v-else-if="column.fieldName === 'quantityWy'">
           {{ scope.quantityWy }}
@@ -161,13 +131,9 @@
           {{ scope.newVisitTransactionRateWy }}%
         </view>
         <!-- 物业（复访成交率） -->
-        <view v-else-if="column.fieldName === 'revisitTransactionRateWy'">
-          {{ scope.revisitTransactionRateWy }}%
-        </view>
+        <view v-else-if="column.fieldName === 'revisitTransactionRateWy'"> {{ scope.revisitTransactionRateWy }}% </view>
         <!-- 物业（老带新率） -->
-        <view v-else-if="column.fieldName === 'oldBringsNewRateWy'">
-          {{ scope.oldBringsNewRateWy }}%
-        </view>
+        <view v-else-if="column.fieldName === 'oldBringsNewRateWy'"> {{ scope.oldBringsNewRateWy }}% </view>
       </template>
     </basic-table>
   </view>
@@ -434,7 +400,7 @@ const handleTypeChange = (item: any) => {
   }
 
   uni.navigateTo({
-    url: `/pages/index/businessChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}&beginDate=${beginDate.value}&endDate=${endDate.value}`
+    url: `/pages/index/subscriptionChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}&beginDate=${beginDate.value}&endDate=${endDate.value}`
   });
 };
 // 开始时间

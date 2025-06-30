@@ -3,13 +3,7 @@
     <view class="table-select">
       <CustomSelect v-model="typeId" :options="typeOptions" @change="handleTypeChange" />
       <view class="table-select-time">
-        <img
-          class="export-icon"
-          src="@/static/images/export.png"
-          alt=""
-          srcset=""
-          @click="exportClick"
-        />
+        <img class="export-icon" src="@/static/images/export.png" alt="" srcset="" @click="exportClick" />
       </view>
     </view>
     <basic-table :columns="columns" :data="tableData" align="center">
@@ -93,7 +87,7 @@ const handleTypeChange = (item: any) => {
   }
 
   uni.navigateTo({
-    url: `/pages/index/businessChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}`
+    url: `/pages/index/effectiveClueChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}`
   });
 };
 //导出

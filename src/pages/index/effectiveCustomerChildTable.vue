@@ -4,13 +4,7 @@
     <view class="table-select" :style="{ marginTop: navBarHeight + 26 + 'px' }">
       <CustomSelect v-model="typeId" :options="typeOptions" @change="handleTypeChange" />
       <view class="table-select-time">
-        <img
-          class="export-icon"
-          src="@/static/images/export.png"
-          alt=""
-          srcset=""
-          @click="exportClick"
-        />
+        <img class="export-icon" src="@/static/images/export.png" alt="" srcset="" @click="exportClick" />
       </view>
     </view>
     <basic-table :columns="columns" :data="tableData" :min-item-width="150" align="center">
@@ -94,7 +88,7 @@ const handleNameClick = (scope: any, index: number) => {
   }
 
   uni.navigateTo({
-    url: `/pages/index/effectiveClueChildTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}`
+    url: `/pages/index/effectiveCustomerChildTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}`
   });
 };
 // 选择类型

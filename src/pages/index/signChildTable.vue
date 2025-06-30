@@ -10,13 +10,7 @@
           @timeStart="handleBeginDate"
           @timeEnd="handleEndDate"
         />
-        <img
-          class="export-icon"
-          src="@/static/images/export.png"
-          alt=""
-          srcset=""
-          @click="exportClick"
-        />
+        <img class="export-icon" src="@/static/images/export.png" alt="" srcset="" @click="exportClick" />
       </view>
     </view>
     <basic-table :columns="columns" :data="tableData" :min-item-width="150" align="center">
@@ -32,69 +26,47 @@
         <!-- 合计（签约周期） -->
         <view v-else-if="column.fieldName === 'signingCycle'"> {{ scope.signingCycle }}天 </view>
         <!-- 合计（签约及时率） -->
-        <view v-else-if="column.fieldName === 'timelySigningRate'">
-          {{ scope.timelySigningRate }}%
-        </view>
+        <view v-else-if="column.fieldName === 'timelySigningRate'"> {{ scope.timelySigningRate }}% </view>
         <!-- 销售（签约额） -->
         <view v-else-if="column.fieldName === 'amountXs'">
           {{ scope.amountXs }}
         </view>
         <!-- 销售（签约周期） -->
-        <view v-else-if="column.fieldName === 'signingCycleXs'">
-          {{ scope.signingCycleXs }}天
-        </view>
+        <view v-else-if="column.fieldName === 'signingCycleXs'"> {{ scope.signingCycleXs }}天 </view>
         <!-- 销售（签约及时率） -->
-        <view v-else-if="column.fieldName === 'timelySigningRateXs'">
-          {{ scope.timelySigningRateXs }}%
-        </view>
+        <view v-else-if="column.fieldName === 'timelySigningRateXs'"> {{ scope.timelySigningRateXs }}% </view>
         <!-- 策划（签约额） -->
         <view v-else-if="column.fieldName === 'amountCh'">
           {{ scope.amountCh }}
         </view>
         <!-- 策划（签约周期） -->
-        <view v-else-if="column.fieldName === 'signingCycleCh'">
-          {{ scope.signingCycleCh }}天
-        </view>
+        <view v-else-if="column.fieldName === 'signingCycleCh'"> {{ scope.signingCycleCh }}天 </view>
         <!-- 策划（签约及时率） -->
-        <view v-else-if="column.fieldName === 'timelySigningRateCh'">
-          {{ scope.timelySigningRateCh }}%
-        </view>
+        <view v-else-if="column.fieldName === 'timelySigningRateCh'"> {{ scope.timelySigningRateCh }}% </view>
         <!-- 渠道（签约额） -->
         <view v-else-if="column.fieldName === 'amountQd'">
           {{ scope.amountQd }}
         </view>
         <!-- 渠道（签约周期） -->
-        <view v-else-if="column.fieldName === 'signingCycleQd'">
-          {{ scope.signingCycleQd }}天
-        </view>
+        <view v-else-if="column.fieldName === 'signingCycleQd'"> {{ scope.signingCycleQd }}天 </view>
         <!-- 渠道（签约及时率） -->
-        <view v-else-if="column.fieldName === 'timelySigningRateQd'">
-          {{ scope.timelySigningRateQd }}%
-        </view>
+        <view v-else-if="column.fieldName === 'timelySigningRateQd'"> {{ scope.timelySigningRateQd }}% </view>
         <!-- 全民（签约额） -->
         <view v-else-if="column.fieldName === 'amountQm'">
           {{ scope.amountQm }}
         </view>
         <!-- 全民（签约周期） -->
-        <view v-else-if="column.fieldName === 'signingCycleQm'">
-          {{ scope.signingCycleQm }}天
-        </view>
+        <view v-else-if="column.fieldName === 'signingCycleQm'"> {{ scope.signingCycleQm }}天 </view>
         <!-- 全民（签约及时率） -->
-        <view v-else-if="column.fieldName === 'timelySigningRateQm'">
-          {{ scope.timelySigningRateQm }}%
-        </view>
+        <view v-else-if="column.fieldName === 'timelySigningRateQm'"> {{ scope.timelySigningRateQm }}% </view>
         <!-- 物业（签约额） -->
         <view v-else-if="column.fieldName === 'amountWy'">
           {{ scope.amountWy }}
         </view>
         <!-- 物业（签约周期） -->
-        <view v-else-if="column.fieldName === 'signingCycleWy'">
-          {{ scope.signingCycleWy }}天
-        </view>
+        <view v-else-if="column.fieldName === 'signingCycleWy'"> {{ scope.signingCycleWy }}天 </view>
         <!-- 物业（签约及时率） -->
-        <view v-else-if="column.fieldName === 'timelySigningRateWy'">
-          {{ scope.timelySigningRateWy }}%
-        </view>
+        <view v-else-if="column.fieldName === 'timelySigningRateWy'"> {{ scope.timelySigningRateWy }}% </view>
       </template>
     </basic-table>
   </view>
@@ -277,7 +249,7 @@ const handleTypeChange = (item: any) => {
   }
 
   uni.navigateTo({
-    url: `/pages/index/businessChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}&beginDate=${beginDate.value}&endDate=${endDate.value}`
+    url: `/pages/index/signChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}&beginDate=${beginDate.value}&endDate=${endDate.value}`
   });
 };
 // 开始时间

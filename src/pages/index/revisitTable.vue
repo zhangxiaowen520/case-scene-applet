@@ -9,13 +9,7 @@
           @timeStart="handleBeginDate"
           @timeEnd="handleEndDate"
         />
-        <img
-          class="export-icon"
-          src="@/static/images/export.png"
-          alt=""
-          srcset=""
-          @click="exportClick"
-        />
+        <img class="export-icon" src="@/static/images/export.png" alt="" srcset="" @click="exportClick" />
       </view>
     </view>
     <basic-table :columns="columns" :data="tableData" :min-item-width="150" align="center">
@@ -29,9 +23,7 @@
           {{ scope.quantity }}
         </view>
         <!-- 合计（跟进及时率） -->
-        <view v-else-if="column.fieldName === 'followUpTimelyRate'">
-          {{ scope.followUpTimelyRate }}%
-        </view>
+        <view v-else-if="column.fieldName === 'followUpTimelyRate'"> {{ scope.followUpTimelyRate }}% </view>
         <!-- 合计（复访率） -->
         <view v-else-if="column.fieldName === 'revisitRate'"> {{ scope.revisitRate }}% </view>
         <!-- 销售（数量） -->
@@ -39,9 +31,7 @@
           {{ scope.quantityXs }}
         </view>
         <!-- 销售（跟进及时率） -->
-        <view v-else-if="column.fieldName === 'followUpTimelyRateXs'">
-          {{ scope.followUpTimelyRateXs }}%
-        </view>
+        <view v-else-if="column.fieldName === 'followUpTimelyRateXs'"> {{ scope.followUpTimelyRateXs }}% </view>
         <!-- 销售（复访率） -->
         <view v-else-if="column.fieldName === 'revisitRateXs'"> {{ scope.revisitRateXs }}% </view>
         <!-- 策划（数量） -->
@@ -49,9 +39,7 @@
           {{ scope.quantityXs }}
         </view>
         <!-- 策划（跟进及时率） -->
-        <view v-else-if="column.fieldName === 'followUpTimelyRateCh'">
-          {{ scope.followUpTimelyRateXs }}%
-        </view>
+        <view v-else-if="column.fieldName === 'followUpTimelyRateCh'"> {{ scope.followUpTimelyRateXs }}% </view>
         <!-- 策划（复访率） -->
         <view v-else-if="column.fieldName === 'revisitRateCh'"> {{ scope.revisitRateCh }}% </view>
         <!-- 渠道（数量） -->
@@ -59,9 +47,7 @@
           {{ scope.quantityXs }}
         </view>
         <!-- 渠道（跟进及时率） -->
-        <view v-else-if="column.fieldName === 'followUpTimelyRateQd'">
-          {{ scope.followUpTimelyRateXs }}%
-        </view>
+        <view v-else-if="column.fieldName === 'followUpTimelyRateQd'"> {{ scope.followUpTimelyRateXs }}% </view>
         <!-- 渠道（复访率） -->
         <view v-else-if="column.fieldName === 'revisitRateQd'"> {{ scope.revisitRateQd }}% </view>
         <!-- 全民（数量） -->
@@ -69,9 +55,7 @@
           {{ scope.quantityXs }}
         </view>
         <!-- 全民（跟进及时率） -->
-        <view v-else-if="column.fieldName === 'followUpTimelyRateQm'">
-          {{ scope.followUpTimelyRateXs }}%
-        </view>
+        <view v-else-if="column.fieldName === 'followUpTimelyRateQm'"> {{ scope.followUpTimelyRateXs }}% </view>
         <!-- 全民（复访率） -->
         <view v-else-if="column.fieldName === 'revisitRateQm'"> {{ scope.revisitRateQm }}% </view>
         <!-- 物业（数量） -->
@@ -79,9 +63,7 @@
           {{ scope.quantityXs }}
         </view>
         <!-- 物业（跟进及时率） -->
-        <view v-else-if="column.fieldName === 'followUpTimelyRateWy'">
-          {{ scope.followUpTimelyRateXs }}%
-        </view>
+        <view v-else-if="column.fieldName === 'followUpTimelyRateWy'"> {{ scope.followUpTimelyRateXs }}% </view>
         <!-- 物业（复访率） -->
         <view v-else-if="column.fieldName === 'revisitRateWy'"> {{ scope.revisitRateWy }}% </view>
       </template>
@@ -255,7 +237,7 @@ const handleTypeChange = (item: any) => {
   }
 
   uni.navigateTo({
-    url: `/pages/index/businessChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}&beginDate=${beginDate.value}&endDate=${endDate.value}`
+    url: `/pages/index/revisitChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}&beginDate=${beginDate.value}&endDate=${endDate.value}`
   });
 };
 // 开始时间
