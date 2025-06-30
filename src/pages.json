@@ -177,6 +177,12 @@
       }
     },
     {
+      "path": "pages/effective/visit",
+      "style": {
+        "navigationBarTitleText": "预计到访客户"
+      }
+    },
+    {
       "path": "pages/property/index",
       "style": {
         "navigationBarTitleText": "楼盘",
@@ -331,8 +337,8 @@
         "path": "pages/customer/addFollow"
       },
       {
-        "name": "业务数据",
-        "path": "pages/index/childTable"
+        "name": "预计到访客户",
+        "path": "pages/effective/visit"
       }
     ]
   },
