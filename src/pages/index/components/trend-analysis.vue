@@ -188,7 +188,9 @@ const handleTimeEnd = (time: string) => {
 };
 
 onMounted(() => {
-  getServerData();
+  setTimeout(() => {
+    getServerData();
+  }, 1000);
 });
 </script>
 
