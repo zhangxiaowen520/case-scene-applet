@@ -35,6 +35,7 @@ const props = defineProps<{
   dataId: string;
   dataName: string;
   dataType: string;
+  queryType: number;
 }>();
 
 const navBarHeight = ref(0);
@@ -71,7 +72,8 @@ const getBusinessInfo = () => {
       pageNumber: 1,
       pageSize: 99,
       id: props.dataId,
-      type: props.dataType
+      type: props.dataType,
+      queryType: props.queryType
     })
     .then(res => {
       if (res.code === 0) {
@@ -94,7 +96,7 @@ const handleNameClick = (scope: any, index: number) => {
   }
 
   uni.navigateTo({
-    url: `/pages/index/effectiveSignChildTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}`
+    url: `/pages/index/effectiveSignChildTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}&queryType=${props.queryType}`
   });
 };
 // 选择类型
@@ -104,7 +106,7 @@ const handleTypeChange = (item: any) => {
   }
 
   uni.navigateTo({
-    url: `/pages/index/effectiveSignChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}`
+    url: `/pages/index/effectiveSignChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}&queryType=${props.queryType}`
   });
 };
 
@@ -115,7 +117,8 @@ const exportClick = () => {
     pageSize: 999,
     description: `${props.dataName}-预计签约`,
     id: props.dataId,
-    type: props.dataType
+    type: props.dataType,
+    queryType: props.queryType
   };
   // 显示加载提示
   uni.showLoading({ title: "正在导出..." });

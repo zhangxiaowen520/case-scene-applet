@@ -28,6 +28,10 @@ import CustomSelect from "@/components/CustomSelect/index.vue";
 import { OrganizationUtil } from "@/utils/auth";
 import { onMounted, ref } from "vue";
 
+const props = defineProps<{
+  queryType: number;
+}>();
+
 // 选项
 const typeOptions = ref<any[]>([]);
 //类型
@@ -55,7 +59,8 @@ const getBusinessInfo = () => {
       pageNumber: 1,
       pageSize: 99,
       id: OrganizationUtil.getOrganizationInfo().id,
-      type: OrganizationUtil.getOrganizationInfo().type
+      type: OrganizationUtil.getOrganizationInfo().type,
+      queryType: props.queryType
     })
     .then(res => {
       if (res.code === 0) {
@@ -77,7 +82,7 @@ const handleNameClick = (scope: any, index: number) => {
   }
 
   uni.navigateTo({
-    url: `/pages/index/effectiveClueChildTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}`
+    url: `/pages/index/effectiveClueChildTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}&queryType=${props.queryType}`
   });
 };
 // 选择类型
@@ -87,7 +92,7 @@ const handleTypeChange = (item: any) => {
   }
 
   uni.navigateTo({
-    url: `/pages/index/effectiveClueChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}`
+    url: `/pages/index/effectiveClueChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}&queryType=${props.queryType}`
   });
 };
 //导出
@@ -97,7 +102,8 @@ const exportClick = () => {
     pageSize: 999,
     description: "有效线索数",
     id: OrganizationUtil.getOrganizationInfo().id,
-    type: OrganizationUtil.getOrganizationInfo().type
+    type: OrganizationUtil.getOrganizationInfo().type,
+    queryType: props.queryType
   };
   // 显示加载提示
   uni.showLoading({ title: "正在导出..." });

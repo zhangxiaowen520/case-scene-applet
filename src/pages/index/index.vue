@@ -754,7 +754,7 @@ const handleQuantityTabChange = (index: number | string) => {
 const handleEffectiveTableClick = (url: string) => {
   if (url) {
     uni.navigateTo({
-      url: url
+      url: `${url}?queryType=${quantityTabIndex.value}`
     });
   }
 };
