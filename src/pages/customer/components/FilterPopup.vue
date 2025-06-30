@@ -5,10 +5,11 @@
     mode="bottom"
     :closeOnClickOverlay="false"
     :safeAreaInsetBottom="false"
-    customStyle="border-radius: 20rpx;">
+    customStyle="border-radius: 20rpx;"
+  >
     <view class="assign-popup">
       <text class="assign-popup-title">筛选</text>
-      <view class="assign-popup-content"> 11</view>
+      <view class="assign-popup-content">11</view>
     </view>
     <view class="assign-popup-btn">
       <up-button style="height: 70rpx" size="small" color="#2C65F6" plain type="primary" @click="close">取消</up-button>
