@@ -349,7 +349,7 @@ const getCustomerList = async () => {
 // 跳转客户详情
 const handleCustomerClick = (item: CustomerInterface) => {
   uni.navigateTo({
-    url: `/pages/customer/details?projectCustomerId=${item.projectCustomerId}`
+    url: `/pages/customer/details?projectCustomerId=${item.id}`
   });
 };
 

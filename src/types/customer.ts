@@ -13,6 +13,20 @@ export interface CustomerInterface {
   reportStore: string;
   visitNumber: number;
   hasPhone: boolean;
+  createTime: string;
+  createUser: number | null;
+  createUserName: string | null;
+  hasCheckTask: boolean;
+  lastFollowUpTime: string;
+  lastReportRecordId: number;
+  lastVisitTime: string;
+  name: string;
+  projectId: number;
+  projectName: string;
+  realEstateConsultant: number;
+  sex: string;
+  updateTime: string;
+  id: number;
 }
 
 export interface CustomerBasicInfoInterface {

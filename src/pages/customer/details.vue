@@ -148,8 +148,30 @@
           customerInfo?.visitNumber > 0
         "
         class="btn-0"
+        @click="handleReportVisit"
+        >报到访</text
+      >
+      <text
+        v-if="
+          (UserUtil.getDataPermissionType() === 'PROJECT' ||
+            UserUtil.getDataPermissionType() === 'SELF') &&
+          UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant &&
+          customerInfo?.visitNumber > 0
+        "
+        class="btn-0"
         @click="handleConfirmPurchaseClick"
         >报认购</text
+      >
+      <text
+        v-if="
+          (UserUtil.getDataPermissionType() === 'PROJECT' ||
+            UserUtil.getDataPermissionType() === 'SELF') &&
+          UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant &&
+          customerInfo?.visitNumber > 0
+        "
+        class="btn-0"
+        @click="handleConfirmSignClick"
+        >报签约</text
       >
       <text
         v-if="
@@ -202,6 +224,15 @@
       @close="showAssignPopup = false"
       @confirm="handleAssignConfirm"
     />
+    <!-- 添加时间选择弹窗 -->
+    <up-datetime-picker
+      :show="isSignTimeShow"
+      v-model="signTime"
+      mode="date"
+      title="请选择预计签约时间"
+      @cancel="isSignTimeShow = false"
+      @confirm="handleSignTimeConfirm($event)"
+    />
   </view>
 </template>
 
@@ -239,6 +270,10 @@ const customerFollowUpRecord = ref<CustomerFollowUpRecordInterface[]>([]);
 const customerReportingRecord = ref<CustomerReportingRecordInterface[]>([]);
 // 分配弹窗
 const showAssignPopup = ref(false);
+// 添加签约时间相关的响应式变量
+//当天时间
+const signTime = ref(new Date());
+const isSignTimeShow = ref(false);
 
 // Add computed properties for countdown logic
 const shouldShowCountdown = computed(() => {
@@ -411,6 +446,32 @@ const goFollow = () => {
   });
 };
 
+// 报到访
+const handleReportVisit = () => {
+  uni.showModal({
+    content: "确认要报到访吗？",
+    success: res => {
+      if (res.confirm) {
+        requestApi
+          .post("/v2/home/visit", {
+            projectCustomerId: projectCustomerId.value,
+            projectId: ProjectUtil.getProjectInfo().projectId
+          })
+          .then(res => {
+            if (res.code === 0) {
+              uni.showToast({ title: "报到访成功", icon: "none" });
+              setTimeout(() => {
+                uni.navigateBack();
+              }, 1000);
+            } else {
+              uni.showToast({ title: res.msg, icon: "none" });
+            }
+          });
+      }
+    }
+  });
+};
+
 //确认购
 const handleConfirmPurchaseClick = () => {
   uni.showModal({
@@ -436,6 +497,42 @@ const handleConfirmPurchaseClick = () => {
       }
     }
   });
+};
+
+// 报签约
+const handleConfirmSignClick = () => {
+  uni.showModal({
+    title: "提示",
+    content: "确认要报签约吗？",
+    success: res => {
+      if (res.confirm) {
+        isSignTimeShow.value = true;
+      }
+    }
+  });
+};
+
+// 处理时间选择确认
+const handleSignTimeConfirm = (e: any) => {
+  const signTime = dayjs(e.value).format("YYYY-MM-DD");
+  isSignTimeShow.value = false;
+
+  // 调用签约接口
+  requestApi
+    .post("/v2/home/sign", {
+      projectCustomerId: projectCustomerId.value,
+      takeTime: signTime
+    })
+    .then(res => {
+      if (res.code === 0) {
+        uni.showToast({ title: "报签约成功", icon: "none" });
+        setTimeout(() => {
+          uni.navigateBack();
+        }, 1000);
+      } else {
+        uni.showToast({ title: res.msg, icon: "none" });
+      }
+    });
 };
 
 // 分配
@@ -698,5 +795,28 @@ const handleCallClick = () => {
     font-size: 20rpx;
     color: #47c686;
   }
+}
+
+.popup-content {
+  background-color: #fff;
+  padding: 30rpx;
+  border-radius: 20rpx 20rpx 0 0;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.popup-title {
+  font-size: 32rpx;
+  font-weight: 500;
+}
+
+.popup-close {
+  font-size: 28rpx;
+  color: #999;
 }
 </style>
