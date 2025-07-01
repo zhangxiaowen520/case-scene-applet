@@ -12,7 +12,14 @@
         <TaskCard :data="taskData" @click="handleTaskClick" />
       </template>
       <template v-else>
-        <TrendAnalysis />
+        <TrendAnalysis
+          v-model:timeStart="trendTimeStart"
+          v-model:timeEnd="trendTimeEnd"
+          v-model:activeId="trendActiveId"
+          v-model:groupType="trendGroupType"
+          :chartData="trendChartData"
+          @fetchData="getTrendAnalysisData"
+        />
       </template>
       <StatisticsCard
         title="业务数据"
@@ -36,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import CustomTreeNavBar from "@/components/CustomTreeNavBar/index.vue";
 import MessageNotification from "@/components/MessageNotification/index.vue";
 import TaskCard from "@/components/TaskCard/index.vue";
@@ -172,6 +179,70 @@ const poolData = ref([
 const timeStart = ref(dayjs().subtract(30, "day").format("YYYY-MM-DD"));
 const timeEnd = ref(dayjs().format("YYYY-MM-DD"));
 
+// 趋势分析数据
+const trendChartData = ref([]);
+const trendActiveId = ref("CLUE");
+const trendGroupType = ref("DAY");
+const trendTimeStart = ref(dayjs().subtract(6, "day").format("YYYY-MM-DD"));
+const trendTimeEnd = ref(dayjs().format("YYYY-MM-DD"));
+
+// 计算时间差（天数）
+const calculateDateDiff = () => {
+  const start = dayjs(trendTimeStart.value);
+  const end = dayjs(trendTimeEnd.value);
+  return end.diff(start, "day");
+};
+
+// 更新统计类型
+const updateTrendGroupType = () => {
+  const dateDiff = calculateDateDiff();
+  if (dateDiff <= 21) {
+    trendGroupType.value = "DAY";
+  } else if (dateDiff > 147) {
+    trendGroupType.value = "MONTH";
+  } else if (trendGroupType.value === "DAY") {
+    trendGroupType.value = "WEEK";
+  }
+};
+
+// 监听时间变化
+watch([trendTimeStart, trendTimeEnd], () => {
+  updateTrendGroupType();
+});
+
+// 获取趋势分析数据
+const getTrendAnalysisData = () => {
+  // 在获取数据前先更新groupType
+  updateTrendGroupType();
+
+  requestApi
+    .post("/v2/home/trend_analysis", {
+      beginDate: trendTimeStart.value,
+      endDate: trendTimeEnd.value,
+      groupType: trendGroupType.value,
+      id: OrganizationUtil.getOrganizationInfo().id,
+      requestType: trendActiveId.value,
+      type: OrganizationUtil.getOrganizationInfo().type
+    })
+    .then(res => {
+      if (res.code === 0) {
+        let newData = {
+          categories: res.data.xx,
+          series: [
+            {
+              name: "数量",
+              linearColor: [[0, "#FF3865"]],
+              data: res.data.yy
+            }
+          ]
+        };
+        trendChartData.value = JSON.parse(JSON.stringify(newData));
+      } else {
+        uni.showToast({ title: res.msg, icon: "none" });
+      }
+    });
+};
+
 // 选择项目
 const handleSelect = (item: OrganizationInfo) => {
   selectedLocation.value.id = item.id;
@@ -193,6 +264,7 @@ const handleSelect = (item: OrganizationInfo) => {
   } else {
     getBusinessData();
     handleQuantityTabChange(0);
+    getTrendAnalysisData();
   }
 };
 
@@ -533,6 +605,7 @@ onShow(() => {
         getBusinessData();
         handleQuantityTabChange(0);
       } else {
+        getTrendAnalysisData();
         getBusinessData();
         handleQuantityTabChange(0);
       }

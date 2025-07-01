@@ -31,26 +31,41 @@
 <script setup lang="ts">
 import Tabs from "@/components/Tabs/index.vue";
 import TimeSelection from "@/components/TimeSelection/index.vue";
-import { onMounted, ref, computed, watch, onUnmounted } from "vue";
+import { ref, computed } from "vue";
 import dayjs from "dayjs";
-import { requestApi } from "@/api/request";
-import { OrganizationUtil, UserUtil } from "@/utils/auth";
-import emitter from "@/utils/eventBus";
 
-/**
- * 分组类型
- */
-const groupType = ref("DAY");
+// Props 定义
+const props = defineProps({
+  chartData: {
+    type: Array,
+    default: () => []
+  },
+  timeStart: {
+    type: String,
+    default: dayjs().subtract(6, "day").format("YYYY-MM-DD")
+  },
+  timeEnd: {
+    type: String,
+    default: dayjs().format("YYYY-MM-DD")
+  },
+  activeId: {
+    type: String,
+    default: "CLUE"
+  },
+  groupType: {
+    type: String,
+    default: "DAY"
+  }
+});
 
-/**
- * 当前选中的tab
- */
-const activeId = ref("CLUE");
-/**
- * 时间选择 - 设置默认值为6天前到今天
- */
-const timeStart = ref(dayjs().subtract(6, "day").format("YYYY-MM-DD"));
-const timeEnd = ref(dayjs().format("YYYY-MM-DD"));
+// Emits 定义
+const emit = defineEmits([
+  "update:timeStart",
+  "update:timeEnd",
+  "update:activeId",
+  "update:groupType",
+  "fetchData"
+]);
 
 const groupTypeList = [
   { id: "DAY", name: "日" },
@@ -65,8 +80,6 @@ const tabList = [
   { id: "SUBSCRIPTION", name: "认购" }
 ];
 
-const chartData = ref([]);
-
 const opts = ref({
   color: ["#FF3865"],
   padding: [15, 30, 0, 15],
@@ -77,8 +90,8 @@ const opts = ref({
   },
   enableScroll: false,
   xAxis: {
-    splitNumber: 5,
-    labelCount: 5,
+    splitNumber: 4,
+    labelCount: 4,
     size: 8,
     margin: 8
   },
@@ -96,43 +109,11 @@ const opts = ref({
 });
 
 /**
- * 获取服务器数据
- */
-const getServerData = () => {
-  requestApi
-    .post("/v2/home/trend_analysis", {
-      beginDate: timeStart.value,
-      endDate: timeEnd.value,
-      groupType: groupType.value,
-      id: OrganizationUtil.getOrganizationInfo().id,
-      requestType: activeId.value,
-      type: OrganizationUtil.getOrganizationInfo().type
-    })
-    .then(res => {
-      if (res.code === 0) {
-        let newData = {
-          categories: res.data.xx,
-          series: [
-            {
-              name: "数量",
-              linearColor: [[0, "#FF3865"]],
-              data: res.data.yy
-            }
-          ]
-        };
-        chartData.value = JSON.parse(JSON.stringify(newData));
-      } else {
-        uni.showToast({ title: res.msg, icon: "none" });
-      }
-    });
-};
-
-/**
  * 计算时间差（天数）
  */
 const calculateDateDiff = () => {
-  const start = dayjs(timeStart.value);
-  const end = dayjs(timeEnd.value);
+  const start = dayjs(props.timeStart);
+  const end = dayjs(props.timeEnd);
   return end.diff(start, "day");
 };
 
@@ -158,15 +139,7 @@ const isGroupTypeDisabled = (type: string) => {
  * 更新选中的统计类型
  */
 const updateSelectedGroupType = () => {
-  const dateDiff = calculateDateDiff();
-
-  if (dateDiff <= 21) {
-    groupType.value = "DAY";
-  } else if (dateDiff > 147) {
-    groupType.value = "MONTH";
-  } else if (groupType.value === "DAY") {
-    groupType.value = "WEEK";
-  }
+  emit("fetchData");
 };
 
 /**
@@ -174,8 +147,8 @@ const updateSelectedGroupType = () => {
  */
 const handleTabClick = (newGroupType: string) => {
   if (!isGroupTypeDisabled(newGroupType)) {
-    groupType.value = newGroupType;
-    getServerData();
+    emit("update:groupType", newGroupType);
+    emit("fetchData");
   }
 };
 
@@ -183,8 +156,8 @@ const handleTabClick = (newGroupType: string) => {
  * 点击类型tab
  */
 const handleClick = (newActiveId: string) => {
-  activeId.value = newActiveId;
-  getServerData();
+  emit("update:activeId", newActiveId);
+  emit("fetchData");
 };
 
 /**
@@ -192,20 +165,19 @@ const handleClick = (newActiveId: string) => {
  */
 const handleTimeStart = (time: string) => {
   const newStart = dayjs(time);
-  const end = dayjs(timeEnd.value);
+  const end = dayjs(props.timeEnd);
 
   if (end.isBefore(newStart)) {
     // 如果新的开始时间大于结束时间，将结束时间设置为开始时间
-    timeEnd.value = time;
+    emit("update:timeEnd", time);
   }
 
-  timeStart.value = time;
-  updateSelectedGroupType();
-  getServerData();
+  emit("update:timeStart", time);
+  emit("fetchData");
 };
 
 const handleTimeEnd = (time: string) => {
-  const start = dayjs(timeStart.value);
+  const start = dayjs(props.timeStart);
   const newEnd = dayjs(time);
 
   if (newEnd.isBefore(start)) {
@@ -216,30 +188,9 @@ const handleTimeEnd = (time: string) => {
     return;
   }
 
-  timeEnd.value = time;
-  updateSelectedGroupType();
-  getServerData();
+  emit("update:timeEnd", time);
+  emit("fetchData");
 };
-
-onMounted(() => {
-  if (UserUtil.getDataPermissionType() !== "SELF") {
-    setTimeout(() => {
-      updateSelectedGroupType();
-      getServerData();
-    }, 600);
-  }
-
-  // 添加事件监听
-  emitter.on("organizationChanged", () => {
-    getServerData();
-  });
-});
-
-// 添加 onUnmounted 钩子
-onUnmounted(() => {
-  // 移除事件监听
-  emitter.off("organizationChanged");
-});
 </script>
 
 <style lang="scss" scoped>
