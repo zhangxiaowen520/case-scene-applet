@@ -133,8 +133,7 @@
     {
       "path": "pages/index/effectiveVisitChildTable",
       "style": {
-        "navigationStyle": "custom",
-        "navigationBarTitleText": "预计到访-区域"
+        "navigationBarTitleText": "预计到访客户"
       }
     },
     {
@@ -146,8 +145,7 @@
     {
       "path": "pages/index/effectiveSubscriptionChildTable",
       "style": {
-        "navigationStyle": "custom",
-        "navigationBarTitleText": "预计认购-区域"
+        "navigationBarTitleText": "预计认购客户"
       }
     },
     {
@@ -159,8 +157,7 @@
     {
       "path": "pages/index/effectiveSignChildTable",
       "style": {
-        "navigationStyle": "custom",
-        "navigationBarTitleText": "预计签约-区域"
+        "navigationBarTitleText": "预计签约客户"
       }
     },
     {
@@ -174,12 +171,6 @@
       "style": {
         "navigationStyle": "custom",
         "navigationBarTitleText": "五位一体团队-区域"
-      }
-    },
-    {
-      "path": "pages/effective/visit",
-      "style": {
-        "navigationBarTitleText": "预计到访客户"
       }
     },
     {
@@ -344,7 +335,7 @@
       },
       {
         "name": "预计到访客户",
-        "path": "pages/effective/visit"
+        "path": "pages/index/effectiveVisitChildTable"
       }
     ]
   },

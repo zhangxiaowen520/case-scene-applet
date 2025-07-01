@@ -1,187 +1,539 @@
 <template>
   <view>
-    <CustomHeader :title="`${props.dataName}` || '预计认购'" />
-    <view class="table-select" :style="{ marginTop: navBarHeight + 26 + 'px' }">
-      <CustomSelect v-model="typeId" :options="typeOptions" @change="handleTypeChange" />
-      <view class="table-select-time">
-        <img class="export-icon" src="@/static/images/export.png" alt="" srcset="" @click="exportClick" />
+    <view class="search-bar-box">
+      <view class="search-bar">
+        <view class="search-input">
+          <up-icon name="search" size="22" color="#979797"></up-icon>
+          <input
+            type="text"
+            v-model="commonName"
+            @input="handleCommonNameInput"
+            placeholder="请输入客户姓名、手机尾号"
+            placeholder-class="placeholder"
+          />
+        </view>
       </view>
     </view>
-    <basic-table :columns="columns" :data="tableData" :min-item-width="150" align="center">
-      <template #item="{ column, scope, index }">
-        <!-- 区域 -->
-        <view v-if="column.fieldName === 'column1DataName'" @click="handleNameClick(scope, index)">
-          {{ scope.column1DataName }}
+    <!-- 客户列表 -->
+    <view class="customer-list">
+      <view class="customer-item" v-for="(item, index) in customerList" :key="item.projectCustomerId">
+        <view class="avatar">
+          <view class="avatar-text">{{ item.level || "-" }}</view>
         </view>
-        <view v-else-if="column.fieldName === 'column2DataName'">
-          <span v-if="column.dataTag < 2">{{ scope.column2DataName }}</span>
-          <span v-else-if="column.dataTag === 2" style="color: #e35bfb">{{ scope.column2DataName }}</span>
-          <span v-else style="color: #ff3b33">{{ scope.column2DataName }}</span>
+        <view class="info">
+          <view class="name-row">
+            <text class="name">{{ item.projectCustomerName }}</text>
+            <text class="phone">{{ item.phone }}</text>
+          </view>
+          <view class="status-row">
+            <u-tag
+              v-if="
+                (item?.realEstateConsultantId === null ||
+                  item?.realEstateConsultantId === undefined ||
+                  item?.realEstateConsultantId === '') &&
+                item.visitNumber === 0
+              "
+              text="待分配"
+              size="mini"
+              type="success"
+              bg-color="rgba(255, 59, 51, 0.1)"
+              border-color="rgba(255, 59, 51, 0.1)"
+              color="#FF3B33"
+            />
+            <u-tag
+              v-else-if="item.visitNumber === 0"
+              text="未到访"
+              size="mini"
+              type="success"
+              bg-color="rgba(255, 59, 51, 0.1)"
+              border-color="rgba(255, 59, 51, 0.1)"
+              color="#FF3B33"
+            />
+            <u-tag
+              v-else-if="item.visitNumber === 1"
+              text="已到访"
+              size="mini"
+              type="success"
+              bg-color="rgba(44, 101, 246, 0.1)"
+              border-color="rgba(44, 101, 246, 0.1)"
+              color="#2C65F6"
+            />
+            <u-tag
+              v-else-if="item.visitNumber >= 2"
+              :text="item.visitNumber >= 4 ? `复访3+` : `复访${item.visitNumber - 1}`"
+              size="mini"
+              type="success"
+              bg-color="rgba(71, 198, 134, 0.1)"
+              border-color="rgba(71, 198, 134, 0.1)"
+              color="#47C686"
+            />
+            <view
+              v-if="
+                item.nextFollowUpTime &&
+                dayjs(item.nextFollowUpTime).isBefore(dayjs().add(24, 'hour')) &&
+                getTimeRemaining(item.nextFollowUpTime) > 0
+              "
+              class="count-down"
+            >
+              <text class="status-green">跟进倒计时</text>
+              <up-count-down :time="getTimeRemaining(item.nextFollowUpTime)" format="HH:mm:ss"></up-count-down>
+            </view>
+            <text v-if="item.lastProjectCustomerTime" class="status-red"
+              >上次到访 {{ item.lastProjectCustomerTime.slice(0, 10) }}</text
+            >
+          </view>
+          <view class="detail-row" v-if="UserUtil.getDataPermissionType() === 'PROJECT'">
+            <text class="label">置业顾问：</text>
+            <text class="value">{{ item.realEstateConsultantName || "-" }}</text>
+          </view>
+          <view class="consultant-row">
+            <text class="label">{{ item.reportStore }}：</text>
+            <text class="value">{{ item.reportBroker || "-" }}</text>
+            <text class="value">｜</text>
+            <text class="value">{{ item.brokerPhone || "-" }}</text>
+            <view class="phone-icon" @click.stop="handleCallClick(item.brokerPhone)">
+              <up-icon name="phone-fill" size="18" color="#2C65F6"></up-icon>
+            </view>
+          </view>
         </view>
-        <view v-else-if="column.fieldName === 'quantity'">
-          {{ scope.quantity }}
+        <view class="action-btn">
+          <up-button
+            v-if="
+              (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+              UserUtil.getUserInfo().id === item?.realEstateConsultantId
+            "
+            plain
+            color="#2C65F6"
+            type="primary"
+            size="small"
+            @click.stop="handleCustomerVisitClick(item.projectCustomerId, item.phone)"
+            >客户到访</up-button
+          >
+          <up-button
+            v-if="
+              (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+              item.visitNumber > 0 &&
+              UserUtil.getUserInfo().id === item?.realEstateConsultantId
+            "
+            plain
+            color="#2C65F6"
+            type="primary"
+            size="small"
+            @click.stop="handleWriteFollowUpClick(item)"
+            >写跟进</up-button
+          >
+          <up-button
+            v-if="
+              (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+              UserUtil.getUserInfo().id === item?.realEstateConsultantId &&
+              item.visitNumber > 0 &&
+              item.hasPhone
+            "
+            plain
+            color="#2C65F6"
+            type="primary"
+            size="small"
+            @click.stop="handleCallClick(item.phone, item.projectCustomerId)"
+            >打电话</up-button
+          >
         </view>
-      </template>
-    </basic-table>
+      </view>
+      <up-loadmore :status="loadStatus" :nomore-text="`共 ${customerList.length} 条`" />
+    </view>
   </view>
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import { requestApi } from "@/api/request";
-import BasicTable from "@/components/basic-table/basic-table.vue";
-import CustomSelect from "@/components/CustomSelect/index.vue";
-import { onMounted, ref } from "vue";
-import CustomHeader from "@/components/CustomHeader/index.vue";
+import { onShow, onReachBottom } from "@dcloudio/uni-app";
+import { UserUtil, OrganizationUtil } from "@/utils/auth";
+import type { CustomerInterface } from "@/types/customer";
+import dayjs from "dayjs";
+import { getTimeRemaining } from "@/utils/tools";
 
-const props = defineProps<{
-  dataId: string;
-  dataName: string;
-  dataType: string;
-  queryType: number;
-}>();
+// 添加防抖定时器变量
+let searchTimer: number | null = null;
+//加载状态
+const loadStatus = ref<"loading" | "nomore" | "loadmore">("loadmore");
+//页码
+const pageNumber = ref(1);
+//总页数
+const pages = ref(0);
+//搜索关键字、客户名称、手机号
+const commonName = ref("");
+//客户列表
+const customerList = ref<CustomerInterface[]>([]);
 
-const navBarHeight = ref(0);
+//搜索关键字输入
+const handleCommonNameInput = () => {
+  // 重置分页和列表数据
+  pageNumber.value = 1;
+  pages.value = 0;
+  customerList.value = [];
+  // 添加防抖处理
+  if (searchTimer) clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    getCustomerList();
+  }, 300);
+};
 
-// 选项
-const typeOptions = ref<any[]>([]);
-//类型
-const typeId = ref("0");
-//表格数据
-const tableData = ref([]);
-//表格名称
-const columns = [
-  {
-    fieldName: "column1DataName",
-    fieldDesc: "区域",
-    fieldType: "slot"
-  },
-  {
-    fieldName: "column2DataName",
-    fieldDesc: "预计成交项目",
-    fieldType: "slot"
-  },
-  {
-    fieldName: "quantity",
-    fieldDesc: "预计成交量",
-    fieldType: "slot"
-  }
-];
-//获取列表数据
-const getBusinessInfo = () => {
-  uni.showLoading({ title: "正在加载..." });
-  requestApi
-    .post("/v2/home/expected/subscription", {
-      pageNumber: 1,
-      pageSize: 99,
-      id: props.dataId,
-      type: props.dataType,
-      queryType: props.queryType
-    })
-    .then(res => {
-      if (res.code === 0) {
-        tableData.value = res.data;
-        typeOptions.value = res.data.map((item: any) => ({
-          label: item.column1DataName,
-          value: item.column1DataId,
-          type: item.column1DataType
-        }));
-        typeId.value = res.data[0].column1DataId;
-      } else {
-        uni.showToast({ title: res.msg, icon: "none" });
-      }
-      uni.hideLoading();
+// 获取客户列表
+const getCustomerList = async () => {
+  // 如果正在加载中且不是首次加载，不重复请求
+  if (loadStatus.value === "loading" && customerList.value.length > 0) return;
+
+  loadStatus.value = "loading";
+  try {
+    const query = {
+      pageNumber: pageNumber.value,
+      pageSize: 10,
+      queryKey: commonName.value,
+      queryType: 1,
+      id: OrganizationUtil.getOrganizationInfo().id,
+      type: OrganizationUtil.getOrganizationInfo().type
+    };
+    const res = await requestApi.post("/v2/home/expected/subscription/customer/list", {
+      ...query
     });
-};
-const handleNameClick = (scope: any, index: number) => {
-  if (scope.dataName === "合计" || scope.dataType === null) {
-    return;
-  }
 
-  uni.navigateTo({
-    url: `/pages/index/effectiveSubscriptionChildTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}&queryType=${props.queryType}`
-  });
-};
-// 选择类型
-const handleTypeChange = (item: any) => {
-  if (item.label === "合计" || item.type === null) {
-    return;
-  }
-
-  uni.navigateTo({
-    url: `/pages/index/effectiveSubscriptionChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}&queryType=${props.queryType}`
-  });
-};
-
-//导出
-const exportClick = () => {
-  const params = {
-    pageNumber: 1,
-    pageSize: 999,
-    description: `${props.dataName}-预计认购`,
-    id: props.dataId,
-    type: props.dataType,
-    queryType: props.queryType
-  };
-  // 显示加载提示
-  uni.showLoading({ title: "正在导出..." });
-  requestApi.post("/v2/home/expected/subscription/export", { ...params }).then(res => {
     if (res.code === 0) {
-      downloadFileClick(res.data);
+      if (pageNumber.value === 1) {
+        customerList.value = res.data.list;
+      } else {
+        customerList.value = [...customerList.value, ...res.data.list];
+      }
+      pages.value = res.data.pages;
+      loadStatus.value = res.data.pages > pageNumber.value ? "loadmore" : "nomore";
     } else {
-      uni.showToast({ title: res.msg, icon: "none" });
+      loadStatus.value = "nomore";
     }
-    uni.hideLoading();
+  } catch (error) {
+    console.error("获取客户列表失败:", error);
+    loadStatus.value = "nomore";
+  }
+};
+
+// 写跟进
+const handleWriteFollowUpClick = (item: CustomerInterface) => {
+  uni.navigateTo({
+    url: `/pages/customer/addFollow?projectCustomerId=${item.projectCustomerId}`
   });
 };
-//下载
-const downloadFileClick = (url: string) => {
-  uni.downloadFile({
-    url: url,
-    success: downloadResult => {
-      console.log(downloadResult);
-      if (downloadResult.statusCode === 200) {
-        uni.openDocument({
-          filePath: downloadResult.tempFilePath,
-          showMenu: true,
-          success: function (res) {
-            console.log("打开文档成功");
-          }
-        });
+
+// 客户到访
+const handleCustomerVisitClick = (id: number, phone: string) => {
+  uni.showModal({
+    title: "提示",
+    content: "是否确认到访?",
+    success: res => {
+      if (res.confirm) {
+        requestApi
+          .post("/customer/visit", {
+            projectCustomerId: id,
+            code: "1234"
+          })
+          .then(res => {
+            if (res.code === 0) {
+              uni.showToast({
+                title: "操作成功",
+                icon: "success"
+              });
+              setTimeout(() => {
+                pageNumber.value = 1;
+                pages.value = 0;
+                customerList.value = [];
+                getCustomerList();
+              }, 0);
+            } else {
+              uni.showToast({
+                title: res.msg,
+                icon: "none"
+              });
+            }
+          });
       }
     }
   });
 };
 
-onMounted(() => {
-  // 获取导航栏高度
-  const menuButtonInfo = uni.getMenuButtonBoundingClientRect();
-  if (menuButtonInfo) {
-    navBarHeight.value = (menuButtonInfo.bottom + menuButtonInfo.top) / 2 + 8;
+// 打电话
+const handleCallClick = (phone: string, id?: number) => {
+  uni.makePhoneCall({
+    phoneNumber: phone,
+    success: () => {
+      if (id) {
+        requestApi
+          .post("/customer/customer/phone", {
+            id: id
+          })
+          .then(res => {
+            if (res.code === 0) {
+              console.log("拨打电话成功");
+            }
+          });
+      }
+    }
+  });
+};
+
+const reset = () => {
+  pageNumber.value = 1;
+  pages.value = 0;
+  customerList.value = [];
+};
+
+onShow(() => {
+  reset();
+  getCustomerList();
+});
+
+onReachBottom(() => {
+  if (pageNumber.value < pages.value) {
+    pageNumber.value++;
+    getCustomerList();
+  } else {
+    loadStatus.value = "nomore";
   }
-  getBusinessInfo();
 });
 </script>
+
 <style lang="scss" scoped>
-.table-select {
+.pool-page {
+  width: 100%;
+}
+
+.search-bar-box {
+  width: 100%;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 99;
+}
+
+.search-bar {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10rpx 20rpx;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.search-input {
+  flex: 1;
+  border: 1rpx solid rgba(26, 39, 52, 0.1);
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  padding: 10rpx;
+  input {
+    flex: 1;
+    font-size: 28rpx;
+    color: $uni-text-color;
+  }
+}
+
+.placeholder {
+  color: $uni-text-color-placeholder;
+  font-weight: normal;
+  font-size: 24rpx;
+}
+
+.cancel-btn {
+  font-size: 28rpx;
+  color: #f04d4d;
+  white-space: nowrap;
+}
+
+.filter-bar {
+  width: 100%;
+  background-color: #fff;
+  display: flex;
+  justify-content: space-around;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f4f4f4;
+  margin-bottom: 20rpx;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-weight: 400;
+  font-size: 28rpx;
+  color: $uni-text-color-placeholder;
+
+  .active {
+    color: $uni-color-primary;
+  }
+}
+
+.customer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  padding-bottom: 50rpx;
+}
+
+.customer-item {
+  position: relative;
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 20rpx;
+}
+.customer-number {
+  width: 100%;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 400;
+  color: #999999;
+  margin-top: 30rpx;
+  letter-spacing: 2rpx;
+}
+
+.avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30rpx;
+
+  .avatar-text {
+    width: 80rpx;
+    height: 80rpx;
+    border: 1rpx solid $uni-color-primary;
+    border-radius: 50%;
+    font-size: 40rpx;
+    color: $uni-color-primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.info {
+  flex: 1;
+}
+
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 16rpx;
+  .name {
+    font-size: 36rpx;
+    font-weight: 400;
+    color: $uni-text-color;
+  }
+
+  .phone {
+    font-weight: 400;
+    font-size: 28rpx;
+    color: $uni-text-color;
+  }
+}
+
+.detail-row {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  font-size: 28rpx;
+  color: $uni-text-color;
+  line-height: 48rpx;
+  margin-bottom: 16rpx;
+
+  .label {
+    color: $uni-text-color-grey;
+  }
+
+  .value {
+    flex: 1;
+  }
+}
+
+.consultant-row {
+  display: flex;
+  align-items: center;
+  font-size: 28rpx;
+  color: $uni-text-color;
+  .label {
+    font-size: 28rpx;
+    color: $uni-text-color-grey;
+  }
+
+  .phone-icon {
+    margin-left: 20rpx;
+  }
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  font-size: 20rpx;
+  margin-bottom: 16rpx;
+
+  :deep(.u-tag) {
+    height: 36rpx;
+    font-size: 20rpx;
+  }
+
+  .status-red {
+    color: #ff6429;
+  }
+
+  .status-green {
+    color: #47c686;
+  }
+
+  .status-btn {
+    color: #2c65f6;
+  }
+}
+
+.count-down {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14rpx;
+
+  :deep(.u-count-down__text) {
+    font-size: 20rpx;
+    color: #47c686;
+  }
+}
+
+.action-btn {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background-color: #fff;
-  margin-top: 10rpx;
-  margin-bottom: 10rpx;
-  box-sizing: border-box;
-  padding: 20rpx;
+  justify-content: flex-end;
+  gap: 20rpx;
+
+  :deep(.u-button) {
+    width: 120rpx;
+    margin: 0rpx;
+  }
 }
-.table-select-time {
+
+.pool-add {
+  width: 108rpx;
+  height: 108rpx;
+  background: $uni-color-primary;
+  border-radius: 50%;
+  position: fixed;
+  bottom: 40rpx;
+  right: 30rpx;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 24rpx;
-
-  .export-icon {
-    width: 42rpx;
-    height: 42rpx;
-  }
+  justify-content: center;
+  z-index: 1;
 }
 </style>
