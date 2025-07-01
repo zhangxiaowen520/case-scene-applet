@@ -173,6 +173,7 @@ const getBusinessInfo = () => {
           value: item.dataId,
           type: item.dataType
         }));
+        typeId.value = res.data[0].dataId;
       } else {
         uni.showToast({ title: res.msg, icon: "none" });
       }

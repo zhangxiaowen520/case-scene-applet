@@ -1,7 +1,6 @@
 <template>
   <view>
     <view class="table-select">
-      <CustomSelect v-model="typeId" :options="typeOptions" @change="handleTypeChange" />
       <view class="table-select-time">
         <img class="export-icon" src="@/static/images/export.png" alt="" srcset="" @click="exportClick" />
       </view>
@@ -28,18 +27,12 @@
 <script setup lang="ts">
 import { requestApi } from "@/api/request";
 import BasicTable from "@/components/basic-table/basic-table.vue";
-import CustomSelect from "@/components/CustomSelect/index.vue";
 import { OrganizationUtil } from "@/utils/auth";
 import { onMounted, ref } from "vue";
 
 const props = defineProps<{
   queryType: number;
 }>();
-
-// 选项
-const typeOptions = ref<any[]>([]);
-//类型
-const typeId = ref("0");
 //表格数据
 const tableData = ref([]);
 //表格名称
@@ -74,16 +67,11 @@ const getBusinessInfo = () => {
     .then(res => {
       if (res.code === 0) {
         tableData.value = res.data;
-        typeOptions.value = res.data.map((item: any) => ({
-          label: item.column1DataName,
-          value: item.column1DataId,
-          type: item.column1DataType
-        }));
-        typeId.value = res.data[0].column1DataId;
+        uni.hideLoading();
       } else {
+        uni.hideLoading();
         uni.showToast({ title: res.msg, icon: "none" });
       }
-      uni.hideLoading();
     });
 };
 const handleNameClick = (scope: any, index: number) => {
@@ -95,16 +83,7 @@ const handleNameClick = (scope: any, index: number) => {
     url: `/pages/index/effectiveVisitChildTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}&queryType=${props.queryType}`
   });
 };
-// 选择类型
-const handleTypeChange = (item: any) => {
-  if (item.label === "合计" || item.type === null) {
-    return;
-  }
 
-  uni.navigateTo({
-    url: `/pages/index/effectiveVisitChildTable?dataId=${item.value}&dataName=${item.label}&dataType=${item.type}&queryType=${props.queryType}`
-  });
-};
 //导出
 const exportClick = () => {
   const params = {
@@ -153,7 +132,7 @@ onMounted(() => {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   background-color: #fff;
   margin-top: 10rpx;
   margin-bottom: 10rpx;

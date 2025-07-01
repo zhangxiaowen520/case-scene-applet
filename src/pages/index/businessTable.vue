@@ -9,13 +9,7 @@
           @timeStart="handleBeginDate"
           @timeEnd="handleEndDate"
         />
-        <img
-          class="export-icon"
-          src="@/static/images/export.png"
-          alt=""
-          srcset=""
-          @click="exportClick"
-        />
+        <img class="export-icon" src="@/static/images/export.png" alt="" srcset="" @click="exportClick" />
       </view>
     </view>
     <basic-table :columns="columns" :data="tableData" :min-item-width="100" align="center">
@@ -29,9 +23,7 @@
           {{ scope.clue.quantity }}
         </view>
         <!-- 线索转换率 -->
-        <view v-else-if="column.fieldName === 'clueConversionRate'">
-          {{ scope.clue.conversionRate }}%
-        </view>
+        <view v-else-if="column.fieldName === 'clueConversionRate'"> {{ scope.clue.conversionRate }}% </view>
         <!-- 新访 -->
         <view v-else-if="column.fieldName === 'subscriptionQuantity'">
           {{ scope.subscription.quantity }}
@@ -127,15 +119,17 @@ const getBusinessInfo = () => {
     .then(res => {
       if (res.code === 0) {
         tableData.value = res.data;
+        uni.hideLoading();
         typeOptions.value = res.data.map((item: any) => ({
           label: item.dataName,
           value: item.dataId,
           type: item.dataType
         }));
+        typeId.value = res.data[0].dataId;
       } else {
         uni.showToast({ title: res.msg, icon: "none" });
+        uni.hideLoading();
       }
-      uni.hideLoading();
     });
 };
 const handleNameClick = (scope: any, index: number) => {
