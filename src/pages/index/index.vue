@@ -43,7 +43,7 @@ import TaskCard from "@/components/TaskCard/index.vue";
 import StatisticsCard from "@/components/StatisticsCard/index.vue";
 import CustomerPool from "@/components/CustomerPool/index.vue";
 import { requestApi } from "@/api/request";
-import { OrganizationUtil, ProjectTreeUtil, ProjectUtil, UserUtil } from "@/utils/auth";
+import { OrganizationUtil, ProjectTreeUtil, ProjectUtil, TokenUtil, UserUtil } from "@/utils/auth";
 import { onShow } from "@dcloudio/uni-app";
 import { getCurrentMonthDay } from "@/utils/tools";
 import dayjs from "dayjs";
@@ -185,12 +185,14 @@ const handleSelect = (item: OrganizationInfo) => {
     children: []
   });
   if (UserUtil.getDataPermissionType() === "SELF") {
-    getBusinessData();
-    getFollowTask();
-  } else {
+    getMessage();
     getPoolTotal();
-    getBusinessData();
     getFollowTask();
+    getBusinessData();
+    handleQuantityTabChange(0);
+  } else {
+    getBusinessData();
+    handleQuantityTabChange(0);
   }
 };
 
@@ -268,14 +270,17 @@ const getProjectTreeInfo = () => {
       if (!OrganizationUtil.getOrganizationInfo().id) {
         OrganizationUtil.setOrganizationInfo(processedData[0]);
       }
-      //置业顾问
+
+      // 在获取到项目树信息后，再执行依赖请求
       if (UserUtil.getDataPermissionType() === "SELF") {
-        getBusinessData();
-        getFollowTask();
-      } else {
+        getMessage();
         getPoolTotal();
-        getBusinessData();
         getFollowTask();
+        getBusinessData();
+        handleQuantityTabChange(0);
+      } else {
+        getBusinessData();
+        handleQuantityTabChange(0);
       }
     } else {
       uni.showToast({ title: res.msg, icon: "none" });
@@ -518,17 +523,20 @@ onShow(() => {
     selectedLocation.value.id = OrganizationUtil.getOrganizationInfo().id;
     selectedLocation.value.name = OrganizationUtil.getOrganizationInfo().name;
     selectedLocation.value.type = OrganizationUtil.getOrganizationInfo().type;
-  }
 
-  //置业顾问
-  if (UserUtil.getDataPermissionType() === "SELF") {
-    getBusinessData();
-  } else {
-    getPoolTotal();
-    getBusinessData();
-    handleQuantityTabChange(0);
+    if (TokenUtil.getToken()) {
+      //置业顾问
+      if (UserUtil.getDataPermissionType() === "SELF") {
+        getMessage();
+        getPoolTotal();
+        getFollowTask();
+        getBusinessData();
+        handleQuantityTabChange(0);
+      } else {
+        getBusinessData();
+        handleQuantityTabChange(0);
+      }
+    }
   }
-  getFollowTask();
-  getMessage();
 });
 </script>

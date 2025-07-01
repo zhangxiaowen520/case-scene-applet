@@ -1,5 +1,6 @@
 import type { DataPermissionType, FilterData, OrganizationInfo, UserInfo } from "@/types/user";
 import type { ProjectInfo } from "@/types/user";
+import emitter from "./eventBus";
 
 const TOKEN_KEY = "case_scene_token";
 const USER_INFO_KEY = "case_scene_userInfo";
@@ -83,7 +84,7 @@ export const UserUtil = {
     CHANNEL_KING("渠道王",CustomerReportChannel.CHANNEL),
    */
   getDataPermissionType(): DataPermissionType {
-    return this.getUserInfo().role?.dataPermission || "SELF";
+    return this.getUserInfo().role?.dataPermission;
   }
 };
 
@@ -129,6 +130,7 @@ export const OrganizationUtil = {
    */
   setOrganizationInfo(organizationInfo: OrganizationInfo): void {
     uni.setStorageSync(ORGANIZATION_INFO_KEY, organizationInfo);
+    emitter.emit("organizationChanged", organizationInfo);
   },
 
   /**

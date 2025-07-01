@@ -31,10 +31,11 @@
 <script setup lang="ts">
 import Tabs from "@/components/Tabs/index.vue";
 import TimeSelection from "@/components/TimeSelection/index.vue";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed, watch, onUnmounted } from "vue";
 import dayjs from "dayjs";
 import { requestApi } from "@/api/request";
-import { OrganizationUtil } from "@/utils/auth";
+import { OrganizationUtil, UserUtil } from "@/utils/auth";
+import emitter from "@/utils/eventBus";
 
 /**
  * 分组类型
@@ -187,22 +188,6 @@ const handleClick = (newActiveId: string) => {
 };
 
 /**
- * 验证时间范围是否合法
- */
-const validateTimeRange = () => {
-  const start = dayjs(timeStart.value);
-  const end = dayjs(timeEnd.value);
-  if (end.isBefore(start)) {
-    uni.showToast({
-      title: "结束时间不能小于开始时间",
-      icon: "none"
-    });
-    return false;
-  }
-  return true;
-};
-
-/**
  * 时间选择
  */
 const handleTimeStart = (time: string) => {
@@ -237,10 +222,23 @@ const handleTimeEnd = (time: string) => {
 };
 
 onMounted(() => {
-  setTimeout(() => {
-    updateSelectedGroupType();
+  if (UserUtil.getDataPermissionType() !== "SELF") {
+    setTimeout(() => {
+      updateSelectedGroupType();
+      getServerData();
+    }, 600);
+  }
+
+  // 添加事件监听
+  emitter.on("organizationChanged", () => {
     getServerData();
-  }, 1000);
+  });
+});
+
+// 添加 onUnmounted 钩子
+onUnmounted(() => {
+  // 移除事件监听
+  emitter.off("organizationChanged");
 });
 </script>
 
