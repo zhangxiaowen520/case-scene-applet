@@ -9,7 +9,13 @@
           @timeStart="handleBeginDate"
           @timeEnd="handleEndDate"
         />
-        <img class="export-icon" src="@/static/images/export.png" alt="" srcset="" @click="exportClick" />
+        <img
+          class="export-icon"
+          src="@/static/images/export.png"
+          alt=""
+          srcset=""
+          @click="exportClick"
+        />
       </view>
     </view>
     <basic-table :columns="columns" :data="tableData" :min-item-width="100" align="center">
@@ -22,9 +28,11 @@
         <view v-else-if="column.fieldName === 'clueQuantity'">
           {{ scope.clue.quantity }}
         </view>
-        <!-- 线索转换率 -->
-        <view v-else-if="column.fieldName === 'clueConversionRate'"> {{ scope.clue.conversionRate }}% </view>
-        <!-- 新访 -->
+        <!-- 线索转化率 -->
+        <view v-else-if="column.fieldName === 'clueConversionRate'">
+          {{ scope.clue.conversionRate }}%
+        </view>
+        <!-- 新访数量 -->
         <view v-else-if="column.fieldName === 'subscriptionQuantity'">
           {{ scope.subscription.quantity }}
         </view>
@@ -35,6 +43,46 @@
         <!-- 复访数量 -->
         <view v-else-if="column.fieldName === 'revisitQuantity'">
           {{ scope.revisit.quantity }}
+        </view>
+        <!-- 复访率 -->
+        <view v-else-if="column.fieldName === 'revisitRate'">
+          {{ scope.revisit.revisitRate }}%
+        </view>
+        <!-- 跟进及时率 -->
+        <view v-else-if="column.fieldName === 'followUpTimelyRate'">
+          {{ scope.revisit.followUpTimelyRate }}%
+        </view>
+        <!-- 新访成交率 -->
+        <view v-else-if="column.fieldName === 'newVisitTransactionRate'">
+          {{ scope.subscription.newVisitTransactionRate }}%
+        </view>
+        <!-- 平均交易期 -->
+        <view v-else-if="column.fieldName === 'averageTransactionCycle'">
+          {{ scope.subscription.averageTransactionCycle }}
+        </view>
+        <!-- 平均复访次数 -->
+        <view v-else-if="column.fieldName === 'averageNumberOfRevisits'">
+          {{ scope.subscription.averageNumberOfRevisits }}
+        </view>
+        <!-- 老带新率 -->
+        <view v-else-if="column.fieldName === 'oldBringsNewRate'">
+          {{ scope.subscription.oldBringsNewRate }}%
+        </view>
+        <!-- 复访成交率 -->
+        <view v-else-if="column.fieldName === 'revisitTransactionRate'">
+          {{ scope.subscription.revisitTransactionRate }}%
+        </view>
+        <!-- 签约额 -->
+        <view v-else-if="column.fieldName === 'signAmount'">
+          {{ scope.sign.amount }}
+        </view>
+        <!-- 签约及时率 -->
+        <view v-else-if="column.fieldName === 'timelySigningRate'">
+          {{ scope.sign.timelySigningRate }}%
+        </view>
+        <!-- 签约周期 -->
+        <view v-else-if="column.fieldName === 'signingCycle'">
+          {{ scope.sign.signingCycle }}
         </view>
       </template>
     </basic-table>
@@ -85,12 +133,12 @@ const columns = [
   },
   {
     fieldName: "clueConversionRate",
-    fieldDesc: "线索转换率",
+    fieldDesc: "线索转化率",
     fieldType: "slot"
   },
   {
     fieldName: "subscriptionQuantity",
-    fieldDesc: "新访",
+    fieldDesc: "新访数量",
     fieldType: "slot"
   },
   {
@@ -101,6 +149,56 @@ const columns = [
   {
     fieldName: "revisitQuantity",
     fieldDesc: "复访数量",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "revisitRate",
+    fieldDesc: "复访率",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "followUpTimelyRate",
+    fieldDesc: "跟进及时率",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "newVisitTransactionRate",
+    fieldDesc: "新访成交率",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "averageTransactionCycle",
+    fieldDesc: "平均交易期(天)",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "averageNumberOfRevisits",
+    fieldDesc: "平均复访次数",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "oldBringsNewRate",
+    fieldDesc: "老带新率",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "revisitTransactionRate",
+    fieldDesc: "复访成交率",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "signAmount",
+    fieldDesc: "签约额(万元)",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "timelySigningRate",
+    fieldDesc: "签约及时率",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "signingCycle",
+    fieldDesc: "签约周期(天)",
     fieldType: "slot"
   }
 ];
