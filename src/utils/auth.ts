@@ -76,7 +76,7 @@ export const UserUtil = {
   /**
    * 获取用户数据权限类型
    * ALL("全项目", null),
-    MANAGER("分管项目", null),
+    MANAGER("分管项目 ceo", null),
     PROJECT("本项目"项目经理, CustomerReportChannel.SELF_SALE),
     SELF("自己"置业顾问,CustomerReportChannel.SELF_SALE),
     NATIONAL_MARKETING("全民营销",CustomerReportChannel.NATIONAL_MARKETING),

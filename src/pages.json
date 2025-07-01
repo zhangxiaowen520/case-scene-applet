@@ -326,6 +326,10 @@
         "path": "pages/index/index"
       },
       {
+        "name": "客户",
+        "path": "pages/customer/index"
+      },
+      {
         "name": "全民",
         "path": "pages/people/index"
       },

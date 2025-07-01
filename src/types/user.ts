@@ -4,7 +4,7 @@
  * SELF: 个人(顾问)
  * NATIONAL_MARKETING: 全民营销
  */
-export type DataPermissionType = "PROJECT" | "SELF" | "NATIONAL_MARKETING" | "CHANNEL_KING";
+export type DataPermissionType = "PROJECT" | "SELF" | "NATIONAL_MARKETING" | "CHANNEL_KING" | "MANAGER";
 
 /*
  * 角色信息

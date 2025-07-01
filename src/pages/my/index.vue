@@ -25,10 +25,20 @@
 
       <!-- 操作按钮列表 -->
       <view class="action-list">
-        <view class="action-item" @tap="handleResetPassword">
+        <view
+          class="action-item"
+          v-if="UserUtil.getDataPermissionType() === 'NATIONAL_MARKETING'"
+          @tap="handleResetPassword"
+        >
           <text>任务下发</text>
         </view>
-        <view class="action-item" @tap="handleFiveInOnePersonnel">
+        <view
+          class="action-item"
+          v-if="
+            UserUtil.getDataPermissionType() === 'NATIONAL_MARKETING' || UserUtil.getDataPermissionType() === 'MANAGER'
+          "
+          @tap="handleFiveInOnePersonnel"
+        >
           <text>五位一体人员填报</text>
         </view>
         <view class="action-item" @tap="handleResetPassword">
