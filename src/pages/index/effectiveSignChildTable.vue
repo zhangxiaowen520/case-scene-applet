@@ -16,7 +16,11 @@
     </view>
     <!-- 客户列表 -->
     <view class="customer-list">
-      <view class="customer-item" v-for="(item, index) in customerList" :key="item.projectCustomerId">
+      <view
+        class="customer-item"
+        v-for="(item, index) in customerList"
+        :key="item.projectCustomerId"
+      >
         <view class="avatar">
           <view class="avatar-text">{{ item.level || "-" }}</view>
         </view>
@@ -76,7 +80,10 @@
               class="count-down"
             >
               <text class="status-green">跟进倒计时</text>
-              <up-count-down :time="getTimeRemaining(item.nextFollowUpTime)" format="HH:mm:ss"></up-count-down>
+              <up-count-down
+                :time="getTimeRemaining(item.nextFollowUpTime)"
+                format="HH:mm:ss"
+              ></up-count-down>
             </view>
             <text v-if="item.lastProjectCustomerTime" class="status-red"
               >上次到访 {{ item.lastProjectCustomerTime.slice(0, 10) }}</text
@@ -99,7 +106,8 @@
         <view class="action-btn">
           <up-button
             v-if="
-              (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+              (UserUtil.getDataPermissionType() === 'PROJECT' ||
+                UserUtil.getDataPermissionType() === 'SELF') &&
               UserUtil.getUserInfo().id === item?.realEstateConsultantId
             "
             plain
@@ -111,7 +119,8 @@
           >
           <up-button
             v-if="
-              (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+              (UserUtil.getDataPermissionType() === 'PROJECT' ||
+                UserUtil.getDataPermissionType() === 'SELF') &&
               item.visitNumber > 0 &&
               UserUtil.getUserInfo().id === item?.realEstateConsultantId
             "
@@ -124,7 +133,8 @@
           >
           <up-button
             v-if="
-              (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+              (UserUtil.getDataPermissionType() === 'PROJECT' ||
+                UserUtil.getDataPermissionType() === 'SELF') &&
               UserUtil.getUserInfo().id === item?.realEstateConsultantId &&
               item.visitNumber > 0 &&
               item.hasPhone
@@ -151,6 +161,13 @@ import { UserUtil, OrganizationUtil } from "@/utils/auth";
 import type { CustomerInterface } from "@/types/customer";
 import dayjs from "dayjs";
 import { getTimeRemaining } from "@/utils/tools";
+
+const props = defineProps<{
+  dataId: number;
+  dataName: string;
+  dataType: number;
+  queryType: number;
+}>();
 
 // 添加防抖定时器变量
 let searchTimer: number | null = null;
@@ -189,9 +206,9 @@ const getCustomerList = async () => {
       pageNumber: pageNumber.value,
       pageSize: 10,
       queryKey: commonName.value,
-      queryType: 1,
-      id: OrganizationUtil.getOrganizationInfo().id,
-      type: OrganizationUtil.getOrganizationInfo().type
+      queryType: props.queryType,
+      id: props.dataId,
+      type: props.dataType
     };
     const res = await requestApi.post("/v2/home/expected/sign/customer/list", {
       ...query

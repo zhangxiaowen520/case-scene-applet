@@ -2,21 +2,29 @@
   <view>
     <view class="table-select">
       <view class="table-select-time">
-        <img class="export-icon" src="@/static/images/export.png" alt="" srcset="" @click="exportClick" />
+        <img
+          class="export-icon"
+          src="@/static/images/export.png"
+          alt=""
+          srcset=""
+          @click="exportClick"
+        />
       </view>
     </view>
     <basic-table :columns="columns" :data="tableData" align="center">
       <template #item="{ column, scope, index }">
         <!-- 区域 -->
-        <view v-if="column.fieldName === 'column1DataName'" @click="handleNameClick(scope, index)">
+        <view v-if="column.fieldName === 'column1DataName'">
           {{ scope.column1DataName }}
         </view>
         <view v-else-if="column.fieldName === 'column2DataName'">
           <span v-if="column.dataTag < 2">{{ scope.column2DataName }}</span>
-          <span v-else-if="column.dataTag === 2" style="color: #e35bfb">{{ scope.column2DataName }}</span>
+          <span v-else-if="column.dataTag === 2" style="color: #e35bfb">{{
+            scope.column2DataName
+          }}</span>
           <span v-else style="color: #ff3b33">{{ scope.column2DataName }}</span>
         </view>
-        <view v-else-if="column.fieldName === 'quantity'">
+        <view v-else-if="column.fieldName === 'quantity'" @click="handleNameClick(scope, index)">
           {{ scope.quantity }}
         </view>
       </template>
@@ -76,12 +84,8 @@ const getBusinessInfo = () => {
     });
 };
 const handleNameClick = (scope: any, index: number) => {
-  if (scope.dataName === "合计" || scope.dataType === null) {
-    return;
-  }
-
   uni.navigateTo({
-    url: `/pages/index/effectiveSubscriptionChildTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}&queryType=${props.queryType}`
+    url: `/pages/index/effectiveSubscriptionChildTable?dataId=${scope.column2DataId}&dataName=${scope.column2DataName}&dataType=${scope.column2DataType}&queryType=${props.queryType}`
   });
 };
 //导出
