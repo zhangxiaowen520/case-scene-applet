@@ -21,7 +21,11 @@
           </view>
           <view class="filter-item" @click.stop="handleScreenClick">
             <text :class="{ active: hasScreenFilter }">筛选</text>
-            <up-icon name="list-dot" size="12" :color="hasScreenFilter ? '#2C65F6' : '#666666'"></up-icon>
+            <up-icon
+              name="list-dot"
+              size="12"
+              :color="hasScreenFilter ? '#2C65F6' : '#666666'"
+            ></up-icon>
           </view>
         </view>
         <view class="filter-bar">
@@ -31,7 +35,11 @@
     </CustomTreeNavBar>
     <!-- 客户列表 -->
     <view class="customer-list" :style="{ marginTop: navBarHeight + 140 + 'px' }">
-      <view class="customer-item" v-for="(item, index) in customerList" :key="item.projectCustomerId">
+      <view
+        class="customer-item"
+        v-for="(item, index) in customerList"
+        :key="item.projectCustomerId"
+      >
         <view class="avatar">
           <view class="avatar-text">{{ item.level || "-" }}</view>
         </view>
@@ -91,7 +99,10 @@
               class="count-down"
             >
               <text class="status-green">跟进倒计时</text>
-              <up-count-down :time="getTimeRemaining(item.nextFollowUpTime)" format="HH:mm:ss"></up-count-down>
+              <up-count-down
+                :time="getTimeRemaining(item.nextFollowUpTime)"
+                format="HH:mm:ss"
+              ></up-count-down>
             </view>
             <text v-if="item.lastProjectCustomerTime" class="status-red"
               >上次到访 {{ item.lastProjectCustomerTime.slice(0, 10) }}</text
@@ -114,7 +125,8 @@
         <view class="action-btn">
           <up-button
             v-if="
-              (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+              (UserUtil.getDataPermissionType() === 'PROJECT' ||
+                UserUtil.getDataPermissionType() === 'SELF') &&
               UserUtil.getUserInfo().id === item?.realEstateConsultantId
             "
             plain
@@ -126,7 +138,8 @@
           >
           <up-button
             v-if="
-              (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+              (UserUtil.getDataPermissionType() === 'PROJECT' ||
+                UserUtil.getDataPermissionType() === 'SELF') &&
               item.visitNumber > 0 &&
               UserUtil.getUserInfo().id === item?.realEstateConsultantId
             "
@@ -139,7 +152,8 @@
           >
           <up-button
             v-if="
-              (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+              (UserUtil.getDataPermissionType() === 'PROJECT' ||
+                UserUtil.getDataPermissionType() === 'SELF') &&
               UserUtil.getUserInfo().id === item?.realEstateConsultantId &&
               item.visitNumber > 0 &&
               item.hasPhone
@@ -157,7 +171,10 @@
     </view>
     <!-- 添加客户 -->
     <view
-      v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'"
+      v-if="
+        UserUtil.getDataPermissionType() === 'PROJECT' ||
+        UserUtil.getDataPermissionType() === 'SELF'
+      "
       class="pool-add"
       @click="handleAddClick"
     >
@@ -218,15 +235,15 @@ const pageNumber = ref(1);
 const pages = ref(0);
 //搜索关键字、客户名称、手机号
 const commonName = ref("");
-//开始时间
-const dateTimeBegin = ref();
-const dateTimeEnd = ref();
+//开始时间  默认30天 yyyy-mm-dd
+const dateTimeBegin = ref(dayjs().subtract(30, "day").format("YYYY-MM-DD"));
+const dateTimeEnd = ref(dayjs().format("YYYY-MM-DD"));
 //有效性
-const effectiveness = ref<boolean>(false);
+const effectiveness = ref<boolean>(true);
 //查询类型
 const queryType = ref<number>(0);
 //职业顾问集合
-const realEstateConsultantNames = ref<string[]>([]);
+const realEstateConsultantIds = ref<string[]>([]);
 //等级集合
 const levels = ref<string[]>([]);
 //筛选
@@ -278,7 +295,7 @@ const handleCommonNameInput = () => {
 // 跳转筛选
 const handleScreenClick = () => {
   uni.navigateTo({
-    url: `/pages/customer/filter?dateTimeBegin=${dateTimeBegin.value}&dateTimeEnd=${dateTimeEnd.value}&realEstateConsultantNames=${realEstateConsultantNames.value}&levels=${levels.value}`
+    url: `/pages/customer/filter?dateTimeBegin=${dateTimeBegin.value}&dateTimeEnd=${dateTimeEnd.value}&realEstateConsultantIds=${realEstateConsultantIds.value}&levels=${levels.value}&isValid=${effectiveness.value}`
   });
 };
 
@@ -301,10 +318,10 @@ const getCustomerList = async () => {
       queryKey: commonName.value,
       projectId: selectedLocation.value.id,
       // selectType: selectedLocation.value.type,
-      dateTimeBegin: dateTimeBegin.value ? dayjs(dateTimeBegin.value).format("YYYY-MM-DD") : "",
-      dateTimeEnd: dateTimeEnd.value ? dayjs(dateTimeEnd.value).format("YYYY-MM-DD") : "",
+      reportTimeStart: dateTimeBegin.value,
+      reportTimeEnd: dateTimeEnd.value,
       levels: levels.value,
-      realEstateConsultantNames: realEstateConsultantNames.value,
+      realEstateConsultantIds: realEstateConsultantIds.value,
       effectiveness: effectiveness.value,
       queryType: queryType.value
     };
@@ -412,8 +429,9 @@ const updateFilter = (filterData: any) => {
   hasScreenFilter.value = !filterData.isReset;
   dateTimeBegin.value = filterData.dateTimeBegin;
   dateTimeEnd.value = filterData.dateTimeEnd;
-  realEstateConsultantNames.value = filterData.realEstateConsultantNames;
+  realEstateConsultantIds.value = filterData.realEstateConsultantIds;
   levels.value = filterData.levels;
+  effectiveness.value = filterData.isValid;
 
   pageNumber.value = 1;
   pages.value = 0;
@@ -425,10 +443,11 @@ const reset = () => {
   pageNumber.value = 1;
   pages.value = 0;
   customerList.value = [];
-  dateTimeBegin.value = "";
-  dateTimeEnd.value = "";
-  realEstateConsultantNames.value = [];
+  dateTimeBegin.value = dayjs().subtract(30, "day").format("YYYY-MM-DD");
+  dateTimeEnd.value = dayjs().format("YYYY-MM-DD");
+  realEstateConsultantIds.value = [];
   levels.value = [];
+  effectiveness.value = true;
 };
 
 onMounted(() => {

@@ -1,6 +1,6 @@
 <template>
   <view class="filter-container">
-    <view class="filter-item" v-if="UserUtil.getDataPermissionType() === 'PROJECT'">
+    <view class="filter-item" v-if="OrganizationUtil.getOrganizationInfo().type === 'PROJECT'">
       <text class="filter-item-title">置业顾问</text>
       <view class="filter-item-content">
         <text
@@ -14,31 +14,10 @@
           v-for="(user, index) in userList"
           :key="index"
           class="filter-item-content-item"
-          :class="{ active: selectedUsers.includes(user?.user?.name) }"
-          @click="toggleUser(user?.user?.name)"
+          :class="{ active: selectedUsers.includes(user?.user?.id) }"
+          @click="toggleUser(user?.user?.id)"
         >
           {{ user?.user?.name }}
-        </text>
-      </view>
-    </view>
-    <view class="filter-item">
-      <text class="filter-item-title">客户状态</text>
-      <view class="filter-item-content">
-        <text
-          class="filter-item-content-item"
-          :class="{ active: selectedStatuses.length === 0 }"
-          @click="allToggleStatus"
-        >
-          全部
-        </text>
-        <text
-          v-for="(item, index) in statusList"
-          :key="index"
-          class="filter-item-content-item"
-          :class="{ active: selectedStatuses.includes(item.value) }"
-          @click="toggleStatus(item.value)"
-        >
-          {{ item.label }}
         </text>
       </view>
     </view>
@@ -64,14 +43,33 @@
       </view>
     </view>
     <view class="filter-item">
+      <text class="filter-item-title">有效性</text>
+      <view class="filter-item-content">
+        <text
+          class="filter-item-content-item"
+          :class="{ active: selectedValidity === true }"
+          @click="toggleValidity(true)"
+        >
+          有效
+        </text>
+        <text
+          class="filter-item-content-item"
+          :class="{ active: selectedValidity === false }"
+          @click="toggleValidity(false)"
+        >
+          无效
+        </text>
+      </view>
+    </view>
+    <view class="filter-item">
       <text class="filter-item-title">时间</text>
       <view class="filter-item-content">
         <view class="filter-item-content-time" @click="isFollowUpStart = true">
-          {{ dayjs(dateTimeBegin).format("YYYY-MM-DD") }}
+          {{ dateTimeBegin }}
         </view>
         <view class="filter-item-content-time-line"></view>
         <view class="filter-item-content-time" @click="isFollowUpEnd = true">
-          {{ dayjs(dateTimeEnd).format("YYYY-MM-DD") }}
+          {{ dateTimeEnd }}
         </view>
       </view>
     </view>
@@ -83,15 +81,17 @@
 
     <up-datetime-picker
       :show="isFollowUpStart"
-      v-model="dateTimeBegin"
+      v-model="internalTimeBegin"
       mode="date"
+      :title="`开始时间`"
       @cancel="isFollowUpStart = false"
       @confirm="onFollowUpStartConfirm($event)"
     />
     <up-datetime-picker
       :show="isFollowUpEnd"
-      v-model="dateTimeEnd"
+      v-model="internalTimeEnd"
       mode="date"
+      :title="`结束时间`"
       @cancel="isFollowUpEnd = false"
       @confirm="onFollowUpEndConfirm($event)"
     />
@@ -101,66 +101,68 @@
 <script setup lang="ts">
 import { requestApi } from "@/api/request";
 import { FilterUtil, OrganizationUtil, ProjectUtil, UserUtil } from "@/utils/auth";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import dayjs from "dayjs";
 
 const props = defineProps<{
   dateTimeBegin: string;
   dateTimeEnd: string;
-  lastVisitTimeBegin: string;
-  lastVisitTimeEnd: string;
-  realEstateConsultantNames: string;
-  customerStates: string;
+  realEstateConsultantIds: string;
   levels: string;
+  isValid: boolean;
 }>();
 
 //职业顾问列表
 const userList = ref<any[]>([]);
 // 经纪人列表
 const levelList = ref<string[]>(["A", "B", "C", "D"]);
-// 状态列表
-// NOT_VISIT("未到访"),
-// VISITED("已到访"),
-// REVISIT("复访"),
-// DEAL("已成交")
-const statusList = ref<any[]>([
-  {
-    label: "未到访",
-    value: "NOT_VISIT"
-  },
-  {
-    label: "已到访",
-    value: "VISITED"
-  },
-  {
-    label: "复访",
-    value: "REVISIT"
-  },
-  {
-    label: "已成交",
-    value: "DEAL"
-  }
-]);
 
 //选择的职业顾问
 const selectedUsers = ref<string[]>(
-  props.realEstateConsultantNames ? props.realEstateConsultantNames.split(",") : []
+  props.realEstateConsultantIds ? props.realEstateConsultantIds.split(",") : []
 );
 //选择的等级
 const selectedLevels = ref<string[]>(props.levels ? props.levels.split(",") : []);
-//选择的状态
-const selectedStatuses = ref<string[]>(props.customerStates ? props.customerStates.split(",") : []);
+//选择的有效性
+const selectedValidity = ref<boolean>(props.isValid);
+
 //跟进时间
 const dateTimeBegin = ref(
   props.dateTimeBegin === "undefined" || props.dateTimeBegin === ""
-    ? Number(dayjs().subtract(6, "day"))
-    : Number(props.dateTimeBegin)
+    ? dayjs().subtract(30, "day").format("YYYY-MM-DD")
+    : props.dateTimeBegin
 );
 const dateTimeEnd = ref(
   props.dateTimeEnd === "undefined" || props.dateTimeEnd === ""
-    ? Number(new Date())
-    : Number(props.dateTimeEnd)
+    ? dayjs().format("YYYY-MM-DD")
+    : props.dateTimeEnd
 );
+
+// 内部时间值，用于 v-model 绑定
+const internalTimeBegin = ref(new Date(dateTimeBegin.value));
+const internalTimeEnd = ref(new Date(dateTimeEnd.value));
+
+// 监听时间变化，更新内部值
+watch(
+  () => dateTimeBegin.value,
+  newVal => {
+    if (newVal && newVal !== "") {
+      internalTimeBegin.value = new Date(newVal);
+    }
+  },
+  { immediate: true }
+);
+
+watch(
+  () => dateTimeEnd.value,
+  newVal => {
+    if (newVal && newVal !== "") {
+      internalTimeEnd.value = new Date(newVal);
+    }
+  },
+  { immediate: true }
+);
+
 //是否显示跟进时间
 const isFollowUpStart = ref(false);
 const isFollowUpEnd = ref(false);
@@ -179,12 +181,12 @@ const getUserList = () => {
 };
 
 const onFollowUpStartConfirm = (e: any) => {
-  dateTimeBegin.value = e.value;
+  dateTimeBegin.value = dayjs(e.value).format("YYYY-MM-DD");
   isFollowUpStart.value = false;
 };
 
 const onFollowUpEndConfirm = (e: any) => {
-  dateTimeEnd.value = e.value;
+  dateTimeEnd.value = dayjs(e.value).format("YYYY-MM-DD");
   isFollowUpEnd.value = false;
 };
 
@@ -192,26 +194,12 @@ const allToggleUser = () => {
   selectedUsers.value = [];
 };
 
-const toggleUser = (name: string) => {
-  console.log(name);
-  const idx = selectedUsers.value.indexOf(name);
+const toggleUser = (id: string) => {
+  const idx = selectedUsers.value.indexOf(id);
   if (idx > -1) {
     selectedUsers.value.splice(idx, 1);
   } else {
-    selectedUsers.value.push(name);
-  }
-};
-
-const allToggleStatus = () => {
-  selectedStatuses.value = [];
-};
-
-const toggleStatus = (value: string) => {
-  const idx = selectedStatuses.value.indexOf(value);
-  if (idx > -1) {
-    selectedStatuses.value.splice(idx, 1);
-  } else {
-    selectedStatuses.value.push(value);
+    selectedUsers.value.push(id);
   }
 };
 
@@ -228,34 +216,38 @@ const toggleLevel = (levels: string) => {
   }
 };
 
+const toggleValidity = (value: boolean) => {
+  selectedValidity.value = value;
+};
+
 // 重置
 const reset = () => {
   const filterData = {
     realEstateConsultantNames: [],
-    customerStates: [],
     levels: [],
     dateTimeBegin: "",
     dateTimeEnd: "",
     isReset: true,
-    selectId: ProjectUtil.getProjectInfo().projectId
+    selectId: ProjectUtil.getProjectInfo().projectId,
+    isValid: null
   };
   FilterUtil.setFilterData(filterData as any);
   selectedUsers.value = [];
-  selectedStatuses.value = [];
   selectedLevels.value = [];
+  selectedValidity.value = false;
   uni.navigateBack();
 };
 
 // 确认
 const handleConfirm = () => {
   const filterData = {
-    realEstateConsultantNames: selectedUsers.value,
+    realEstateConsultantIds: selectedUsers.value,
     dateTimeBegin: dateTimeBegin.value,
     dateTimeEnd: dateTimeEnd.value,
     isReset: false,
     selectId: OrganizationUtil.getOrganizationInfo().id,
-    customerStates: selectedStatuses.value,
-    levels: selectedLevels.value
+    levels: selectedLevels.value,
+    isValid: selectedValidity.value
   };
   console.log(filterData);
 
