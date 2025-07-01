@@ -92,7 +92,7 @@ const opts = ref({
   xAxis: {
     splitNumber: 4,
     labelCount: 4,
-    size: 8,
+    fontSize: 10,
     margin: 8
   },
   yAxis: {
