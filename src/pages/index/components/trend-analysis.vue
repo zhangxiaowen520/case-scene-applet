@@ -59,17 +59,15 @@ const opts = ref({
   padding: [15, 10, 0, 15],
   dataLabel: false,
   dataPointShape: false,
+  legend: {
+    show: false
+  },
   enableScroll: false,
-  legend: {},
   xAxis: {
-    disableGrid: true,
-    fontSize: 10,
-    scrollShow: true,
-    dashLength: 2
+    splitNumber: 2
   },
   yAxis: {
-    gridType: "dash",
-    dashLength: 2
+    gridType: "dash"
   },
   extra: {
     line: {
@@ -84,72 +82,25 @@ const opts = ref({
 /**
  * 获取服务器数据
  */
-const getServerData = (newGroupType?: string, newActiveId?: string) => {
+const getServerData = () => {
   requestApi
     .post("/v2/home/trend_analysis", {
       beginDate: timeStart.value,
       endDate: timeEnd.value,
-      groupType: newGroupType || groupType.value,
+      groupType: groupType.value,
       id: OrganizationUtil.getOrganizationInfo().id,
-      requestType: newActiveId || activeId.value,
+      requestType: activeId.value,
       type: OrganizationUtil.getOrganizationInfo().type
     })
     .then(res => {
       if (res.code === 0) {
-        if (newGroupType) {
-          groupType.value = newGroupType;
-        }
-        if (newActiveId) {
-          activeId.value = newActiveId;
-        }
-
-        // 限制数据点数量为7个
-        const maxDataPoints = 7;
-
-        // 获取原始数据
-        const originalXx = res.data.xx;
-        const originalYy = res.data.yy;
-
-        let xxData, yyData;
-
-        // 如果数据点少于等于7个，直接使用所有数据
-        if (originalXx.length <= maxDataPoints) {
-          xxData = originalXx;
-          yyData = originalYy;
-        } else {
-          // 数据点超过7个，需要采样
-          xxData = [];
-          yyData = [];
-
-          // 添加第一个数据点
-          xxData.push(originalXx[0]);
-          yyData.push(originalYy[0]);
-
-          // 计算中间需要取的数据点数量（除去首尾，还需要5个）
-          const middleCount = maxDataPoints - 2;
-          const step = (originalXx.length - 1) / (middleCount + 1);
-
-          // 取中间的数据点
-          for (let i = 1; i <= middleCount; i++) {
-            const index = Math.round(i * step);
-            xxData.push(originalXx[index]);
-            yyData.push(originalYy[index]);
-          }
-
-          // 添加最后一个数据点
-          xxData.push(originalXx[originalXx.length - 1]);
-          yyData.push(originalYy[originalYy.length - 1]);
-        }
-
         let newData = {
-          categories: xxData.map(
-            (item: string) => item.slice(5) + groupTypeList.find(item => item.id === groupType.value)?.name
-          ),
+          categories: res.data.xx,
           series: [
             {
-              name: "成交量",
+              name: "数量",
               linearColor: [[0, "#FF3865"]],
-              data: yyData
+              data: res.data.yy
             }
           ]
         };
@@ -163,28 +114,30 @@ const getServerData = (newGroupType?: string, newActiveId?: string) => {
 /**
  * 点击周、月、日tab
  */
-const handleTabClick = (groupType: string) => {
-  getServerData(groupType);
+const handleTabClick = (newGroupType: string) => {
+  groupType.value = newGroupType;
+  getServerData();
 };
 
 /**
  * 点击类型tab
  */
-const handleClick = (activeId: string) => {
-  getServerData("", activeId);
+const handleClick = (newActiveId: string) => {
+  activeId.value = newActiveId;
+  getServerData();
 };
 
 /**
  * 时间选择
  */
 const handleTimeStart = (time: string) => {
-  console.log("handleTimeStart", time);
   timeStart.value = time;
+  getServerData();
 };
 
 const handleTimeEnd = (time: string) => {
-  console.log("handleTimeEnd", time);
   timeEnd.value = time;
+  getServerData();
 };
 
 onMounted(() => {

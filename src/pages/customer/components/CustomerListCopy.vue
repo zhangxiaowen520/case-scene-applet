@@ -19,18 +19,38 @@
               placeholder-class="placeholder"
             />
           </view>
+        </view>
+        <view class="filter-bar">
+          <view class="filter-item" @click.stop="handleSortClick('ALL')">
+            <text :class="{ active: sortType === 'ALL' }">全部</text>
+          </view>
+          <view class="filter-item" @click.stop="handleSortClick('DATE_TIME')">
+            <text :class="{ active: sortType === 'DATE_TIME' }">{{
+              sortMethod === "ASC" ? "时间升序" : "时间降序"
+            }}</text>
+            <up-icon
+              :name="sortMethod === 'ASC' ? 'arrow-up' : 'arrow-down'"
+              size="12"
+              :color="sortType === 'DATE_TIME' ? '#2C65F6' : '#666666'"
+            ></up-icon>
+          </view>
+          <view class="filter-item" @click.stop="handleSortClick('LEVEL')">
+            <text :class="{ active: sortType === 'LEVEL' }">意向等级</text>
+            <up-icon
+              :name="sortMethod === 'ASC' ? 'arrow-up' : 'arrow-down'"
+              size="12"
+              :color="sortType === 'LEVEL' ? '#2C65F6' : '#666666'"
+            ></up-icon>
+          </view>
           <view class="filter-item" @click.stop="handleScreenClick">
             <text :class="{ active: hasScreenFilter }">筛选</text>
             <up-icon name="list-dot" size="12" :color="hasScreenFilter ? '#2C65F6' : '#666666'"></up-icon>
           </view>
         </view>
-        <view class="filter-bar">
-          <Tabs :tabList="tabList" :activeId="queryType" @click="handleQueryTypeClick" />
-        </view>
       </view>
     </CustomTreeNavBar>
     <!-- 客户列表 -->
-    <view class="customer-list" :style="{ marginTop: navBarHeight + 140 + 'px' }">
+    <view class="customer-list" :style="{ marginTop: navBarHeight + 130 + 'px' }">
       <view class="customer-item" v-for="(item, index) in customerList" :key="item.projectCustomerId">
         <view class="avatar">
           <view class="avatar-text">{{ item.level || "-" }}</view>
@@ -182,7 +202,6 @@ import type { CustomerInterface } from "@/types/customer";
 import dayjs from "dayjs";
 import { getTimeRemaining } from "@/utils/tools";
 import type { OrganizationInfo } from "@/types/user";
-import Tabs from "@/components/Tabs/index.vue";
 
 // 添加防抖定时器变量
 let searchTimer: number | null = null;
@@ -192,24 +211,6 @@ const selectedLocation = ref({
   name: "",
   type: ""
 });
-const tabList = ref([
-  {
-    id: 0,
-    name: "全部"
-  },
-  {
-    id: 1,
-    name: "线索"
-  },
-  {
-    id: 2,
-    name: "到访"
-  },
-  {
-    id: 3,
-    name: "认购"
-  }
-]);
 //加载状态
 const loadStatus = ref<"loading" | "nomore" | "loadmore">("loadmore");
 //页码
@@ -218,15 +219,23 @@ const pageNumber = ref(1);
 const pages = ref(0);
 //搜索关键字、客户名称、手机号
 const commonName = ref("");
+//排序类型
+const sortType = ref<"ALL" | "DATE_TIME" | "LEVEL">("ALL");
+//排序方法
+const sortMethod = ref<"ASC" | "DESC">("ASC");
+
 //开始时间
 const dateTimeBegin = ref();
 const dateTimeEnd = ref();
-//有效性
-const effectiveness = ref<boolean>(false);
-//查询类型
-const queryType = ref<number>(0);
+
 //职业顾问集合
 const realEstateConsultantNames = ref<string[]>([]);
+//客户状态集合
+// NOT_VISIT("未到访"),
+// VISITED("已到访"),
+// REVISIT("复访"),
+// DEAL("已成交");
+const customerStates = ref<string[]>([]);
 //等级集合
 const levels = ref<string[]>([]);
 //筛选
@@ -275,17 +284,27 @@ const handleCommonNameInput = () => {
   }, 300);
 };
 
-// 跳转筛选
-const handleScreenClick = () => {
-  uni.navigateTo({
-    url: `/pages/customer/filter?dateTimeBegin=${dateTimeBegin.value}&dateTimeEnd=${dateTimeEnd.value}&realEstateConsultantNames=${realEstateConsultantNames.value}&levels=${levels.value}`
-  });
+// 排序
+const handleSortClick = (type: "ALL" | "DATE_TIME" | "LEVEL") => {
+  if (sortType.value === type) {
+    sortMethod.value = sortMethod.value === "ASC" ? "DESC" : "ASC";
+  } else {
+    sortType.value = type;
+    sortMethod.value = "ASC";
+  }
+  pageNumber.value = 1;
+  pages.value = 0;
+  customerList.value = [];
+  getCustomerList();
 };
 
-// 查询类型点击
-const handleQueryTypeClick = (id: number) => {
-  queryType.value = id;
-  getCustomerList();
+// 跳转筛选
+const handleScreenClick = () => {
+  console.log(customerStates.value);
+  console.log(levels.value);
+  uni.navigateTo({
+    url: `/pages/customer/filter?dateTimeBegin=${dateTimeBegin.value}&dateTimeEnd=${dateTimeEnd.value}&realEstateConsultantNames=${realEstateConsultantNames.value}&customerStates=${customerStates.value}&levels=${levels.value}`
+  });
 };
 
 // 获取客户列表
@@ -298,17 +317,18 @@ const getCustomerList = async () => {
     const query = {
       pageNumber: pageNumber.value,
       pageSize: 10,
-      queryKey: commonName.value,
-      projectId: selectedLocation.value.id,
-      // selectType: selectedLocation.value.type,
+      commonName: commonName.value,
+      customerStates: customerStates.value,
+      selectId: selectedLocation.value.id,
+      selectType: selectedLocation.value.type,
       dateTimeBegin: dateTimeBegin.value ? dayjs(dateTimeBegin.value).format("YYYY-MM-DD") : "",
       dateTimeEnd: dateTimeEnd.value ? dayjs(dateTimeEnd.value).format("YYYY-MM-DD") : "",
       levels: levels.value,
-      realEstateConsultantNames: realEstateConsultantNames.value,
-      effectiveness: effectiveness.value,
-      queryType: queryType.value
+      sortField: sortType.value,
+      sortMethod: sortMethod.value,
+      realEstateConsultantNames: realEstateConsultantNames.value
     };
-    const res = await requestApi.post("/v2/home/customer/list", {
+    const res = await requestApi.post("/customer/query/customer/list", {
       ...query
     });
 
@@ -352,6 +372,18 @@ const handleWriteFollowUpClick = (item: CustomerInterface) => {
 
 // 客户到访
 const handleCustomerVisitClick = (id: number, phone: string) => {
+  // // 先重置状态
+  // customerId.value = 0;
+  // customerPhone.value = "";
+  // isVisitPopup.value = false;
+
+  // // 然后设置新的值
+  // setTimeout(() => {
+  //   customerId.value = id;
+  //   customerPhone.value = phone;
+  //   isVisitPopup.value = true;
+  // }, 0);
+
   uni.showModal({
     title: "提示",
     content: "是否确认到访?",
@@ -406,6 +438,38 @@ const handleCallClick = (phone: string, id?: number) => {
   });
 };
 
+// 处理弹窗关闭
+// const handleVisitPopupClose = () => {
+//   isVisitPopup.value = false;
+//   setTimeout(() => {
+//     customerId.value = 0;
+//     customerPhone.value = "";
+//   }, 0);
+// };
+
+// 处理确认
+// const visitConfirm = () => {
+//   uni.showToast({
+//     title: "操作成功",
+//     icon: "success"
+//   });
+
+//   // 先关闭弹窗
+//   isVisitPopup.value = false;
+
+//   // 延迟执行其他操作
+//   setTimeout(() => {
+//     customerId.value = 0;
+//     customerPhone.value = "";
+
+//     // 重新加载列表
+//     pageNumber.value = 1;
+//     pages.value = 0;
+//     customerList.value = [];
+//     getCustomerList();
+//   }, 0);
+// };
+
 // 添加接收筛选数据的方法
 const updateFilter = (filterData: any) => {
   console.log(filterData);
@@ -413,6 +477,7 @@ const updateFilter = (filterData: any) => {
   dateTimeBegin.value = filterData.dateTimeBegin;
   dateTimeEnd.value = filterData.dateTimeEnd;
   realEstateConsultantNames.value = filterData.realEstateConsultantNames;
+  customerStates.value = filterData.customerStates;
   levels.value = filterData.levels;
 
   pageNumber.value = 1;
@@ -428,6 +493,7 @@ const reset = () => {
   dateTimeBegin.value = "";
   dateTimeEnd.value = "";
   realEstateConsultantNames.value = [];
+  customerStates.value = [];
   levels.value = [];
 };
 
@@ -537,8 +603,11 @@ onReachBottom(() => {
 .filter-bar {
   width: 100%;
   background-color: #fff;
-  box-sizing: border-box;
-  padding: 10rpx 20rpx;
+  display: flex;
+  justify-content: space-around;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f4f4f4;
+  margin-bottom: 20rpx;
 }
 
 .filter-item {
