@@ -62,7 +62,7 @@
       </view>
     </view>
     <view class="filter-item">
-      <text class="filter-item-title">时间</text>
+      <text class="filter-item-title">最后报备时间</text>
       <view class="filter-item-content">
         <view class="filter-item-content-time" @click="isFollowUpStart = true">
           {{ dateTimeBegin }}
