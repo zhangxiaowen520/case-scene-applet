@@ -1,15 +1,12 @@
 <template>
   <view class="container">
     <template v-for="item in list" :key="item.value">
-      <picker :range="optionsMap" range-key="dataName" @change="onPickerChange($event, item.value)">
-        <form-input
-          :label="item.label"
-          v-model="infoName[item.value]"
-          placeholder="请选择"
-          :showArrow="true"
-          :disabled="true"
-        />
-      </picker>
+      <form-input
+        :label="item.label"
+        v-model="info[item.value]"
+        placeholder="请输入"
+        @input="onPickerChange($event, item.value)"
+      />
     </template>
     <view class="form-btn">
       <up-button color="#2C65F6" type="primary" size="large" :loading="loading" @click="handleSave">保存</up-button>
@@ -66,7 +63,6 @@ const list = ref([
   }
 ]);
 
-const optionsMap = ref<any[]>([]);
 const loading = ref(false);
 
 const info = ref<{
@@ -97,45 +93,10 @@ const info = ref<{
   subjectionWy: "",
   subjectionXs: ""
 });
-const infoName = ref<{
-  associateCh: string;
-  associateQd: string;
-  associateQm: string;
-  associateWy: string;
-  associateXs: string;
-  dataId: string;
-  dataType: string;
-  subjectionCh: string;
-  subjectionQd: string;
-  subjectionQm: string;
-  subjectionWy: string;
-  subjectionXs: string;
-  [key: string]: string;
-}>({
-  associateCh: "",
-  associateQd: "",
-  associateQm: "",
-  associateWy: "",
-  associateXs: "",
-  dataId: "",
-  dataType: "",
-  subjectionCh: "",
-  subjectionQd: "",
-  subjectionQm: "",
-  subjectionWy: "",
-  subjectionXs: ""
-});
-//获取options
-const getOptions = async () => {
-  const res = await requestApi.post("/v2/home/five-in-one-personnel/find/select");
-  if (res.code === 0) {
-    optionsMap.value = res.data;
-  }
-};
 
 const onPickerChange = (e: any, key: string) => {
-  info.value[key] = optionsMap.value[e.detail.value].dataId;
-  infoName.value[key] = optionsMap.value[e.detail.value].dataName;
+  console.log(e);
+  info.value[key] = e.detail.value;
 };
 
 const handleSave = async () => {
@@ -162,10 +123,6 @@ const handleSave = async () => {
     loading.value = false;
   }
 };
-
-onMounted(() => {
-  getOptions();
-});
 </script>
 
 <style lang="scss" scoped>
