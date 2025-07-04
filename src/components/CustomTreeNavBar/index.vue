@@ -43,6 +43,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "update:modelValue", value: number): void;
   (e: "handleSelect", value: OrganizationInfo): void;
+  (e: "showTree", value: boolean): void;
 }>();
 
 const navBarHeight = ref(0);
@@ -63,18 +64,21 @@ onMounted(() => {
 // 确定回调事件
 const handleSelect = (e: any) => {
   if (e.length > 0) {
+    emit("showTree", false);
     emit("handleSelect", e[0]);
   }
 };
 
 // 取消回调事件
 const treeCancel = () => {
+  emit("showTree", false);
   console.log("取消");
 };
 
 // 显示树形选择器
 const showTree = () => {
   tkitree.value._show();
+  emit("showTree", true);
 };
 </script>
 

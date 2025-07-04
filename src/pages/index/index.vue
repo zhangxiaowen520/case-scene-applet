@@ -4,6 +4,7 @@
       :modelName="OrganizationUtil.getOrganizationInfo().name"
       :locations="treeLocations"
       @handleSelect="handleSelect"
+      @showTree="showTree"
     />
     <view class="page-content" :style="{ marginTop: navBarHeight + 26 + 'px' }">
       <template v-if="UserUtil.getDataPermissionType() === 'SELF'">
@@ -12,14 +13,16 @@
         <TaskCard :data="taskData" @click="handleTaskClick" />
       </template>
       <template v-else>
-        <TrendAnalysis
-          v-model:timeStart="trendTimeStart"
-          v-model:timeEnd="trendTimeEnd"
-          v-model:activeId="trendActiveId"
-          v-model:groupType="trendGroupType"
-          :chartData="trendChartData"
-          @fetchData="getTrendAnalysisData"
-        />
+        <view style="min-height: 600rpx" v-show="!isShowTree">
+          <TrendAnalysis
+            v-model:timeStart="trendTimeStart"
+            v-model:timeEnd="trendTimeEnd"
+            v-model:activeId="trendActiveId"
+            v-model:groupType="trendGroupType"
+            :chartData="trendChartData"
+            @fetchData="getTrendAnalysisData"
+          />
+        </view>
       </template>
       <StatisticsCard
         title="业务数据"
@@ -66,6 +69,7 @@ const selectedLocation = ref({
   name: "",
   type: ""
 });
+const isShowTree = ref(false);
 
 const treeLocations = ref<TreeNode[]>([]);
 const navBarHeight = ref(0);
@@ -243,6 +247,10 @@ const getTrendAnalysisData = () => {
     });
 };
 
+const showTree = (value: boolean) => {
+  isShowTree.value = value;
+};
+
 // 选择项目
 const handleSelect = (item: OrganizationInfo) => {
   selectedLocation.value.id = item.id;
@@ -335,10 +343,8 @@ const getProjectTreeInfo = () => {
       treeLocations.value = processedData;
       ProjectTreeUtil.setProjectTree(processedData);
       selectedLocation.value.id = OrganizationUtil.getOrganizationInfo().id || processedData[0].id;
-      selectedLocation.value.name =
-        OrganizationUtil.getOrganizationInfo().name || processedData[0].name;
-      selectedLocation.value.type =
-        OrganizationUtil.getOrganizationInfo().type || processedData[0].type;
+      selectedLocation.value.name = OrganizationUtil.getOrganizationInfo().name || processedData[0].name;
+      selectedLocation.value.type = OrganizationUtil.getOrganizationInfo().type || processedData[0].type;
       if (!OrganizationUtil.getOrganizationInfo().id) {
         OrganizationUtil.setOrganizationInfo(processedData[0]);
       }
