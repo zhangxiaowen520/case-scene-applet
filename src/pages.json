@@ -270,6 +270,12 @@
       }
     },
     {
+      "path": "pages/my/missionIssuance",
+      "style": {
+        "navigationBarTitleText": "任务下发"
+      }
+    },
+    {
       "path": "pages/message/index",
       "style": {
         "navigationBarTitleText": "消息通知"
@@ -338,8 +344,8 @@
         "path": "pages/my/fiveInOnePersonnel"
       },
       {
-        "name": "预计到访客户",
-        "path": "pages/index/effectiveVisitChildTable"
+        "name": "任务下发",
+        "path": "pages/my/missionIssuance"
       }
     ]
   },

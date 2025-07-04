@@ -478,13 +478,13 @@ const getBusinessData = () => {
             url: "/pages/index/subscriptionTable"
           },
           {
-            value: Number((res.data.signAmount / 10000).toFixed(2)),
+            value: res.data.signAmount || 0,
             label: "签约",
             unit: "万元",
             url: "/pages/index/signTable"
           },
           {
-            value: Number((res.data.refundAmount / 10000).toFixed(2)),
+            value: res.data.refundAmount || 0,
             label: "回款",
             unit: "万元"
           }

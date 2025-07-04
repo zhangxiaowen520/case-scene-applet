@@ -25,7 +25,7 @@
 
       <!-- 操作按钮列表 -->
       <view class="action-list">
-        <view class="action-item" v-if="UserUtil.getDataPermissionType() === 'PROJECT'" @tap="handleResetPassword">
+        <view class="action-item" v-if="UserUtil.getDataPermissionType() === 'PROJECT'" @tap="handleMissionIssuance">
           <text>任务下发</text>
         </view>
         <view
@@ -68,6 +68,11 @@ const handleResetPassword = () => {
 // 五位一体人员填报
 const handleFiveInOnePersonnel = () => {
   uni.navigateTo({ url: "/pages/my/fiveInOnePersonnel" });
+};
+
+// 任务下发
+const handleMissionIssuance = () => {
+  uni.navigateTo({ url: "/pages/my/missionIssuance" });
 };
 
 // 退出登录
