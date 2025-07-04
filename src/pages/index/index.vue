@@ -343,8 +343,10 @@ const getProjectTreeInfo = () => {
       treeLocations.value = processedData;
       ProjectTreeUtil.setProjectTree(processedData);
       selectedLocation.value.id = OrganizationUtil.getOrganizationInfo().id || processedData[0].id;
-      selectedLocation.value.name = OrganizationUtil.getOrganizationInfo().name || processedData[0].name;
-      selectedLocation.value.type = OrganizationUtil.getOrganizationInfo().type || processedData[0].type;
+      selectedLocation.value.name =
+        OrganizationUtil.getOrganizationInfo().name || processedData[0].name;
+      selectedLocation.value.type =
+        OrganizationUtil.getOrganizationInfo().type || processedData[0].type;
       if (!OrganizationUtil.getOrganizationInfo().id) {
         OrganizationUtil.setOrganizationInfo(processedData[0]);
       }
@@ -359,6 +361,7 @@ const getProjectTreeInfo = () => {
       } else {
         getBusinessData();
         handleQuantityTabChange(0);
+        getTrendAnalysisData();
       }
     } else {
       uni.showToast({ title: res.msg, icon: "none" });
@@ -504,51 +507,58 @@ const handleQuantityTabChange = (index: number | string) => {
       type: selectedLocation.value.type,
       queryType: index
     })
-    .then(res => {
-      if (res.code === 0) {
-        // @ts-expect-error 忽略索引类型检查
-        quantityTabIndex.value = index;
-        quantityData.value = [
-          {
-            value: res.data.numberOfValidClue || 0,
-            label: "有效线索数",
-            unit: "组",
-            url: "/pages/index/effectiveClueTable"
-          },
-          {
-            value: res.data.numberOfValidCustomer || 0,
-            label: "有效客户数",
-            unit: "组",
-            url: "/pages/index/effectiveCustomerTable"
-          },
-          {
-            value: res.data.expectedToVisit || 0,
-            label: `${getCurrentMonthDay()}预计到访`,
-            unit: "组",
-            url: "/pages/index/effectiveVisitTable"
-          },
-          {
-            value: res.data.expectedToSubscription || 0,
-            label: `${getCurrentMonthDay()}预计认购`,
-            unit: "组",
-            url: "/pages/index/effectiveSubscriptionTable"
-          },
-          {
-            value: res.data.expectedToSign || 0,
-            label: `${getCurrentMonthDay()}预计签约`,
-            unit: "组",
-            url: "/pages/index/effectiveSignTable"
-          },
-          {
-            value: res.data.numberOfPersonnel || 0,
-            label: "人员数量",
-            unit: "组",
-            url: "/pages/index/effectivePersonnelTable"
-          }
-        ];
+    .then(
+      res => {
+        if (res.code === 0) {
+          // @ts-expect-error 忽略索引类型检查
+          quantityTabIndex.value = index;
+          quantityData.value = [
+            {
+              value: res.data.numberOfValidClue || 0,
+              label: "有效线索数",
+              unit: "组",
+              url: "/pages/index/effectiveClueTable"
+            },
+            {
+              value: res.data.numberOfValidCustomer || 0,
+              label: "有效客户数",
+              unit: "组",
+              url: "/pages/index/effectiveCustomerTable"
+            },
+            {
+              value: res.data.expectedToVisit || 0,
+              label: `${getCurrentMonthDay()}预计到访`,
+              unit: "组",
+              url: "/pages/index/effectiveVisitTable"
+            },
+            {
+              value: res.data.expectedToSubscription || 0,
+              label: `${getCurrentMonthDay()}预计认购`,
+              unit: "组",
+              url: "/pages/index/effectiveSubscriptionTable"
+            },
+            {
+              value: res.data.expectedToSign || 0,
+              label: `${getCurrentMonthDay()}预计签约`,
+              unit: "组",
+              url: "/pages/index/effectiveSignTable"
+            },
+            {
+              value: res.data.numberOfPersonnel || 0,
+              label: "人员数量",
+              unit: "组",
+              url: "/pages/index/effectivePersonnelTable"
+            }
+          ];
+          uni.hideLoading();
+        } else {
+          uni.hideLoading();
+        }
+      },
+      () => {
         uni.hideLoading();
       }
-    });
+    );
 };
 
 //预计相关数据页面 - 跳转
