@@ -1,15 +1,28 @@
 <template>
   <view class="container">
+    <template v-if="optionsMap.length >= 2">
+      <picker :range="optionsMap" range-key="dataName" @change="onPickerChange($event, 'dataId')">
+        <form-input
+          label="所属片区/项目"
+          v-model="dataName"
+          placeholder="请选择"
+          disabled
+          show-arrow
+        />
+      </picker>
+    </template>
     <template v-for="item in list" :key="item.value">
       <form-input
         :label="item.label"
         v-model="info[item.value]"
         placeholder="请输入"
-        @input="onPickerChange($event, item.value)"
+        @input="onInputChange($event, item.value)"
       />
     </template>
     <view class="form-btn">
-      <up-button color="#2C65F6" type="primary" size="large" :loading="loading" @click="handleSave">保存</up-button>
+      <up-button color="#2C65F6" type="primary" size="large" :loading="loading" @click="handleSave"
+        >保存</up-button
+      >
     </view>
   </view>
 </template>
@@ -19,6 +32,10 @@ import { requestApi } from "@/api/request";
 import FormInput from "@/components/From/FormInput.vue";
 import { OrganizationUtil } from "@/utils/auth";
 import { onMounted, ref } from "vue";
+
+const dataId = ref("");
+const dataName = ref("");
+const dataType = ref("");
 
 const list = ref([
   {
@@ -63,6 +80,8 @@ const list = ref([
   }
 ]);
 
+const optionsMap = ref<any[]>([]);
+
 const loading = ref(false);
 
 const info = ref<{
@@ -94,19 +113,35 @@ const info = ref<{
   subjectionXs: ""
 });
 
+//获取options
+const getOptions = async () => {
+  const res = await requestApi.post("/v2/home/five-in-one-personnel/find/select");
+  if (res.code === 0) {
+    optionsMap.value = res.data;
+    dataId.value = optionsMap.value[0].dataId;
+    dataName.value = optionsMap.value[0].dataName;
+    dataType.value = optionsMap.value[0].dataType;
+  }
+};
+
 const onPickerChange = (e: any, key: string) => {
-  console.log(e);
+  const item = optionsMap.value[e.detail.value];
+  dataId.value = item.dataId;
+  dataName.value = item.dataName;
+  dataType.value = item.dataType;
+};
+
+const onInputChange = (e: any, key: string) => {
   info.value[key] = e.detail.value;
 };
 
 const handleSave = async () => {
-  console.log(info.value);
   loading.value = true;
   //@ts-ignore
-  info.value.dataId = OrganizationUtil.getOrganizationInfo().id;
-  info.value.dataType = OrganizationUtil.getOrganizationInfo().type;
   const res = await requestApi.post("/v2/home/five-in-one-personnel/edit", {
-    ...info.value
+    ...info.value,
+    dataId: OrganizationUtil.getOrganizationInfo().id,
+    dataType: OrganizationUtil.getOrganizationInfo().type
   });
   if (res.code === 0) {
     uni.showToast({
@@ -114,7 +149,9 @@ const handleSave = async () => {
       icon: "success"
     });
     loading.value = false;
-    uni.navigateBack();
+    setTimeout(() => {
+      uni.navigateBack();
+    }, 1000);
   } else {
     uni.showToast({
       title: res.msg,
@@ -123,6 +160,10 @@ const handleSave = async () => {
     loading.value = false;
   }
 };
+
+onMounted(() => {
+  getOptions();
+});
 </script>
 
 <style lang="scss" scoped>

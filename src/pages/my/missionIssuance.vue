@@ -19,7 +19,9 @@
       </view>
     </view>
     <view class="form-btn">
-      <up-button color="#2C65F6" type="primary" size="large" :loading="loading" @click="handleSave">保存</up-button>
+      <up-button color="#2C65F6" type="primary" size="large" :loading="loading" @click="handleSave"
+        >保存</up-button
+      >
     </view>
   </view>
 </template>
@@ -44,7 +46,13 @@ type Person = {
 };
 
 const peopleList = ref<Person[]>([
-  { projectGroupUserId: "", projectGroupUserName: "王芳", callCustomerNumber: "", followUpNumber: "", clueNumber: "" }
+  {
+    projectGroupUserId: "",
+    projectGroupUserName: "王芳",
+    callCustomerNumber: "",
+    followUpNumber: "",
+    clueNumber: ""
+  }
 ]);
 
 const loading = ref(false);
@@ -76,7 +84,9 @@ const handleSave = async () => {
         icon: "success"
       });
       loading.value = false;
-      uni.navigateBack();
+      setTimeout(() => {
+        uni.navigateBack();
+      }, 1000);
     } else {
       uni.showToast({
         title: res.msg,
