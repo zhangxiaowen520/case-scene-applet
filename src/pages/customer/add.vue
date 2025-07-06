@@ -4,10 +4,44 @@
       <form-input label="客户姓名" v-model="name" required placeholder="请输入" />
       <form-input label="客户电话" v-model="phone" required placeholder="请输入" />
       <view @click="handleGenderChange">
-        <form-input label="客户性别" v-model="sex" required placeholder="请选择" disabled show-arrow />
+        <form-input
+          label="客户性别"
+          v-model="sex"
+          required
+          placeholder="请选择"
+          disabled
+          show-arrow
+        />
+      </view>
+      <view @click="handleHasOldCustomerChange">
+        <form-input
+          label="是否是老客户介绍"
+          v-model="hasOldCustomerName"
+          required
+          placeholder="请选择"
+          disabled
+          show-arrow
+        />
+      </view>
+      <view @click="handleSourceChannelChange">
+        <form-input
+          label="来源渠道"
+          v-model="sourceChannelName"
+          required
+          placeholder="请选择"
+          disabled
+          show-arrow
+        />
       </view>
       <view class="form-btn">
-        <up-button color="#2C65F6" type="primary" size="large" :loading="loading" @click="handleSave">保存</up-button>
+        <up-button
+          color="#2C65F6"
+          type="primary"
+          size="large"
+          :loading="loading"
+          @click="handleSave"
+          >保存</up-button
+        >
       </view>
     </view>
   </view>
@@ -23,11 +57,43 @@ const name = ref("");
 const phone = ref("");
 const sex = ref("");
 const loading = ref(false);
+// 来源渠道,1:销售，2:策划，3:渠道，4：全民，5:物业
+const sourceChannel = ref<number>(0);
+const sourceChannelName = ref("");
+const hasOldCustomer = ref<number>(0);
+const hasOldCustomerName = ref("");
+
+const handleSourceChannelChange = () => {
+  uni.showActionSheet({
+    itemList: ["销售", "策划", "渠道", "全民", "物业"],
+    success: res => {
+      const map = {
+        0: "销售",
+        1: "策划",
+        2: "渠道",
+        3: "全民",
+        4: "物业"
+      };
+      sourceChannelName.value = map[res.tapIndex as keyof typeof map];
+      sourceChannel.value = res.tapIndex + 1;
+    }
+  });
+};
+
+const handleHasOldCustomerChange = () => {
+  uni.showActionSheet({
+    itemList: ["是", "否"],
+    success: res => {
+      hasOldCustomer.value = res.tapIndex === 0 ? 1 : 0;
+      hasOldCustomerName.value = res.tapIndex === 0 ? "是" : "否";
+    }
+  });
+};
 
 const handleGenderChange = () => {
   uni.showActionSheet({
     itemList: ["男", "女"],
-    success: (res) => {
+    success: res => {
       sex.value = res.tapIndex === 0 ? "男" : "女";
     }
   });
@@ -43,16 +109,21 @@ const handleSave = () => {
   }
   loading.value = true;
   uni.requestSubscribeMessage({
-    tmplIds: ["randtQk6QHnQwZZ3LIcpBfQcTwsoHbXEaoontsm6BlY", "4GRYF8ESsWqnlU8l86glyaTqH5y73SNhz2XEK2sWu3A"],
-    success: (success) => {
+    tmplIds: [
+      "randtQk6QHnQwZZ3LIcpBfQcTwsoHbXEaoontsm6BlY",
+      "4GRYF8ESsWqnlU8l86glyaTqH5y73SNhz2XEK2sWu3A"
+    ],
+    success: success => {
       requestApi
         .post("/national/marketing/report", {
           projectId: ProjectUtil.getProjectInfo().projectId,
           name: name.value,
           phone: phone.value,
-          sex: sex.value
+          sex: sex.value,
+          sourceChannel: sourceChannel.value,
+          hasOldCustomer: hasOldCustomer.value
         })
-        .then((res) => {
+        .then(res => {
           if (res.code === 0) {
             uni.showToast({
               title: "保存成功",
@@ -72,7 +143,7 @@ const handleSave = () => {
           loading.value = false;
         });
     },
-    fail: (err) => {
+    fail: err => {
       console.log(err);
     }
   });

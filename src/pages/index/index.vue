@@ -11,6 +11,7 @@
         <MessageNotification :data="messageList" />
         <CustomerPool :data="poolData" @click="handlePoolClick" />
         <TaskCard :data="taskData" @click="handleTaskClick" />
+        <TodayTaskCard :data="currentTaskData" @click="handleTaskClick" />
       </template>
       <template v-else>
         <view style="min-height: 600rpx" v-show="!isShowTree">
@@ -59,6 +60,7 @@ import { getCurrentMonthDay } from "@/utils/tools";
 import dayjs from "dayjs";
 import type { OrganizationInfo } from "@/types/user";
 import TrendAnalysis from "./components/trend-analysis.vue";
+import TodayTaskCard from "@/components/TodayTaskCard/index.vue";
 
 type TreeNode = OrganizationInfo & {
   typeKey?: string;
@@ -86,6 +88,33 @@ const taskData = ref([
     name: "复访跟进",
     current: 0,
     total: 0
+  }
+]);
+// 今日任务
+const currentTaskData = ref([
+  {
+    type: 3,
+    firstName: "客",
+    name: "Call客数量",
+    current: 0,
+    total: 0,
+    bgColor: "#c946ea"
+  },
+  {
+    type: 4,
+    firstName: "线",
+    name: "线索数量",
+    current: 0,
+    total: 0,
+    bgColor: "#ff4d4f"
+  },
+  {
+    type: 5,
+    firstName: "跟",
+    name: "跟进数量",
+    current: 0,
+    total: 0,
+    bgColor: "#eabe1e"
   }
 ]);
 // 业务数据
@@ -595,6 +624,45 @@ const getFollowTask = () => {
     });
 };
 
+//  跟进任务（条数）
+const getCurrentTask = () => {
+  requestApi
+    .post("/v2/home/current-task/info", {
+      id: selectedLocation.value.id,
+      type: selectedLocation.value.type
+    })
+    .then(res => {
+      if (res.code === 0) {
+        currentTaskData.value = [
+          {
+            type: 3,
+            firstName: "客",
+            name: "Call客数量",
+            current: res.data.callCustomerCompleteNumber || 0,
+            total: res.data.callCustomerNumber || 0,
+            bgColor: "#c946ea"
+          },
+          {
+            type: 4,
+            firstName: "线",
+            name: "线索数量",
+            current: res.data.clueCompleteNumber || 0,
+            total: res.data.clueNumber || 0,
+            bgColor: "#ff4d4f"
+          },
+          {
+            type: 5,
+            firstName: "跟",
+            name: "跟进数量",
+            current: res.data.followUpCompleteNumber || 0,
+            total: res.data.followUpNumber || 0,
+            bgColor: "#eabe1e"
+          }
+        ];
+      }
+    });
+};
+
 onMounted(() => {
   // 获取导航栏高度
   const menuButtonInfo = uni.getMenuButtonBoundingClientRect();
@@ -618,6 +686,7 @@ onShow(() => {
         getMessage();
         getPoolTotal();
         getFollowTask();
+        getCurrentTask();
         getBusinessData();
         handleQuantityTabChange(0);
       } else {

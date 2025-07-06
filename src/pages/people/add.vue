@@ -4,16 +4,64 @@
       <form-input label="客户姓名" v-model="name" required placeholder="请输入" />
       <form-input label="客户电话" v-model="phone" required placeholder="请输入" />
       <view @click="handleGenderChange">
-        <form-input label="客户性别" v-model="sex" required placeholder="请选择" disabled show-arrow />
+        <form-input
+          label="客户性别"
+          v-model="sex"
+          required
+          placeholder="请选择"
+          disabled
+          show-arrow
+        />
+      </view>
+      <view @click="handleHasOldCustomerChange">
+        <form-input
+          label="是否是老客户介绍"
+          v-model="hasOldCustomerName"
+          required
+          placeholder="请选择"
+          disabled
+          show-arrow
+        />
+      </view>
+      <view @click="handleSourceChannelChange">
+        <form-input
+          label="来源渠道"
+          v-model="sourceChannelName"
+          required
+          placeholder="请选择"
+          disabled
+          show-arrow
+        />
       </view>
       <view @click="handleProjectChange">
-        <form-input label="报备项目" v-model="projectName" required placeholder="请选择" disabled show-arrow />
+        <form-input
+          label="报备项目"
+          v-model="projectName"
+          required
+          placeholder="请选择"
+          disabled
+          show-arrow
+        />
       </view>
       <view v-if="isChannelKing" @click="handleStoreChange">
-        <form-input label="组织架构" v-model="selectedStore" required placeholder="请选择" disabled show-arrow />
+        <form-input
+          label="组织架构"
+          v-model="selectedStore"
+          required
+          placeholder="请选择"
+          disabled
+          show-arrow
+        />
       </view>
       <view class="form-btn">
-        <up-button color="#2C65F6" type="primary" size="large" :loading="loading" @click="handleSave">保存</up-button>
+        <up-button
+          color="#2C65F6"
+          type="primary"
+          size="large"
+          :loading="loading"
+          @click="handleSave"
+          >保存</up-button
+        >
       </view>
     </view>
     <multi-select
@@ -21,7 +69,8 @@
       title="选择报备项目"
       :options="projectOptions"
       :value="selectedProjects"
-      @confirm="handleProjectConfirm"></multi-select>
+      @confirm="handleProjectConfirm"
+    ></multi-select>
     <view class="report-overlay" v-if="showReportStatus">
       <view class="report-table">
         <view class="table-header">
@@ -33,11 +82,18 @@
           <view class="table-row" v-for="item in reportStatus" :key="item.projectId">
             <text class="body-cell">{{ item.projectName }}</text>
             <text class="body-cell">{{ item.description }}</text>
-            <text class="body-cell" :class="getStatusClass(item.status)">{{ item.statusText }}</text>
+            <text class="body-cell" :class="getStatusClass(item.status)">{{
+              item.statusText
+            }}</text>
           </view>
         </view>
         <view class="table-footer">
-          <up-button v-if="isAllCompleted" color="#2C65F6" type="primary" size="normal" @click="closeReportStatus"
+          <up-button
+            v-if="isAllCompleted"
+            color="#2C65F6"
+            type="primary"
+            size="normal"
+            @click="closeReportStatus"
             >关闭</up-button
           >
         </view>
@@ -77,6 +133,13 @@ const reportStoreName = ref("");
 const isChannelKing = ref(false);
 
 const showReportStatus = ref(false);
+
+// 来源渠道,1:销售，2:策划，3:渠道，4：全民，5:物业
+const sourceChannel = ref<number>(0);
+const sourceChannelName = ref("");
+const hasOldCustomer = ref<number>(0);
+const hasOldCustomerName = ref("");
+
 const reportStatus = ref<
   Array<{
     projectId: number;
@@ -88,8 +151,35 @@ const reportStatus = ref<
 >([]);
 
 const isAllCompleted = computed(() => {
-  return reportStatus.value.every((item) => item.status === "success" || item.status === "failed");
+  return reportStatus.value.every(item => item.status === "success" || item.status === "failed");
 });
+
+const handleSourceChannelChange = () => {
+  uni.showActionSheet({
+    itemList: ["销售", "策划", "渠道", "全民", "物业"],
+    success: res => {
+      const map = {
+        0: "销售",
+        1: "策划",
+        2: "渠道",
+        3: "全民",
+        4: "物业"
+      };
+      sourceChannelName.value = map[res.tapIndex as keyof typeof map];
+      sourceChannel.value = res.tapIndex + 1;
+    }
+  });
+};
+
+const handleHasOldCustomerChange = () => {
+  uni.showActionSheet({
+    itemList: ["是", "否"],
+    success: res => {
+      hasOldCustomer.value = res.tapIndex === 0 ? 1 : 0;
+      hasOldCustomerName.value = res.tapIndex === 0 ? "是" : "否";
+    }
+  });
+};
 
 const getStatusClass = (status: string) => {
   return {
@@ -107,7 +197,7 @@ const closeReportStatus = () => {
 };
 
 const getProjectList = () => {
-  requestApi.post("/national/marketing/find/all/project").then((res) => {
+  requestApi.post("/national/marketing/find/all/project").then(res => {
     if (res.code === 0) {
       projectOptions.value = res.data.map((item: { id: number; name: string }) => ({
         label: item.name,
@@ -139,7 +229,7 @@ const getCustomerStoreList = async () => {
 const handleGenderChange = () => {
   uni.showActionSheet({
     itemList: ["男", "女"],
-    success: (res) => {
+    success: res => {
       sex.value = res.tapIndex === 0 ? "男" : "女";
     }
   });
@@ -192,6 +282,8 @@ const handleSave = async () => {
         phone: phone.value,
         sex: sex.value,
         projectId: pid,
+        sourceChannel: sourceChannel.value,
+        hasOldCustomer: hasOldCustomer.value,
         ...(isChannelKing.value && { reportStore: reportStoreName.value })
       };
 

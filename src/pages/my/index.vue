@@ -25,12 +25,19 @@
 
       <!-- 操作按钮列表 -->
       <view class="action-list">
-        <view class="action-item" v-if="UserUtil.getDataPermissionType() === 'PROJECT'" @tap="handleMissionIssuance">
+        <view
+          class="action-item"
+          v-if="UserUtil.getDataPermissionType() === 'PROJECT'"
+          @tap="handleMissionIssuance"
+        >
           <text>任务下发</text>
         </view>
         <view
           class="action-item"
-          v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'MANAGER'"
+          v-if="
+            UserUtil.getDataPermissionType() === 'PROJECT' ||
+            UserUtil.getDataPermissionType() === 'MANAGER'
+          "
           @tap="handleFiveInOnePersonnel"
         >
           <text>五位一体人员填报</text>
@@ -47,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { FilterUtil, OrganizationUtil, ProjectUtil, TokenUtil, UserUtil } from "@/utils/auth";
+import { UserUtil } from "@/utils/auth";
 import { onMounted, ref } from "vue";
 
 const navBarHeight = ref(0);
