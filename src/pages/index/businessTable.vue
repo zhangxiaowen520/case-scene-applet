@@ -215,7 +215,7 @@ const getBusinessInfo = () => {
       type: OrganizationUtil.getOrganizationInfo().type
     })
     .then(res => {
-      if (res.code === 0) {
+      if (res.code === 0 && res.data.length > 0) {
         tableData.value = res.data;
         uni.hideLoading();
         typeOptions.value = res.data.map((item: any) => ({

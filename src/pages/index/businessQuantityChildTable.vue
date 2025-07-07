@@ -331,7 +331,7 @@ const getBusinessInfo = () => {
       type: props.dataType
     })
     .then(res => {
-      if (res.code === 0) {
+      if (res.code === 0 && res.data.length > 0) {
         tableData.value = res.data;
         typeOptions.value = res.data.map((item: any) => ({
           label: item.dataName,

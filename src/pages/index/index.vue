@@ -54,7 +54,14 @@ import TaskCard from "@/components/TaskCard/index.vue";
 import StatisticsCard from "@/components/StatisticsCard/index.vue";
 import CustomerPool from "@/components/CustomerPool/index.vue";
 import { requestApi } from "@/api/request";
-import { OrganizationUtil, ProjectTreeUtil, ProjectUtil, TokenUtil, UserUtil } from "@/utils/auth";
+import {
+  OrganizationUtil,
+  ProjectTreeUtil,
+  ProjectUtil,
+  TokenUtil,
+  UserUtil,
+  QuantityTabUtil
+} from "@/utils/auth";
 import { onShow } from "@dcloudio/uni-app";
 import { getCurrentMonthDay } from "@/utils/tools";
 import dayjs from "dayjs";
@@ -164,7 +171,7 @@ const statisticsData = ref([
 //统计-总计数据
 const quantityData = ref<any[]>([]);
 //统计-总计index
-const quantityTabIndex = ref(0);
+const quantityTabIndex = ref(QuantityTabUtil.getQuantityTabIndex());
 //统计-总计tabs
 const quantityTabs = ref([
   {
@@ -303,10 +310,10 @@ const handleSelect = (item: OrganizationInfo) => {
     getPoolTotal();
     getFollowTask();
     getBusinessData();
-    handleQuantityTabChange(0);
+    handleQuantityTabChange(QuantityTabUtil.getQuantityTabIndex());
   } else {
     getBusinessData();
-    handleQuantityTabChange(0);
+    handleQuantityTabChange(QuantityTabUtil.getQuantityTabIndex());
     getTrendAnalysisData();
   }
 };
@@ -392,10 +399,10 @@ const getProjectTreeInfo = () => {
         getPoolTotal();
         getFollowTask();
         getBusinessData();
-        handleQuantityTabChange(0);
+        handleQuantityTabChange(QuantityTabUtil.getQuantityTabIndex());
       } else {
         getBusinessData();
-        handleQuantityTabChange(0);
+        handleQuantityTabChange(QuantityTabUtil.getQuantityTabIndex());
         getTrendAnalysisData();
       }
     } else {
@@ -541,6 +548,7 @@ const getBusinessData = () => {
 const handleQuantityTabChange = (index: number | string) => {
   // @ts-expect-error 忽略索引类型检查
   quantityTabIndex.value = index;
+  QuantityTabUtil.setQuantityTabIndex(Number(index));
   uni.showLoading({
     title: "加载中..."
   });
@@ -700,11 +708,11 @@ onShow(() => {
         getFollowTask();
         getCurrentTask();
         getBusinessData();
-        handleQuantityTabChange(0);
+        handleQuantityTabChange(QuantityTabUtil.getQuantityTabIndex());
       } else {
         getTrendAnalysisData();
         getBusinessData();
-        handleQuantityTabChange(0);
+        handleQuantityTabChange(QuantityTabUtil.getQuantityTabIndex());
       }
     }
   }

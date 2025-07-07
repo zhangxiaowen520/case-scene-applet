@@ -246,6 +246,8 @@ const queryType = ref<number>(0);
 const realEstateConsultantIds = ref<string[]>([]);
 //等级集合
 const levels = ref<string[]>([]);
+//来源渠道
+const sourceChannel = ref<number[]>([]);
 //筛选
 const hasScreenFilter = ref(false);
 //客户列表
@@ -295,13 +297,15 @@ const handleCommonNameInput = () => {
 // 跳转筛选
 const handleScreenClick = () => {
   uni.navigateTo({
-    url: `/pages/customer/filter?dateTimeBegin=${dateTimeBegin.value}&dateTimeEnd=${dateTimeEnd.value}&realEstateConsultantIds=${realEstateConsultantIds.value}&levels=${levels.value}&isValid=${effectiveness.value}`
+    url: `/pages/customer/filter?dateTimeBegin=${dateTimeBegin.value}&dateTimeEnd=${dateTimeEnd.value}&realEstateConsultantIds=${realEstateConsultantIds.value}&levels=${levels.value}&isValid=${effectiveness.value}&sourceChannel=${sourceChannel.value}`
   });
 };
 
 // 查询类型点击
 const handleQueryTypeClick = (id: number) => {
-  reset();
+  customerList.value = [];
+  pageNumber.value = 1;
+  pages.value = 0;
   queryType.value = id;
   getCustomerList();
 };
@@ -324,7 +328,8 @@ const getCustomerList = async () => {
       levels: levels.value,
       realEstateConsultantIds: realEstateConsultantIds.value,
       effectiveness: effectiveness.value,
-      queryType: queryType.value
+      queryType: queryType.value,
+      sourceChannel: sourceChannel.value
     };
     const res = await requestApi.post("/v2/home/customer/list", {
       ...query
@@ -426,14 +431,13 @@ const handleCallClick = (phone: string, id?: number) => {
 
 // 添加接收筛选数据的方法
 const updateFilter = (filterData: any) => {
-  console.log(filterData);
   hasScreenFilter.value = !filterData.isReset;
   dateTimeBegin.value = filterData.dateTimeBegin;
   dateTimeEnd.value = filterData.dateTimeEnd;
   realEstateConsultantIds.value = filterData.realEstateConsultantIds;
   levels.value = filterData.levels;
   effectiveness.value = filterData.isValid;
-
+  sourceChannel.value = filterData.sourceChannel;
   pageNumber.value = 1;
   pages.value = 0;
   customerList.value = [];
@@ -449,6 +453,7 @@ const reset = () => {
   realEstateConsultantIds.value = [];
   levels.value = [];
   effectiveness.value = true;
+  sourceChannel.value = [];
 };
 
 onMounted(() => {

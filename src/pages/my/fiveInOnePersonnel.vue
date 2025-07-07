@@ -121,6 +121,7 @@ const getOptions = async () => {
     dataId.value = optionsMap.value[0].dataId;
     dataName.value = optionsMap.value[0].dataName;
     dataType.value = optionsMap.value[0].dataType;
+    info.value = res.data[0];
   }
 };
 

@@ -10,7 +10,13 @@
           @timeStart="handleBeginDate"
           @timeEnd="handleEndDate"
         />
-        <img class="export-icon" src="@/static/images/export.png" alt="" srcset="" @click="exportClick" />
+        <img
+          class="export-icon"
+          src="@/static/images/export.png"
+          alt=""
+          srcset=""
+          @click="exportClick"
+        />
       </view>
     </view>
     <basic-table :columns="columns" :data="tableData" :min-item-width="150" align="center">
@@ -30,31 +36,41 @@
           {{ scope.quantityXs }}
         </view>
         <!-- 销售（转化率） -->
-        <view v-else-if="column.fieldName === 'conversionRateXs'"> {{ scope.conversionRateXs }}% </view>
+        <view v-else-if="column.fieldName === 'conversionRateXs'">
+          {{ scope.conversionRateXs }}%
+        </view>
         <!-- 策划（数量） -->
         <view v-else-if="column.fieldName === 'quantityCh'">
           {{ scope.quantityCh }}
         </view>
         <!-- 策划（转化率） -->
-        <view v-else-if="column.fieldName === 'conversionRateCh'"> {{ scope.conversionRateXs }}% </view>
+        <view v-else-if="column.fieldName === 'conversionRateCh'">
+          {{ scope.conversionRateXs }}%
+        </view>
         <!-- 渠道（数量） -->
         <view v-else-if="column.fieldName === 'quantityQd'">
           {{ scope.quantityQd }}
         </view>
         <!-- 渠道（转化率） -->
-        <view v-else-if="column.fieldName === 'conversionRateQd'"> {{ scope.conversionRateXs }}% </view>
+        <view v-else-if="column.fieldName === 'conversionRateQd'">
+          {{ scope.conversionRateXs }}%
+        </view>
         <!-- 全民（数量） -->
         <view v-else-if="column.fieldName === 'quantityQm'">
           {{ scope.quantityQm }}
         </view>
         <!-- 全民（转化率） -->
-        <view v-else-if="column.fieldName === 'conversionRateQm'"> {{ scope.conversionRateXs }}% </view>
+        <view v-else-if="column.fieldName === 'conversionRateQm'">
+          {{ scope.conversionRateXs }}%
+        </view>
         <!-- 物业（数量） -->
         <view v-else-if="column.fieldName === 'quantityWy'">
           {{ scope.quantityWy }}
         </view>
         <!-- 物业（转化率） -->
-        <view v-else-if="column.fieldName === 'conversionRateWy'"> {{ scope.conversionRateXs }}% </view>
+        <view v-else-if="column.fieldName === 'conversionRateWy'">
+          {{ scope.conversionRateXs }}%
+        </view>
       </template>
     </basic-table>
   </view>
@@ -173,7 +189,7 @@ const getBusinessInfo = () => {
       type: props.dataType
     })
     .then(res => {
-      if (res.code === 0) {
+      if (res.code === 0 && res.data.length > 0) {
         tableData.value = res.data;
         typeOptions.value = res.data.map((item: any) => ({
           label: item.dataName,

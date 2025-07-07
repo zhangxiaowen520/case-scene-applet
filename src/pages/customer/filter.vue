@@ -62,6 +62,27 @@
       </view>
     </view>
     <view class="filter-item">
+      <text class="filter-item-title">来源渠道</text>
+      <view class="filter-item-content">
+        <text
+          class="filter-item-content-item"
+          :class="{ active: selectedSourceChannels.length === 0 }"
+          @click="allToggleSourceChannel"
+        >
+          全部
+        </text>
+        <text
+          v-for="(channel, index) in sourceChannelList"
+          :key="index"
+          class="filter-item-content-item"
+          :class="{ active: selectedSourceChannels.includes(channel.value) }"
+          @click="toggleSourceChannel(channel.value)"
+        >
+          {{ channel.label }}
+        </text>
+      </view>
+    </view>
+    <view class="filter-item">
       <text class="filter-item-title">最后报备时间</text>
       <view class="filter-item-content">
         <view class="filter-item-content-time" @click="isFollowUpStart = true">
@@ -110,13 +131,13 @@ const props = defineProps<{
   realEstateConsultantIds: string;
   levels: string;
   isValid: boolean;
+  sourceChannel: string;
 }>();
-
+console.log(props);
 //职业顾问列表
 const userList = ref<any[]>([]);
 // 经纪人列表
 const levelList = ref<string[]>(["A", "B", "C", "D"]);
-
 //选择的职业顾问
 const selectedUsers = ref<string[]>(
   props.realEstateConsultantIds ? props.realEstateConsultantIds.split(",") : []
@@ -125,6 +146,20 @@ const selectedUsers = ref<string[]>(
 const selectedLevels = ref<string[]>(props.levels ? props.levels.split(",") : []);
 //选择的有效性
 const selectedValidity = ref<boolean>(props.isValid);
+
+// 来源渠道列表
+const sourceChannelList = ref([
+  { label: "销售", value: 1 },
+  { label: "策划", value: 2 },
+  { label: "渠道", value: 3 },
+  { label: "全民", value: 4 },
+  { label: "物业", value: 5 }
+]);
+
+// 选择的来源渠道
+const selectedSourceChannels = ref<number[]>(
+  props.sourceChannel ? props.sourceChannel.split(",").map(Number) : []
+);
 
 //跟进时间
 const dateTimeBegin = ref(
@@ -220,6 +255,21 @@ const toggleValidity = (value: boolean) => {
   selectedValidity.value = value;
 };
 
+// 全选/取消全选来源渠道
+const allToggleSourceChannel = () => {
+  selectedSourceChannels.value = [];
+};
+
+// 切换来源渠道
+const toggleSourceChannel = (value: number) => {
+  const idx = selectedSourceChannels.value.indexOf(value);
+  if (idx > -1) {
+    selectedSourceChannels.value.splice(idx, 1);
+  } else {
+    selectedSourceChannels.value.push(value);
+  }
+};
+
 // 重置
 const reset = () => {
   const filterData = {
@@ -229,12 +279,14 @@ const reset = () => {
     dateTimeEnd: "",
     isReset: true,
     selectId: ProjectUtil.getProjectInfo().projectId,
-    isValid: null
+    isValid: null,
+    sourceChannel: []
   };
   FilterUtil.setFilterData(filterData as any);
   selectedUsers.value = [];
   selectedLevels.value = [];
   selectedValidity.value = false;
+  selectedSourceChannels.value = [];
   uni.navigateBack();
 };
 
@@ -247,7 +299,8 @@ const handleConfirm = () => {
     isReset: false,
     selectId: OrganizationUtil.getOrganizationInfo().id,
     levels: selectedLevels.value,
-    isValid: selectedValidity.value
+    isValid: selectedValidity.value,
+    sourceChannel: selectedSourceChannels.value
   };
   console.log(filterData);
 

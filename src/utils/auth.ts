@@ -8,6 +8,7 @@ const PROJECT_INFO_KEY = "case_scene_projectInfo";
 const FILTER_DATA_KEY = "case_scene_filterData";
 const ORGANIZATION_INFO_KEY = "case_scene_organizationInfo";
 const PROJECT_TREE_KEY = "case_scene_projectTree";
+const QUANTITY_TAB_INDEX_KEY = "case_scene_quantityTabIndex";
 /**
  * Token管理工具类
  */
@@ -167,5 +168,31 @@ export const ProjectTreeUtil = {
 
   removeProjectTree(): void {
     uni.removeStorageSync(PROJECT_TREE_KEY);
+  }
+};
+
+/**
+ * 统计Tab索引管理工具类
+ */
+export const QuantityTabUtil = {
+  /**
+   * 获取统计Tab索引
+   */
+  getQuantityTabIndex(): number {
+    return uni.getStorageSync(QUANTITY_TAB_INDEX_KEY) || 0;
+  },
+
+  /**
+   * 设置统计Tab索引
+   */
+  setQuantityTabIndex(index: number): void {
+    uni.setStorageSync(QUANTITY_TAB_INDEX_KEY, index);
+  },
+
+  /**
+   * 删除统计Tab索引
+   */
+  removeQuantityTabIndex(): void {
+    uni.removeStorageSync(QUANTITY_TAB_INDEX_KEY);
   }
 };

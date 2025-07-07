@@ -10,7 +10,13 @@
           @timeStart="handleBeginDate"
           @timeEnd="handleEndDate"
         />
-        <img class="export-icon" src="@/static/images/export.png" alt="" srcset="" @click="exportClick" />
+        <img
+          class="export-icon"
+          src="@/static/images/export.png"
+          alt=""
+          srcset=""
+          @click="exportClick"
+        />
       </view>
     </view>
     <basic-table :columns="columns" :data="tableData" :min-item-width="100" align="center">
@@ -24,7 +30,9 @@
           {{ scope.clue.quantity }}
         </view>
         <!-- 线索转化率 -->
-        <view v-else-if="column.fieldName === 'clueConversionRate'"> {{ scope.clue.conversionRate }}% </view>
+        <view v-else-if="column.fieldName === 'clueConversionRate'">
+          {{ scope.clue.conversionRate }}%
+        </view>
         <!-- 新访数量 -->
         <view v-else-if="column.fieldName === 'subscriptionQuantity'">
           {{ scope.subscription.quantity }}
@@ -38,9 +46,13 @@
           {{ scope.revisit.quantity }}
         </view>
         <!-- 复访率 -->
-        <view v-else-if="column.fieldName === 'revisitRate'"> {{ scope.revisit.revisitRate }}% </view>
+        <view v-else-if="column.fieldName === 'revisitRate'">
+          {{ scope.revisit.revisitRate }}%
+        </view>
         <!-- 跟进及时率 -->
-        <view v-else-if="column.fieldName === 'followUpTimelyRate'"> {{ scope.revisit.followUpTimelyRate }}% </view>
+        <view v-else-if="column.fieldName === 'followUpTimelyRate'">
+          {{ scope.revisit.followUpTimelyRate }}%
+        </view>
         <!-- 新访成交率 -->
         <view v-else-if="column.fieldName === 'newVisitTransactionRate'">
           {{ scope.subscription.newVisitTransactionRate }}%
@@ -54,7 +66,9 @@
           {{ scope.subscription.averageNumberOfRevisits }}
         </view>
         <!-- 老带新率 -->
-        <view v-else-if="column.fieldName === 'oldBringsNewRate'"> {{ scope.subscription.oldBringsNewRate }}% </view>
+        <view v-else-if="column.fieldName === 'oldBringsNewRate'">
+          {{ scope.subscription.oldBringsNewRate }}%
+        </view>
         <!-- 复访成交率 -->
         <view v-else-if="column.fieldName === 'revisitTransactionRate'">
           {{ scope.subscription.revisitTransactionRate }}%
@@ -64,7 +78,9 @@
           {{ scope.sign.amount }}
         </view>
         <!-- 签约及时率 -->
-        <view v-else-if="column.fieldName === 'timelySigningRate'"> {{ scope.sign.timelySigningRate }}% </view>
+        <view v-else-if="column.fieldName === 'timelySigningRate'">
+          {{ scope.sign.timelySigningRate }}%
+        </view>
         <!-- 签约周期 -->
         <view v-else-if="column.fieldName === 'signingCycle'">
           {{ scope.sign.signingCycle }}
@@ -201,7 +217,7 @@ const getBusinessInfo = () => {
       type: props.dataType
     })
     .then(res => {
-      if (res.code === 0) {
+      if (res.code === 0 && res.data.length > 0) {
         tableData.value = res.data;
         typeOptions.value = res.data.map((item: any) => ({
           label: item.dataName,

@@ -214,7 +214,7 @@ const getCustomerList = async () => {
       ...query
     });
 
-    if (res.code === 0) {
+    if (res.code === 0 && res.data.length > 0) {
       if (pageNumber.value === 1) {
         customerList.value = res.data.list;
       } else {

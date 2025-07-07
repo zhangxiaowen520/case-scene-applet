@@ -4,7 +4,13 @@
     <view class="table-select" :style="{ marginTop: navBarHeight + 26 + 'px' }">
       <CustomSelect v-model="typeId" :options="typeOptions" @change="handleTypeChange" />
       <view class="table-select-time">
-        <img class="export-icon" src="@/static/images/export.png" alt="" srcset="" @click="exportClick" />
+        <img
+          class="export-icon"
+          src="@/static/images/export.png"
+          alt=""
+          srcset=""
+          @click="exportClick"
+        />
       </view>
     </view>
     <basic-table :columns="columns" :data="tableData" :min-item-width="150" align="center">
@@ -104,7 +110,7 @@ const getBusinessInfo = () => {
       type: props.dataType
     })
     .then(res => {
-      if (res.code === 0) {
+      if (res.code === 0 && res.data.length > 0) {
         tableData.value = res.data;
         typeOptions.value = res.data.map((item: any) => ({
           label: item.dataName,
