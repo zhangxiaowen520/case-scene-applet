@@ -21,6 +21,19 @@
       }
     },
     {
+      "path": "pages/index/businessQuantityTable",
+      "style": {
+        "navigationBarTitleText": "统计"
+      }
+    },
+    {
+      "path": "pages/index/businessQuantityChildTable",
+      "style": {
+        "navigationBarTitleText": "统计-区域",
+        "navigationStyle": "custom"
+      }
+    },
+    {
       "path": "pages/index/businessTable",
       "style": {
         "navigationBarTitleText": "业务数据"

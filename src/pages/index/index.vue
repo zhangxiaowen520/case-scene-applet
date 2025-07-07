@@ -153,6 +153,12 @@ const statisticsData = ref([
     value: 0,
     label: "回款",
     unit: "万元"
+  },
+  {
+    value: "--",
+    label: "分渠道统计",
+    unit: "",
+    url: "/pages/index/businessQuantityTable"
   }
 ]);
 //统计-总计数据
@@ -519,6 +525,12 @@ const getBusinessData = () => {
             value: res.data.refundAmount || 0,
             label: "回款",
             unit: "万元"
+          },
+          {
+            value: "--",
+            label: "分渠道统计",
+            unit: "",
+            url: "/pages/index/businessQuantityTable"
           }
         ];
       }
@@ -527,6 +539,8 @@ const getBusinessData = () => {
 
 // 统计-总计tab切换
 const handleQuantityTabChange = (index: number | string) => {
+  // @ts-expect-error 忽略索引类型检查
+  quantityTabIndex.value = index;
   uni.showLoading({
     title: "加载中..."
   });
@@ -539,8 +553,6 @@ const handleQuantityTabChange = (index: number | string) => {
     .then(
       res => {
         if (res.code === 0) {
-          // @ts-expect-error 忽略索引类型检查
-          quantityTabIndex.value = index;
           quantityData.value = [
             {
               value: res.data.numberOfValidClue || 0,
