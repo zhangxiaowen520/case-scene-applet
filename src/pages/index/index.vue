@@ -11,7 +11,7 @@
         <MessageNotification :data="messageList" />
         <CustomerPool :data="poolData" @click="handlePoolClick" />
         <TaskCard :data="taskData" @click="handleTaskClick" />
-        <TodayTaskCard :data="currentTaskData" @click="handleTaskClick" />
+        <TodayTaskCard :data="currentTaskData" />
       </template>
       <template v-else>
         <view style="min-height: 600rpx" v-show="!isShowTree">
