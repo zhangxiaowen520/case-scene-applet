@@ -100,25 +100,6 @@
         <view v-else-if="column.fieldName === 'subscriptionQuantity'">
           {{ scope.subscription.quantity }}
         </view>
-        <!-- 签约 -->
-        <view v-else-if="column.fieldName === 'signQuantityXs'">
-          {{ scope.sign.quantityXs }}
-        </view>
-        <view v-else-if="column.fieldName === 'signQuantityCh'">
-          {{ scope.sign.quantityCh }}
-        </view>
-        <view v-else-if="column.fieldName === 'signQuantityQd'">
-          {{ scope.sign.quantityQd }}
-        </view>
-        <view v-else-if="column.fieldName === 'signQuantityQm'">
-          {{ scope.sign.quantityQm }}
-        </view>
-        <view v-else-if="column.fieldName === 'signQuantityWy'">
-          {{ scope.sign.quantityWy }}
-        </view>
-        <view v-else-if="column.fieldName === 'signQuantity'">
-          {{ scope.sign.quantity }}
-        </view>
       </template>
     </basic-table>
   </view>
@@ -283,37 +264,6 @@ const columns = [
     fieldName: "subscriptionQuantity",
     fieldDesc: "认购（总计）",
     fieldType: "slot"
-  },
-  // 签约数据列
-  {
-    fieldName: "signQuantityXs",
-    fieldDesc: "签约（销售）",
-    fieldType: "slot"
-  },
-  {
-    fieldName: "signQuantityCh",
-    fieldDesc: "签约（策划）",
-    fieldType: "slot"
-  },
-  {
-    fieldName: "signQuantityQd",
-    fieldDesc: "签约（渠道）",
-    fieldType: "slot"
-  },
-  {
-    fieldName: "signQuantityQm",
-    fieldDesc: "签约（全民）",
-    fieldType: "slot"
-  },
-  {
-    fieldName: "signQuantityWy",
-    fieldDesc: "签约（物业）",
-    fieldType: "slot"
-  },
-  {
-    fieldName: "signQuantity",
-    fieldDesc: "签约（总计）",
-    fieldType: "slot"
   }
 ];
 //获取列表数据
@@ -386,7 +336,7 @@ const exportClick = () => {
   };
   // 显示加载提示
   uni.showLoading({ title: "正在导出..." });
-  requestApi.post("/v2/home/business/info/export", { ...params }).then(res => {
+  requestApi.post("/v2/home/business/info/export/quantity", { ...params }).then(res => {
     if (res.code === 0) {
       downloadFileClick(res.data);
     } else {

@@ -63,12 +63,8 @@ const list = ref([
     value: "associateQd"
   },
   {
-    label: "全民隶属本项目",
-    value: "subjectionQm"
-  },
-  {
-    label: "全民关联本项目",
-    value: "associateQm"
+    label: "全民",
+    value: "qmNumber"
   },
   {
     label: "物业隶属本项目",
@@ -87,30 +83,28 @@ const loading = ref(false);
 const info = ref<{
   associateCh: string;
   associateQd: string;
-  associateQm: string;
   associateWy: string;
   associateXs: string;
   dataId: string;
   dataType: string;
   subjectionCh: string;
   subjectionQd: string;
-  subjectionQm: string;
   subjectionWy: string;
   subjectionXs: string;
+  qmNumber: string;
   [key: string]: string;
 }>({
   associateCh: "",
   associateQd: "",
-  associateQm: "",
   associateWy: "",
   associateXs: "",
   dataId: "",
   dataType: "",
   subjectionCh: "",
   subjectionQd: "",
-  subjectionQm: "",
   subjectionWy: "",
-  subjectionXs: ""
+  subjectionXs: "",
+  qmNumber: ""
 });
 
 //获取options
@@ -130,6 +124,7 @@ const onPickerChange = (e: any, key: string) => {
   dataId.value = item.dataId;
   dataName.value = item.dataName;
   dataType.value = item.dataType;
+  info.value = optionsMap.value[e.detail.value];
 };
 
 const onInputChange = (e: any, key: string) => {
@@ -141,8 +136,8 @@ const handleSave = async () => {
   //@ts-ignore
   const res = await requestApi.post("/v2/home/five-in-one-personnel/edit", {
     ...info.value,
-    dataId: OrganizationUtil.getOrganizationInfo().id,
-    dataType: OrganizationUtil.getOrganizationInfo().type
+    dataId: dataId.value,
+    dataType: dataType.value
   });
   if (res.code === 0) {
     uni.showToast({
