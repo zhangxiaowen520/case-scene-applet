@@ -38,6 +38,14 @@
         <view v-else-if="column.fieldName === 'summaryQm'">
           {{ scope.summaryQm }}
         </view>
+        <!-- 物业 -->
+        <view v-else-if="column.fieldName === 'summaryWy'">
+          {{ scope.summaryWy }}
+        </view>
+        <!-- 最后更新时间 -->
+        <view v-else-if="column.fieldName === 'updateTime'">
+          {{ scope.updateTime }}
+        </view>
       </template>
     </basic-table>
   </view>
@@ -90,6 +98,16 @@ const columns = [
   {
     fieldName: "summaryQm",
     fieldDesc: "全民",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "summaryWy",
+    fieldDesc: "物业",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "updateTime",
+    fieldDesc: "最后更新时间",
     fieldType: "slot"
   }
 ];

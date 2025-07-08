@@ -73,6 +73,12 @@ type TreeNode = OrganizationInfo & {
   typeKey?: string;
 };
 
+const handlePoolAdd = () => {
+  uni.switchTab({
+    url: `/pages/customer/index?type=1`
+  });
+};
+
 const selectedLocation = ref({
   id: 1,
   name: "",
@@ -162,7 +168,7 @@ const statisticsData = ref([
     unit: "万元"
   },
   {
-    value: "--",
+    value: "",
     label: "分渠道统计",
     unit: "",
     url: "/pages/index/businessQuantityTable"
@@ -309,6 +315,7 @@ const handleSelect = (item: OrganizationInfo) => {
     getMessage();
     getPoolTotal();
     getFollowTask();
+    getCurrentTask();
     getBusinessData();
     handleQuantityTabChange(QuantityTabUtil.getQuantityTabIndex());
   } else {
@@ -398,6 +405,7 @@ const getProjectTreeInfo = () => {
         getMessage();
         getPoolTotal();
         getFollowTask();
+        getCurrentTask();
         getBusinessData();
         handleQuantityTabChange(QuantityTabUtil.getQuantityTabIndex());
       } else {
@@ -534,7 +542,7 @@ const getBusinessData = () => {
             unit: "万元"
           },
           {
-            value: "--",
+            value: "",
             label: "分渠道统计",
             unit: "",
             url: "/pages/index/businessQuantityTable"

@@ -17,6 +17,7 @@
         v-model="info[item.value]"
         placeholder="请输入"
         @input="onInputChange($event, item.value)"
+        type="number"
       />
     </template>
     <view class="form-btn">

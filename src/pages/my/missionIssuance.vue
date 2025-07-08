@@ -12,7 +12,7 @@
             @input="e => handleInput(idx, col.key as keyof Person, (e.target as HTMLInputElement)?.value || '')"
             placeholder="请输入"
             class="table-input"
-            type="text"
+            type="number"
             placeholder-style="font-size: 24rpx;"
           />
         </view>
@@ -31,10 +31,10 @@ import { requestApi } from "@/api/request";
 import { onMounted, ref } from "vue";
 
 const columns = [
-  { label: "置业顾问", key: "name" },
-  { label: "Call客", key: "call" },
-  { label: "跟进", key: "follow" },
-  { label: "线索获取", key: "clue" }
+  { label: "置业顾问", key: "projectGroupUserName" },
+  { label: "Call客", key: "callCustomerNumber" },
+  { label: "跟进", key: "followUpNumber" },
+  { label: "线索获取", key: "clueNumber" }
 ] as const;
 
 type Person = {

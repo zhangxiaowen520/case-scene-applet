@@ -23,13 +23,13 @@
     {
       "path": "pages/index/businessQuantityTable",
       "style": {
-        "navigationBarTitleText": "统计"
+        "navigationBarTitleText": "分渠道统计"
       }
     },
     {
       "path": "pages/index/businessQuantityChildTable",
       "style": {
-        "navigationBarTitleText": "统计-区域",
+        "navigationBarTitleText": "分渠道统计-区域",
         "navigationStyle": "custom"
       }
     },

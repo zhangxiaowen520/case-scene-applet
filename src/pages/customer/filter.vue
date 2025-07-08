@@ -1,6 +1,12 @@
 <template>
   <view class="filter-container">
-    <view class="filter-item" v-if="OrganizationUtil.getOrganizationInfo().type === 'PROJECT'">
+    <view
+      class="filter-item"
+      v-if="
+        OrganizationUtil.getOrganizationInfo().type === 'PROJECT' &&
+        UserUtil.getDataPermissionType() !== 'SELF'
+      "
+    >
       <text class="filter-item-title">置业顾问</text>
       <view class="filter-item-content">
         <text
