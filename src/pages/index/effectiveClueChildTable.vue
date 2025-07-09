@@ -20,7 +20,10 @@
           {{ scope.dataName }}
         </view>
         <!-- 有效线索 -->
-        <view v-else-if="column.fieldName === 'quantity'">
+        <view
+          v-else-if="column.fieldName === 'quantity'"
+          @click="handleQuantityClick(scope, index)"
+        >
           {{ scope.quantity }}
         </view>
       </template>
@@ -92,32 +95,44 @@ const getBusinessInfo = () => {
       uni.hideLoading();
     });
 };
-const handleNameClick = (scope: any, index: number) => {
-  if (scope.dataType === null) {
-    const sourceChannel =
-      QuantityTabUtil.getQuantityTabIndex() === 0 ? [] : [QuantityTabUtil.getQuantityTabIndex()];
-    FilterUtil.setFilterData({
-      realEstateConsultantIds: [Number(scope.dataId)],
-      levels: [],
-      dateTimeBegin: dayjs().subtract(30, "day").format("YYYY-MM-DD"),
-      dateTimeEnd: dayjs().format("YYYY-MM-DD"),
-      isValid: false,
-      sourceChannel: sourceChannel,
-      isReset: false,
-      selectId: props.dataId,
-      queryType: 1
-    });
-    OrganizationUtil.setOrganizationInfo({
-      id: props.dataId,
-      name: props.dataName,
-      type: props.dataType,
-      isProject: props.dataType === "PROJECT",
-      children: []
-    });
-    uni.switchTab({
-      url: "/pages/customer/index"
-    });
+
+const handleQuantityClick = (scope: any, index: number) => {
+  let dataId = scope.dataId;
+  let dataName = scope.dataName;
+  let dataType = scope.dataType;
+  if (scope.dataId === "0" || scope.dataType === null) {
+    dataId = props.dataId;
+    dataName = props.dataName;
+    dataType = props.dataType;
   }
+
+  const sourceChannel =
+    QuantityTabUtil.getQuantityTabIndex() === 0 ? [] : [QuantityTabUtil.getQuantityTabIndex()];
+  const realEstateConsultantIds = scope.dataType === null ? [Number(scope.dataId)] : [];
+  FilterUtil.setFilterData({
+    realEstateConsultantIds: realEstateConsultantIds,
+    levels: [],
+    dateTimeBegin: dayjs().subtract(30, "day").format("YYYY-MM-DD"),
+    dateTimeEnd: dayjs().format("YYYY-MM-DD"),
+    isValid: true,
+    sourceChannel: sourceChannel,
+    isReset: false,
+    selectId: dataId,
+    queryType: 1
+  });
+  OrganizationUtil.setOrganizationInfo({
+    id: dataId,
+    name: dataName,
+    type: dataType,
+    isProject: dataType === "PROJECT",
+    children: []
+  });
+  uni.switchTab({
+    url: "/pages/customer/index"
+  });
+};
+
+const handleNameClick = (scope: any, index: number) => {
   if (scope.dataName === "合计" || scope.dataType === null) {
     return;
   }

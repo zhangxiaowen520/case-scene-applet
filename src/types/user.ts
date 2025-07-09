@@ -72,6 +72,7 @@ export interface FilterData {
   isValid: boolean;
   sourceChannel: number[];
   queryType?: number;
+  selectType?: string;
 }
 
 export interface OrganizationInfo {

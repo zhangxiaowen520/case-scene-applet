@@ -609,7 +609,7 @@ const handleQuantityTabChange = (index: number | string) => {
           ];
           if (UserUtil.getDataPermissionType() === "SELF") {
             //删除人员数量
-            quantityData.value.splice(4, 1);
+            quantityData.value.splice(5, 1);
           }
           uni.hideLoading();
         } else {

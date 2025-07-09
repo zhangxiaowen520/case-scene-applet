@@ -19,7 +19,10 @@
           {{ scope.dataName }}
         </view>
         <!-- 有效线索数 -->
-        <view v-else-if="column.fieldName === 'quantity'">
+        <view
+          v-else-if="column.fieldName === 'quantity'"
+          @click="handleQuantityClick(scope, index)"
+        >
           {{ scope.quantity }}
         </view>
       </template>
@@ -85,30 +88,47 @@ const getBusinessInfo = () => {
     });
 };
 const handleNameClick = (scope: any, index: number) => {
-  if (scope.dataType === null) {
-    const sourceChannel =
-      QuantityTabUtil.getQuantityTabIndex() === 0 ? [] : [QuantityTabUtil.getQuantityTabIndex()];
-    FilterUtil.setFilterData({
-      realEstateConsultantIds: [Number(scope.dataId)],
-      levels: [],
-      dateTimeBegin: dayjs().subtract(30, "day").format("YYYY-MM-DD"),
-      dateTimeEnd: dayjs().format("YYYY-MM-DD"),
-      isValid: false,
-      sourceChannel: sourceChannel,
-      isReset: false,
-      selectId: OrganizationUtil.getOrganizationInfo().id,
-      queryType: 1
-    });
-    uni.switchTab({
-      url: "/pages/customer/index"
-    });
-  }
   if (scope.dataName === "合计" || scope.dataType === null) {
     return;
   }
-
   uni.navigateTo({
     url: `/pages/index/effectiveClueChildTable?dataId=${scope.dataId}&dataName=${scope.dataName}&dataType=${scope.dataType}&queryType=${props.queryType}`
+  });
+};
+
+const handleQuantityClick = (scope: any, index: number) => {
+  let dataId = scope.dataId;
+  let dataName = scope.dataName;
+  let dataType = scope.dataType;
+  if (scope.dataId === "0" || scope.dataType === null) {
+    dataId = OrganizationUtil.getOrganizationInfo().id;
+    dataName = OrganizationUtil.getOrganizationInfo().name;
+    dataType = OrganizationUtil.getOrganizationInfo().type;
+  }
+
+  const sourceChannel =
+    QuantityTabUtil.getQuantityTabIndex() === 0 ? [] : [QuantityTabUtil.getQuantityTabIndex()];
+  const realEstateConsultantIds = scope.dataType === null ? [Number(scope.dataId)] : [];
+  FilterUtil.setFilterData({
+    realEstateConsultantIds: realEstateConsultantIds,
+    levels: [],
+    dateTimeBegin: dayjs().subtract(30, "day").format("YYYY-MM-DD"),
+    dateTimeEnd: dayjs().format("YYYY-MM-DD"),
+    isValid: true,
+    sourceChannel: sourceChannel,
+    isReset: false,
+    selectId: dataId,
+    queryType: 1
+  });
+  OrganizationUtil.setOrganizationInfo({
+    id: dataId,
+    name: dataName,
+    type: dataType,
+    isProject: dataType === "PROJECT",
+    children: []
+  });
+  uni.switchTab({
+    url: "/pages/customer/index"
   });
 };
 // 选择类型
