@@ -302,6 +302,7 @@ const handleCommonNameInput = () => {
 
 // 跳转筛选
 const handleScreenClick = () => {
+  console.log(effectiveness.value, "effectiveness");
   uni.navigateTo({
     url: `/pages/customer/filter?dateTimeBegin=${dateTimeBegin.value}&dateTimeEnd=${dateTimeEnd.value}&realEstateConsultantIds=${realEstateConsultantIds.value}&levels=${levels.value}&isValid=${effectiveness.value}&sourceChannel=${sourceChannel.value}`
   });
@@ -478,6 +479,7 @@ onShow(() => {
   }
   const filterData = FilterUtil.getFilterData();
   if (filterData && filterData.selectId === selectedLocation.value.id) {
+    queryType.value = filterData.queryType || 0;
     updateFilter(filterData);
   } else {
     hasScreenFilter.value = false;

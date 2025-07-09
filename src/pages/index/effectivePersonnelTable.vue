@@ -22,29 +22,49 @@
         <view v-else-if="column.fieldName === 'summary'">
           {{ scope.summary }}
         </view>
-        <!-- 销售 -->
-        <view v-else-if="column.fieldName === 'summaryXs'">
-          {{ scope.summaryXs }}
+        <!-- 销售隶属 -->
+        <view v-else-if="column.fieldName === 'subjectionXs'">
+          {{ scope.subjectionXs }}
         </view>
-        <!-- 策划 -->
-        <view v-else-if="column.fieldName === 'summaryCh'">
-          {{ scope.summaryCh }}
+        <!-- 销售关联 -->
+        <view v-else-if="column.fieldName === 'associateXs'">
+          {{ scope.associateXs }}
         </view>
-        <!-- 渠道 -->
-        <view v-else-if="column.fieldName === 'summaryQd'">
-          {{ scope.summaryQd }}
+        <!-- 策划隶属 -->
+        <view v-else-if="column.fieldName === 'subjectionCh'">
+          {{ scope.subjectionCh }}
         </view>
-        <!-- 全民 -->
-        <view v-else-if="column.fieldName === 'summaryQm'">
-          {{ scope.summaryQm }}
+        <!-- 策划关联 -->
+        <view v-else-if="column.fieldName === 'associateCh'">
+          {{ scope.associateCh }}
         </view>
-        <!-- 物业 -->
-        <view v-else-if="column.fieldName === 'summaryWy'">
-          {{ scope.summaryWy }}
+        <!-- 渠道隶属 -->
+        <view v-else-if="column.fieldName === 'subjectionQd'">
+          {{ scope.subjectionQd }}
+        </view>
+        <!-- 渠道关联 -->
+        <view v-else-if="column.fieldName === 'associateQd'">
+          {{ scope.associateQd }}
+        </view>
+        <!-- 物业隶属 -->
+        <view v-else-if="column.fieldName === 'subjectionWy'">
+          {{ scope.subjectionWy }}
+        </view>
+        <!-- 物业关联 -->
+        <view v-else-if="column.fieldName === 'associateWy'">
+          {{ scope.associateWy }}
+        </view>
+        <!-- 全民隶属 -->
+        <view v-else-if="column.fieldName === 'subjectionQm'">
+          {{ scope.subjectionQm }}
+        </view>
+        <!-- 全民关联 -->
+        <view v-else-if="column.fieldName === 'associateQm'">
+          {{ scope.associateQm }}
         </view>
         <!-- 最后更新时间 -->
         <view v-else-if="column.fieldName === 'updateTime'">
-          {{ scope.updateTime }}
+          {{ scope.updateTime || "--" }}
         </view>
       </template>
     </basic-table>
@@ -81,34 +101,60 @@ const columns = [
     fieldType: "slot"
   },
   {
-    fieldName: "summaryXs",
-    fieldDesc: "销售",
+    fieldName: "subjectionXs",
+    fieldDesc: "销售隶属",
     fieldType: "slot"
   },
   {
-    fieldName: "summaryCh",
-    fieldDesc: "策划",
+    fieldName: "associateXs",
+    fieldDesc: "销售关联",
     fieldType: "slot"
   },
   {
-    fieldName: "summaryQd",
-    fieldDesc: "渠道",
+    fieldName: "subjectionCh",
+    fieldDesc: "策划隶属",
     fieldType: "slot"
   },
   {
-    fieldName: "summaryQm",
-    fieldDesc: "全民",
+    fieldName: "associateCh",
+    fieldDesc: "策划关联",
     fieldType: "slot"
   },
   {
-    fieldName: "summaryWy",
-    fieldDesc: "物业",
+    fieldName: "subjectionQd",
+    fieldDesc: "渠道隶属",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "associateQd",
+    fieldDesc: "渠道关联",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "subjectionWy",
+    fieldDesc: "物业隶属",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "associateWy",
+    fieldDesc: "物业关联",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "subjectionQm",
+    fieldDesc: "全民隶属",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "associateQm",
+    fieldDesc: "全民关联",
     fieldType: "slot"
   },
   {
     fieldName: "updateTime",
     fieldDesc: "最后更新时间",
-    fieldType: "slot"
+    fieldType: "slot",
+    width: 180
   }
 ];
 //获取列表数据

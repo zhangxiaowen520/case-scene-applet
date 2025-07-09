@@ -20,8 +20,8 @@
           v-for="(user, index) in userList"
           :key="index"
           class="filter-item-content-item"
-          :class="{ active: selectedUsers.includes(user?.user?.id) }"
-          @click="toggleUser(user?.user?.id)"
+          :class="{ active: selectedUsers.includes(user.user.id) }"
+          @click="toggleUser(user.user.id)"
         >
           {{ user?.user?.name }}
         </text>
@@ -136,22 +136,22 @@ const props = defineProps<{
   dateTimeEnd: string;
   realEstateConsultantIds: string;
   levels: string;
-  isValid: boolean;
+  isValid: string;
   sourceChannel: string;
 }>();
-console.log(props);
+
 //职业顾问列表
 const userList = ref<any[]>([]);
 // 经纪人列表
 const levelList = ref<string[]>(["A", "B", "C", "D"]);
 //选择的职业顾问
-const selectedUsers = ref<string[]>(
-  props.realEstateConsultantIds ? props.realEstateConsultantIds.split(",") : []
+const selectedUsers = ref<number[]>(
+  props.realEstateConsultantIds ? props.realEstateConsultantIds.split(",").map(Number) : []
 );
 //选择的等级
 const selectedLevels = ref<string[]>(props.levels ? props.levels.split(",") : []);
 //选择的有效性
-const selectedValidity = ref<boolean>(props.isValid);
+const selectedValidity = ref<boolean>(props.isValid === "true");
 
 // 来源渠道列表
 const sourceChannelList = ref([
@@ -216,7 +216,9 @@ const getUserList = () => {
     })
     .then(res => {
       if (res.code === 0) {
+        console.log("userList response:", res.data);
         userList.value = res.data;
+        console.log("selectedUsers:", selectedUsers.value);
       }
     });
 };
@@ -235,7 +237,7 @@ const allToggleUser = () => {
   selectedUsers.value = [];
 };
 
-const toggleUser = (id: string) => {
+const toggleUser = (id: number) => {
   const idx = selectedUsers.value.indexOf(id);
   if (idx > -1) {
     selectedUsers.value.splice(idx, 1);
@@ -257,8 +259,8 @@ const toggleLevel = (levels: string) => {
   }
 };
 
-const toggleValidity = (value: boolean) => {
-  selectedValidity.value = value;
+const toggleValidity = (newValue: boolean) => {
+  selectedValidity.value = newValue;
 };
 
 // 全选/取消全选来源渠道
@@ -279,13 +281,13 @@ const toggleSourceChannel = (value: number) => {
 // 重置
 const reset = () => {
   const filterData = {
-    realEstateConsultantNames: [],
+    realEstateConsultantIds: [],
     levels: [],
     dateTimeBegin: "",
     dateTimeEnd: "",
     isReset: true,
     selectId: ProjectUtil.getProjectInfo().projectId,
-    isValid: null,
+    isValid: false,
     sourceChannel: []
   };
   FilterUtil.setFilterData(filterData as any);
@@ -308,8 +310,6 @@ const handleConfirm = () => {
     isValid: selectedValidity.value,
     sourceChannel: selectedSourceChannels.value
   };
-  console.log(filterData);
-
   FilterUtil.setFilterData(filterData as any);
   uni.navigateBack();
 };

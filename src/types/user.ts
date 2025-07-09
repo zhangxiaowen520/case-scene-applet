@@ -4,7 +4,12 @@
  * SELF: 个人(顾问)
  * NATIONAL_MARKETING: 全民营销
  */
-export type DataPermissionType = "PROJECT" | "SELF" | "NATIONAL_MARKETING" | "CHANNEL_KING" | "MANAGER";
+export type DataPermissionType =
+  | "PROJECT"
+  | "SELF"
+  | "NATIONAL_MARKETING"
+  | "CHANNEL_KING"
+  | "MANAGER";
 
 /*
  * 角色信息
@@ -58,16 +63,15 @@ export interface MessageInfo {
 }
 
 export interface FilterData {
-  realEstateConsultantName: string;
-  reportBroker: string;
-  reportStore: string;
-  followUpTimeBegin: string;
-  followUpTimeEnd: string;
-  lastVisitTimeBegin: string;
-  lastVisitTimeEnd: string;
+  realEstateConsultantIds: number[];
+  levels: string[];
+  dateTimeBegin: string;
+  dateTimeEnd: string;
   isReset: boolean;
-  projectId: number;
   selectId: number;
+  isValid: boolean;
+  sourceChannel: number[];
+  queryType?: number;
 }
 
 export interface OrganizationInfo {

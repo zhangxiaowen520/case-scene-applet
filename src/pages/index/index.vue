@@ -607,6 +607,10 @@ const handleQuantityTabChange = (index: number | string) => {
               url: "/pages/index/effectivePersonnelTable"
             }
           ];
+          if (UserUtil.getDataPermissionType() === "SELF") {
+            //删除人员数量
+            quantityData.value.splice(4, 1);
+          }
           uni.hideLoading();
         } else {
           uni.hideLoading();

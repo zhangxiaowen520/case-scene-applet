@@ -31,7 +31,8 @@
 import { requestApi } from "@/api/request";
 import BasicTable from "@/components/basic-table/basic-table.vue";
 import CustomSelect from "@/components/CustomSelect/index.vue";
-import { OrganizationUtil } from "@/utils/auth";
+import { FilterUtil, OrganizationUtil, QuantityTabUtil } from "@/utils/auth";
+import dayjs from "dayjs";
 import { onMounted, ref } from "vue";
 
 const props = defineProps<{
@@ -84,6 +85,24 @@ const getBusinessInfo = () => {
     });
 };
 const handleNameClick = (scope: any, index: number) => {
+  if (scope.dataType === null) {
+    const sourceChannel =
+      QuantityTabUtil.getQuantityTabIndex() === 0 ? [] : [QuantityTabUtil.getQuantityTabIndex()];
+    FilterUtil.setFilterData({
+      realEstateConsultantIds: [Number(scope.dataId)],
+      levels: [],
+      dateTimeBegin: dayjs().subtract(30, "day").format("YYYY-MM-DD"),
+      dateTimeEnd: dayjs().format("YYYY-MM-DD"),
+      isValid: false,
+      sourceChannel: sourceChannel,
+      isReset: false,
+      selectId: OrganizationUtil.getOrganizationInfo().id,
+      queryType: 1
+    });
+    uni.switchTab({
+      url: "/pages/customer/index"
+    });
+  }
   if (scope.dataName === "合计" || scope.dataType === null) {
     return;
   }

@@ -9,6 +9,7 @@ const FILTER_DATA_KEY = "case_scene_filterData";
 const ORGANIZATION_INFO_KEY = "case_scene_organizationInfo";
 const PROJECT_TREE_KEY = "case_scene_projectTree";
 const QUANTITY_TAB_INDEX_KEY = "case_scene_quantityTabIndex";
+const CUSTOMER_QUERY_DATA_KEY = "case_scene_customerQueryData";
 /**
  * Token管理工具类
  */

@@ -34,9 +34,11 @@ import BasicTable from "@/components/basic-table/basic-table.vue";
 import CustomSelect from "@/components/CustomSelect/index.vue";
 import { onMounted, ref } from "vue";
 import CustomHeader from "@/components/CustomHeader/index.vue";
+import { FilterUtil, OrganizationUtil, QuantityTabUtil } from "@/utils/auth";
+import dayjs from "dayjs";
 
 const props = defineProps<{
-  dataId: string;
+  dataId: number;
   dataName: string;
   dataType: string;
   queryType: number;
@@ -91,6 +93,32 @@ const getBusinessInfo = () => {
     });
 };
 const handleNameClick = (scope: any, index: number) => {
+  if (scope.dataType === null) {
+    const sourceChannel =
+      QuantityTabUtil.getQuantityTabIndex() === 0 ? [] : [QuantityTabUtil.getQuantityTabIndex()];
+    FilterUtil.setFilterData({
+      realEstateConsultantIds: [Number(scope.dataId)],
+      levels: [],
+      dateTimeBegin: dayjs().subtract(30, "day").format("YYYY-MM-DD"),
+      dateTimeEnd: dayjs().format("YYYY-MM-DD"),
+      isValid: false,
+      sourceChannel: sourceChannel,
+      isReset: false,
+      selectId: props.dataId,
+      queryType: 2
+    });
+    OrganizationUtil.setOrganizationInfo({
+      id: props.dataId,
+      name: props.dataName,
+      type: props.dataType,
+      isProject: props.dataType === "PROJECT",
+      children: []
+    });
+    uni.switchTab({
+      url: "/pages/customer/index"
+    });
+  }
+
   if (scope.dataName === "合计" || scope.dataType === null) {
     return;
   }
