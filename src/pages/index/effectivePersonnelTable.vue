@@ -54,13 +54,9 @@
         <view v-else-if="column.fieldName === 'associateWy'">
           {{ scope.associateWy }}
         </view>
-        <!-- 全民隶属 -->
-        <view v-else-if="column.fieldName === 'subjectionQm'">
-          {{ scope.subjectionQm }}
-        </view>
-        <!-- 全民关联 -->
-        <view v-else-if="column.fieldName === 'associateQm'">
-          {{ scope.associateQm }}
+        <!-- 全民 -->
+        <view v-else-if="column.fieldName === 'qmNumber'">
+          {{ scope.qmNumber }}
         </view>
         <!-- 最后更新时间 -->
         <view v-else-if="column.fieldName === 'updateTime'">
@@ -141,13 +137,8 @@ const columns = [
     fieldType: "slot"
   },
   {
-    fieldName: "subjectionQm",
-    fieldDesc: "全民隶属",
-    fieldType: "slot"
-  },
-  {
-    fieldName: "associateQm",
-    fieldDesc: "全民关联",
+    fieldName: "qmNumber",
+    fieldDesc: "全民",
     fieldType: "slot"
   },
   {
