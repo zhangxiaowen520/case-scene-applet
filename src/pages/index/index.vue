@@ -249,8 +249,20 @@ const calculateDateDiff = () => {
 const updateTrendGroupType = () => {
   const dateDiff = calculateDateDiff();
   if (dateDiff <= 7) {
+    // 小于等于7天只能按天统计
     trendGroupType.value = "DAY";
-  } else if (dateDiff > 147) {
+  } else if (dateDiff <= 30) {
+    // 大于7天，小于等于30天，如果当前是月统计则切换到日统计
+    if (trendGroupType.value === "MONTH") {
+      trendGroupType.value = "DAY";
+    }
+  } else if (dateDiff <= 147) {
+    // 大于30天，小于等于147天，如果当前是日统计则切换到周统计
+    if (trendGroupType.value === "DAY") {
+      trendGroupType.value = "WEEK";
+    }
+  } else {
+    // 大于147天只能按月统计
     trendGroupType.value = "MONTH";
   }
 };
