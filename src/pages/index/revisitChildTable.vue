@@ -10,7 +10,13 @@
           @timeStart="handleBeginDate"
           @timeEnd="handleEndDate"
         />
-        <img class="export-icon" src="@/static/images/export.png" alt="" srcset="" @click="exportClick" />
+        <img
+          class="export-icon"
+          src="@/static/images/export.png"
+          alt=""
+          srcset=""
+          @click="exportClick"
+        />
       </view>
     </view>
     <basic-table :columns="columns" :data="tableData" :min-item-width="150" align="center">
@@ -23,38 +29,62 @@
         <view v-else-if="column.fieldName === 'quantity'">
           {{ scope.quantity }}
         </view>
-        <!-- 合计（信息完整度） -->
-        <view v-else-if="column.fieldName === 'completionRate'"> {{ scope.completionRate }}% </view>
+        <!-- 合计（跟进及时率） -->
+        <view v-else-if="column.fieldName === 'followUpTimelyRate'">
+          {{ scope.followUpTimelyRate }}%
+        </view>
+        <!-- 合计（复访率） -->
+        <view v-else-if="column.fieldName === 'revisitRate'"> {{ scope.revisitRate }}% </view>
         <!-- 销售（数量） -->
         <view v-else-if="column.fieldName === 'quantityXs'">
           {{ scope.quantityXs }}
         </view>
-        <!-- 销售（信息完整度） -->
-        <view v-else-if="column.fieldName === 'completionRateXs'"> {{ scope.completionRateXs }}% </view>
+        <!-- 销售（跟进及时率） -->
+        <view v-else-if="column.fieldName === 'followUpTimelyRateXs'">
+          {{ scope.followUpTimelyRateXs }}%
+        </view>
+        <!-- 销售（复访率） -->
+        <view v-else-if="column.fieldName === 'revisitRateXs'"> {{ scope.revisitRateXs }}% </view>
         <!-- 策划（数量） -->
         <view v-else-if="column.fieldName === 'quantityCh'">
-          {{ scope.quantityXs }}
+          {{ scope.quantityCh }}
         </view>
-        <!-- 策划（信息完整度） -->
-        <view v-else-if="column.fieldName === 'completionRateCh'"> {{ scope.completionRateXs }}% </view>
+        <!-- 策划（跟进及时率） -->
+        <view v-else-if="column.fieldName === 'followUpTimelyRateCh'">
+          {{ scope.followUpTimelyRateCh }}%
+        </view>
+        <!-- 策划（复访率） -->
+        <view v-else-if="column.fieldName === 'revisitRateCh'"> {{ scope.revisitRateCh }}% </view>
         <!-- 渠道（数量） -->
         <view v-else-if="column.fieldName === 'quantityQd'">
-          {{ scope.quantityXs }}
+          {{ scope.quantityQd }}
         </view>
-        <!-- 渠道（信息完整度） -->
-        <view v-else-if="column.fieldName === 'completionRateQd'"> {{ scope.completionRateXs }}% </view>
+        <!-- 渠道（跟进及时率） -->
+        <view v-else-if="column.fieldName === 'followUpTimelyRateQd'">
+          {{ scope.followUpTimelyRateQd }}%
+        </view>
+        <!-- 渠道（复访率） -->
+        <view v-else-if="column.fieldName === 'revisitRateQd'"> {{ scope.revisitRateQd }}% </view>
         <!-- 全民（数量） -->
         <view v-else-if="column.fieldName === 'quantityQm'">
-          {{ scope.quantityXs }}
+          {{ scope.quantityQm }}
         </view>
-        <!-- 全民（信息完整度） -->
-        <view v-else-if="column.fieldName === 'completionRateQm'"> {{ scope.completionRateXs }}% </view>
+        <!-- 全民（跟进及时率） -->
+        <view v-else-if="column.fieldName === 'followUpTimelyRateQm'">
+          {{ scope.followUpTimelyRateQm }}%
+        </view>
+        <!-- 全民（复访率） -->
+        <view v-else-if="column.fieldName === 'revisitRateQm'"> {{ scope.revisitRateQm }}% </view>
         <!-- 物业（数量） -->
         <view v-else-if="column.fieldName === 'quantityWy'">
-          {{ scope.quantityXs }}
+          {{ scope.quantityWy }}
         </view>
-        <!-- 物业（信息完整度） -->
-        <view v-else-if="column.fieldName === 'completionRateWy'"> {{ scope.completionRateXs }}% </view>
+        <!-- 物业（跟进及时率） -->
+        <view v-else-if="column.fieldName === 'followUpTimelyRateWy'">
+          {{ scope.followUpTimelyRateWy }}%
+        </view>
+        <!-- 物业（复访率） -->
+        <view v-else-if="column.fieldName === 'revisitRateWy'"> {{ scope.revisitRateWy }}% </view>
       </template>
     </basic-table>
   </view>
@@ -104,8 +134,13 @@ const columns = [
     fieldType: "slot"
   },
   {
-    fieldName: "completionRate",
-    fieldDesc: "合计（信息完整度）",
+    fieldName: "followUpTimelyRate",
+    fieldDesc: "合计（跟进及时率）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "revisitRate",
+    fieldDesc: "合计（复访率）",
     fieldType: "slot"
   },
   {
@@ -114,8 +149,13 @@ const columns = [
     fieldType: "slot"
   },
   {
-    fieldName: "completionRateXs",
-    fieldDesc: "销售（信息完整度）",
+    fieldName: "followUpTimelyRateXs",
+    fieldDesc: "销售（跟进及时率）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "revisitRateXs",
+    fieldDesc: "销售（复访率）",
     fieldType: "slot"
   },
   {
@@ -124,8 +164,13 @@ const columns = [
     fieldType: "slot"
   },
   {
-    fieldName: "completionRateCh",
-    fieldDesc: "策划（信息完整度）",
+    fieldName: "followUpTimelyRateCh",
+    fieldDesc: "策划（跟进及时率）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "revisitRateCh",
+    fieldDesc: "策划（复访率）",
     fieldType: "slot"
   },
   {
@@ -134,8 +179,13 @@ const columns = [
     fieldType: "slot"
   },
   {
-    fieldName: "completionRateQd",
-    fieldDesc: "渠道（信息完整度）",
+    fieldName: "followUpTimelyRateQd",
+    fieldDesc: "渠道（跟进及时率）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "revisitRateQd",
+    fieldDesc: "渠道（复访率）",
     fieldType: "slot"
   },
   {
@@ -144,8 +194,13 @@ const columns = [
     fieldType: "slot"
   },
   {
-    fieldName: "completionRateQm",
-    fieldDesc: "全民（信息完整度）",
+    fieldName: "followUpTimelyRateQm",
+    fieldDesc: "全民（跟进及时率）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "revisitRateQm",
+    fieldDesc: "全民（复访率）",
     fieldType: "slot"
   },
   {
@@ -154,8 +209,13 @@ const columns = [
     fieldType: "slot"
   },
   {
-    fieldName: "completionRateXs",
-    fieldDesc: "物业（信息完整度）",
+    fieldName: "followUpTimelyRateWy",
+    fieldDesc: "物业（跟进及时率）",
+    fieldType: "slot"
+  },
+  {
+    fieldName: "revisitRateWy",
+    fieldDesc: "物业（复访率）",
     fieldType: "slot"
   }
 ];

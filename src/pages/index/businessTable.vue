@@ -33,8 +33,8 @@
           {{ scope.clue.conversionRate }}%
         </view>
         <!-- 新访数量 -->
-        <view v-else-if="column.fieldName === 'subscriptionQuantity'">
-          {{ scope.subscription.quantity }}
+        <view v-else-if="column.fieldName === 'firstVisitQuantity'">
+          {{ scope.firstVisit.quantity }}
         </view>
         <!-- 信息完整率 -->
         <view v-else-if="column.fieldName === 'firstVisitCompletionRate'">
@@ -44,13 +44,17 @@
         <view v-else-if="column.fieldName === 'revisitQuantity'">
           {{ scope.revisit.quantity }}
         </view>
+        <!-- 跟进及时率 -->
+        <view v-else-if="column.fieldName === 'followUpTimelyRate'">
+          {{ scope.revisit.followUpTimelyRate }}%
+        </view>
         <!-- 复访率 -->
         <view v-else-if="column.fieldName === 'revisitRate'">
           {{ scope.revisit.revisitRate }}%
         </view>
-        <!-- 跟进及时率 -->
-        <view v-else-if="column.fieldName === 'followUpTimelyRate'">
-          {{ scope.revisit.followUpTimelyRate }}%
+        <!-- 认购数量 -->
+        <view v-else-if="column.fieldName === 'subscriptionQuantity'">
+          {{ scope.subscription.quantity }}
         </view>
         <!-- 新访成交率 -->
         <view v-else-if="column.fieldName === 'newVisitTransactionRate'">
@@ -137,7 +141,7 @@ const columns = [
     fieldType: "slot"
   },
   {
-    fieldName: "subscriptionQuantity",
+    fieldName: "firstVisitQuantity",
     fieldDesc: "新访数量",
     fieldType: "slot"
   },
@@ -152,13 +156,18 @@ const columns = [
     fieldType: "slot"
   },
   {
+    fieldName: "followUpTimelyRate",
+    fieldDesc: "跟进及时率",
+    fieldType: "slot"
+  },
+  {
     fieldName: "revisitRate",
     fieldDesc: "复访率",
     fieldType: "slot"
   },
   {
-    fieldName: "followUpTimelyRate",
-    fieldDesc: "跟进及时率",
+    fieldName: "subscriptionQuantity",
+    fieldDesc: "认购数量",
     fieldType: "slot"
   },
   {

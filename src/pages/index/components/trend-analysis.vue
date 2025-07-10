@@ -123,23 +123,19 @@ const calculateDateDiff = () => {
 const isGroupTypeDisabled = (type: string) => {
   const dateDiff = calculateDateDiff();
 
-  if (dateDiff <= 21) {
-    // 小于等于21天只能按天统计
+  if (dateDiff <= 7) {
+    // 小于等于7天只能按天统计
     return type !== "DAY";
-  } else if (dateDiff > 147) {
+  } else if (dateDiff <= 30) {
+    // 大于7天，小于等于30天可以按天或按周统计
+    return type === "MONTH";
+  } else if (dateDiff <= 147) {
+    // 大于30天，小于等于147天可以按周或按月统计
+    return type === "DAY";
+  } else {
     // 大于147天只能按月统计
     return type !== "MONTH";
-  } else {
-    // 21-147天之间可以按周或按月统计
-    return type === "DAY";
   }
-};
-
-/**
- * 更新选中的统计类型
- */
-const updateSelectedGroupType = () => {
-  emit("fetchData");
 };
 
 /**

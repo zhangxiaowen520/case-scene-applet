@@ -248,12 +248,10 @@ const calculateDateDiff = () => {
 // 更新统计类型
 const updateTrendGroupType = () => {
   const dateDiff = calculateDateDiff();
-  if (dateDiff <= 21) {
+  if (dateDiff <= 7) {
     trendGroupType.value = "DAY";
   } else if (dateDiff > 147) {
     trendGroupType.value = "MONTH";
-  } else if (trendGroupType.value === "DAY") {
-    trendGroupType.value = "WEEK";
   }
 };
 
