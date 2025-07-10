@@ -3,13 +3,7 @@
     <view class="table-select">
       <CustomSelect v-model="typeId" :options="typeOptions" @change="handleTypeChange" />
       <view class="table-select-time">
-        <img
-          class="export-icon"
-          src="@/static/images/export.png"
-          alt=""
-          srcset=""
-          @click="exportClick"
-        />
+        <img class="export-icon" src="@/static/images/export.png" alt="" srcset="" @click="exportClick" />
       </view>
     </view>
     <basic-table :columns="columns" :data="tableData" align="center">
@@ -89,7 +83,8 @@ const columns = [
   {
     fieldName: "dataName",
     fieldDesc: "区域",
-    fieldType: "slot"
+    fieldType: "slot",
+    fixed: "left"
   },
   {
     fieldName: "summary",

@@ -16,11 +16,7 @@
     </view>
     <!-- 客户列表 -->
     <view class="customer-list">
-      <view
-        class="customer-item"
-        v-for="(item, index) in customerList"
-        :key="item.projectCustomerId"
-      >
+      <view class="customer-item" v-for="(item, index) in customerList" :key="item.projectCustomerId">
         <view class="avatar">
           <view class="avatar-text">{{ item.level || "-" }}</view>
         </view>
@@ -80,10 +76,7 @@
               class="count-down"
             >
               <text class="status-green">跟进倒计时</text>
-              <up-count-down
-                :time="getTimeRemaining(item.nextFollowUpTime)"
-                format="HH:mm:ss"
-              ></up-count-down>
+              <up-count-down :time="getTimeRemaining(item.nextFollowUpTime)" format="HH:mm:ss"></up-count-down>
             </view>
             <text v-if="item.lastProjectCustomerTime" class="status-red"
               >上次到访 {{ item.lastProjectCustomerTime.slice(0, 10) }}</text
@@ -106,8 +99,7 @@
         <view class="action-btn">
           <up-button
             v-if="
-              (UserUtil.getDataPermissionType() === 'PROJECT' ||
-                UserUtil.getDataPermissionType() === 'SELF') &&
+              (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
               UserUtil.getUserInfo().id === item?.realEstateConsultantId
             "
             plain
@@ -119,8 +111,7 @@
           >
           <up-button
             v-if="
-              (UserUtil.getDataPermissionType() === 'PROJECT' ||
-                UserUtil.getDataPermissionType() === 'SELF') &&
+              (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
               item.visitNumber > 0 &&
               UserUtil.getUserInfo().id === item?.realEstateConsultantId
             "
@@ -133,8 +124,7 @@
           >
           <up-button
             v-if="
-              (UserUtil.getDataPermissionType() === 'PROJECT' ||
-                UserUtil.getDataPermissionType() === 'SELF') &&
+              (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
               UserUtil.getUserInfo().id === item?.realEstateConsultantId &&
               item.visitNumber > 0 &&
               item.hasPhone
@@ -214,7 +204,7 @@ const getCustomerList = async () => {
       ...query
     });
 
-    if (res.code === 0 && res.data.length > 0) {
+    if (res.code === 0) {
       if (pageNumber.value === 1) {
         customerList.value = res.data.list;
       } else {
