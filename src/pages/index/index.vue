@@ -714,9 +714,6 @@ onMounted(() => {
   // 获取用户信息
   getUserInfo();
   getProjectTreeInfo();
-});
-
-onShow(() => {
   if (OrganizationUtil.getOrganizationInfo().id) {
     selectedLocation.value.id = OrganizationUtil.getOrganizationInfo().id;
     selectedLocation.value.name = OrganizationUtil.getOrganizationInfo().name;
@@ -737,6 +734,14 @@ onShow(() => {
         handleQuantityTabChange(QuantityTabUtil.getQuantityTabIndex());
       }
     }
+  }
+});
+
+onShow(() => {
+  if (OrganizationUtil.getOrganizationInfo().id) {
+    selectedLocation.value.id = OrganizationUtil.getOrganizationInfo().id;
+    selectedLocation.value.name = OrganizationUtil.getOrganizationInfo().name;
+    selectedLocation.value.type = OrganizationUtil.getOrganizationInfo().type;
   }
 });
 </script>

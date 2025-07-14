@@ -140,55 +140,72 @@
     </view>
     <!-- 按钮组 -->
     <view class="btn-group">
-      <text
+      <up-button
         v-if="
           (UserUtil.getDataPermissionType() === 'PROJECT' ||
             UserUtil.getDataPermissionType() === 'SELF') &&
           UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant &&
           customerInfo?.visitNumber > 0
         "
+        style="width: 140rpx; margin: 0rpx"
+        plain
+        type="primary"
+        color="#2C65F6"
         class="btn-0"
         @click="handleReportVisit"
-        >报到访</text
+        >报到访</up-button
       >
-      <text
+      <up-button
         v-if="
           (UserUtil.getDataPermissionType() === 'PROJECT' ||
             UserUtil.getDataPermissionType() === 'SELF') &&
           UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant &&
           customerInfo?.visitNumber > 0
         "
+        style="width: 140rpx; margin: 0rpx"
+        plain
+        type="primary"
+        color="#2C65F6"
         class="btn-0"
         @click="handleConfirmPurchaseClick"
-        >报认购</text
+        >报认购</up-button
       >
-      <text
+      <up-button
         v-if="
           (UserUtil.getDataPermissionType() === 'PROJECT' ||
             UserUtil.getDataPermissionType() === 'SELF') &&
           UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant &&
           customerInfo?.visitNumber > 0
         "
-        class="btn-0"
+        style="width: 140rpx; margin: 0rpx"
+        plain
+        type="primary"
+        color="#2C65F6"
         @click="handleConfirmSignClick"
-        >报签约</text
+        >报签约</up-button
       >
-      <text
+      <up-button
         v-if="
           (UserUtil.getDataPermissionType() === 'PROJECT' ||
             UserUtil.getDataPermissionType() === 'SELF') &&
           UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant &&
           customerInfo?.visitNumber > 0
         "
-        class="btn-0"
+        style="width: 140rpx; margin: 0rpx"
+        plain
+        type="primary"
+        color="#2C65F6"
         @click="handleGiveUpClick"
-        >放弃</text
+        >放弃</up-button
       >
-      <text
-        class="btn-1"
+      <up-button
+        style="width: 140rpx; margin: 0rpx"
+        plain
+        type="primary"
+        color="#2C65F6"
         @click="handleAssignClick"
         v-if="UserUtil.getDataPermissionType() === 'PROJECT'"
-        >分配</text
+        >分配</up-button
       >
       <up-button
         v-if="
