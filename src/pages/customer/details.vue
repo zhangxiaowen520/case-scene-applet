@@ -782,6 +782,7 @@ const handleCallClick = () => {
 .btn-group {
   width: 100%;
   display: flex;
+  flex-wrap: wrap-reverse;
   gap: 30rpx;
   justify-content: flex-end;
   align-items: center;
@@ -792,6 +793,7 @@ const handleCallClick = () => {
   padding: 30rpx 30rpx 40rpx 30rpx;
   box-sizing: border-box;
   background-color: #fff;
+  z-index: 2;
 
   .btn-0 {
     font-size: 32rpx;

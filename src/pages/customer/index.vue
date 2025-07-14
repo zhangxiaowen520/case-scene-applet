@@ -169,6 +169,20 @@
       </view>
       <up-loadmore :status="loadStatus" :nomore-text="`共 ${customerList.length} 条`" />
     </view>
+    <view
+      v-if="UserUtil.getDataPermissionType() === 'PROJECT'"
+      class="pool-add-1"
+      @click="handleReportClick"
+    >
+      报备
+    </view>
+    <view
+      v-if="UserUtil.getDataPermissionType() === 'PROJECT'"
+      class="pool-add-2"
+      @click="handlePublicClick"
+    >
+      公客
+    </view>
     <!-- 添加客户 -->
     <view
       v-if="
@@ -377,6 +391,19 @@ const handleAddClick = () => {
 const handleWriteFollowUpClick = (item: CustomerInterface) => {
   uni.navigateTo({
     url: `/pages/customer/addFollow?projectCustomerId=${item.projectCustomerId}`
+  });
+};
+
+//handleReportClick
+const handleReportClick = () => {
+  uni.navigateTo({
+    url: `/pages/pool/report`
+  });
+};
+
+const handlePublicClick = () => {
+  uni.navigateTo({
+    url: `/pages/pool/index`
   });
 };
 
@@ -751,5 +778,37 @@ onReachBottom(() => {
   align-items: center;
   justify-content: center;
   z-index: 1;
+}
+
+.pool-add-1 {
+  width: 108rpx;
+  height: 108rpx;
+  background: $uni-color-primary;
+  border-radius: 50%;
+  position: fixed;
+  bottom: 300rpx;
+  right: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  font-size: 28rpx;
+  color: #fff;
+}
+
+.pool-add-2 {
+  width: 108rpx;
+  height: 108rpx;
+  background: $uni-color-primary;
+  border-radius: 50%;
+  position: fixed;
+  bottom: 170rpx;
+  right: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  font-size: 28rpx;
+  color: #fff;
 }
 </style>
