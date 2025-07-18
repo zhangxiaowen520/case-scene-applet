@@ -233,6 +233,12 @@
       }
     },
     {
+      "path": "pages/customer/components/ReportingRecordEdit",
+      "style": {
+        "navigationBarTitleText": "修改报备记录"
+      }
+    },
+    {
       "path": "pages/customer/basic",
       "style": {
         "navigationBarTitleText": "基础信息"

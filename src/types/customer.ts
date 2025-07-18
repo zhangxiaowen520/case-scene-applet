@@ -99,4 +99,11 @@ export interface CustomerReportingRecordInterface {
   reportBroker: string;
   reportStore: string;
   reportTime: string;
+  channel: "SELF_SALE";
+  customerReportRecordId: number;
+  hasJdUser: boolean;
+  realEstateConsultantId: number | null;
+  sourceChannel: number | null;
+  sourceChannelName: string;
+  visitNumber: number | null;
 }

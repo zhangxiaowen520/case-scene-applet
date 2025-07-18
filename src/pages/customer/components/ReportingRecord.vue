@@ -4,6 +4,7 @@
       <view class="record-content">
         <view class="row-content">
           <view class="time">{{ step.reportTime }}</view>
+          <view v-if="step.hasJdUser" class="update" @click="handleUpdate(step)">修改</view>
         </view>
         <view class="row-content">
           <view class="time" style="font-size: 24rpx">{{ step.reportStore }}</view>
@@ -15,7 +16,12 @@
           <view class="desc-wrapper">
             <view class="desc">{{ step.brokerPhone }}</view>
           </view>
-          <up-icon name="phone" size="16" color="#2C65F6" @click="handleCall(step.brokerPhone)"></up-icon>
+          <up-icon
+            name="phone"
+            size="16"
+            color="#2C65F6"
+            @click="handleCall(step.brokerPhone)"
+          ></up-icon>
         </view>
       </view>
     </template>
@@ -33,6 +39,12 @@ const props = defineProps<{
 const handleCall = (phone: string) => {
   uni.makePhoneCall({
     phoneNumber: phone
+  });
+};
+
+const handleUpdate = (step: CustomerReportingRecordInterface) => {
+  uni.navigateTo({
+    url: `/pages/customer/components/ReportingRecordEdit?data=${JSON.stringify(step)}`
   });
 };
 </script>
@@ -86,6 +98,11 @@ const handleCall = (phone: string) => {
   .desc {
     font-size: 28rpx;
     color: rgba(26, 39, 52, 0.8);
+  }
+
+  .update {
+    font-size: 24rpx;
+    color: #2c65f6;
   }
 }
 </style>
