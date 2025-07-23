@@ -73,12 +73,6 @@ type TreeNode = OrganizationInfo & {
   typeKey?: string;
 };
 
-const handlePoolAdd = () => {
-  uni.switchTab({
-    url: `/pages/customer/index?type=1`
-  });
-};
-
 const selectedLocation = ref({
   id: 1,
   name: "",
@@ -227,8 +221,8 @@ const poolData = ref([
     bgClass: "bg-orange"
   }
 ]);
-
-const timeStart = ref(dayjs().subtract(30, "day").format("YYYY-MM-DD"));
+//当天
+const timeStart = ref(dayjs().format("YYYY-MM-DD"));
 const timeEnd = ref(dayjs().format("YYYY-MM-DD"));
 
 // 趋势分析数据

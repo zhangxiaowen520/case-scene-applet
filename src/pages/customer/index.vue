@@ -256,7 +256,7 @@ const pages = ref(0);
 //搜索关键字、客户名称、手机号
 const commonName = ref("");
 //开始时间  默认30天 yyyy-mm-dd
-const dateTimeBegin = ref(dayjs().subtract(30, "day").format("YYYY-MM-DD"));
+const dateTimeBegin = ref("2025-01-01");
 const dateTimeEnd = ref(dayjs().format("YYYY-MM-DD"));
 //有效性
 const effectiveness = ref<boolean>(true);
@@ -482,7 +482,7 @@ const reset = () => {
   pageNumber.value = 1;
   pages.value = 0;
   customerList.value = [];
-  dateTimeBegin.value = dayjs().subtract(30, "day").format("YYYY-MM-DD");
+  dateTimeBegin.value = "2025-01-01";
   dateTimeEnd.value = dayjs().format("YYYY-MM-DD");
   realEstateConsultantIds.value = [];
   levels.value = [];
@@ -506,7 +506,9 @@ onShow(() => {
   }
   const filterData = FilterUtil.getFilterData();
   if (filterData && filterData.selectId === selectedLocation.value.id) {
-    queryType.value = filterData.queryType || 0;
+    if (filterData.queryType) {
+      queryType.value = filterData.queryType;
+    }
     updateFilter(filterData);
   } else {
     hasScreenFilter.value = false;

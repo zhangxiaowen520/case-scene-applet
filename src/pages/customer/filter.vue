@@ -170,7 +170,7 @@ const selectedSourceChannels = ref<number[]>(
 //跟进时间
 const dateTimeBegin = ref(
   props.dateTimeBegin === "undefined" || props.dateTimeBegin === ""
-    ? dayjs().subtract(30, "day").format("YYYY-MM-DD")
+    ? "2025-01-01"
     : props.dateTimeBegin
 );
 const dateTimeEnd = ref(
