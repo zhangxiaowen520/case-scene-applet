@@ -325,6 +325,12 @@
       }
     },
     {
+      "path": "pages/pool/rulePool",
+      "style": {
+        "navigationBarTitleText": "公客池设置"
+      }
+    },
+    {
       "path": "pages/people/index",
       "style": {
         "navigationBarTitleText": "全民"

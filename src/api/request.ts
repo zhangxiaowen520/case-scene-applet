@@ -2,8 +2,8 @@ import type { RequestOptions } from "@/types/request";
 import { TokenUtil, UserUtil } from "@/utils/auth";
 
 // 基础配置
-// export const BASE_URL = "https://customer-dev.focuson.cc"; //测试环境
-export const BASE_URL = "https://customer.focuson.cc"; //生产环境
+export const BASE_URL = "https://customer-dev.focuson.cc"; //测试环境
+// export const BASE_URL = "https://customer.focuson.cc"; //生产环境
 
 const TIMEOUT = 600000;
 

@@ -22,7 +22,8 @@
           :password="!showPassword"
           v-model="password"
           placeholder="请输入密码"
-          placeholder-class="placeholder" />
+          placeholder-class="placeholder"
+        />
         <view class="password-toggle" @tap="togglePassword">
           <up-icon v-if="showPassword" name="eye" size="24" color="#999999"></up-icon>
           <up-icon v-else name="eye-off" size="24" color="#999999"></up-icon>
@@ -40,7 +41,8 @@
         text="登录"
         :disabled="loading"
         :loading="loading"
-        @click="handleLogin"></up-button>
+        @click="handleLogin"
+      ></up-button>
     </view>
   </view>
 </template>
@@ -70,10 +72,10 @@ const getWxCode = () => {
   return new Promise((resolve, reject) => {
     uni.login({
       provider: "weixin",
-      success: (res) => {
+      success: res => {
         resolve(res.code);
       },
-      fail: (err) => {
+      fail: err => {
         console.error("微信登录失败:", err);
         reject(err);
       }
@@ -85,14 +87,14 @@ const handleSubscribeAndNavigate = () => {
   uni.showModal({
     title: "订阅提醒",
     content: "是否接受消息订阅？订阅后可及时接收重要通知。",
-    success: (res) => {
+    success: res => {
       if (res.confirm) {
         uni.requestSubscribeMessage({
           tmplIds: ["randtQk6QHnQwZZ3LIcpBfQcTwsoHbXEaoontsm6BlY", "4GRYF8ESsWqnlU8l86glyaTqH5y73SNhz2XEK2sWu3A"],
-          success: (success) => {
+          success: success => {
             console.log("订阅成功", success);
           },
-          fail: (err) => {
+          fail: err => {
             console.error("订阅消息失败:", err);
           },
           complete: () => {

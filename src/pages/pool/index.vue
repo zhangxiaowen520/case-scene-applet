@@ -11,12 +11,7 @@
           @input="handleCommonNameInput"
         />
       </view>
-      <template
-        v-if="
-          UserUtil.getDataPermissionType() === 'PROJECT' ||
-          UserUtil.getDataPermissionType() === 'SELF'
-        "
-      >
+      <template v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'">
         <up-button
           v-if="isBatch"
           style="width: 120rpx"
@@ -26,14 +21,17 @@
           @click="handleBatchCancel"
           >取消选择</up-button
         >
+        <up-button v-else style="width: 120rpx" color="#2C65F6" type="primary" size="small" @click="handleBatchCancel"
+          >批量选择</up-button
+        >
         <up-button
-          v-else
-          style="width: 120rpx"
+          v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'"
+          style="width: 40rpx"
           color="#2C65F6"
           type="primary"
           size="small"
-          @click="handleBatchCancel"
-          >批量选择</up-button
+          @click="handleSetRule"
+          >设置</up-button
         >
       </template>
     </view>
@@ -43,9 +41,7 @@
         <text :class="{ active: sortType === 'all' }">全部</text>
       </view>
       <view class="filter-item" @click.stop="handIsAscendingTimeClick">
-        <text :class="{ active: sortType === 'isAscendingTime' }">{{
-          orderBy ? "创建时间升序" : "创建时间降序"
-        }}</text>
+        <text :class="{ active: sortType === 'isAscendingTime' }">{{ orderBy ? "创建时间升序" : "创建时间降序" }}</text>
         <up-icon
           :name="orderBy ? 'arrow-up' : 'arrow-down'"
           size="12"
@@ -63,19 +59,12 @@
     </view>
 
     <view class="customer-list">
-      <view
-        class="customer-item"
-        v-for="(item, index) in list"
-        :key="index"
-        @click="handleCustomerClick(item)"
-      >
+      <view class="customer-item" v-for="(item, index) in list" :key="index" @click.stop="handleCustomerClick(item)">
         <view class="avatar">
           <view class="avatar-text">{{ item.level || "-" }}</view>
           <template v-if="isBatch">
             <view
-              :class="
-                customerIds.includes(item.projectCustomerId) ? 'avatar-btn-active' : 'avatar-btn'
-              "
+              :class="customerIds.includes(item.projectCustomerId) ? 'avatar-btn-active' : 'avatar-btn'"
               @click="handleCustomerSelect(item.projectCustomerId)"
             >
               <view class="avatar-btn-inner"></view>
@@ -85,7 +74,10 @@
         <view class="info">
           <view class="name-row">
             <text class="name">{{ item.projectCustomerName }}</text>
-            <text class="phone">{{ item.phone }}</text>
+          </view>
+          <view class="detail-row">
+            <text class="label">联系方式：</text>
+            <text class="value">{{ item.phone }}</text>
           </view>
           <view class="detail-row">
             <text class="label">原置业顾问：</text>
@@ -96,18 +88,24 @@
             <text class="value">{{ item.reason }}</text>
           </view>
         </view>
-        <view class="action-btn">
+        <view class="action-btn" @click.stop>
           <up-button
-            v-if="
-              UserUtil.getDataPermissionType() === 'PROJECT' ||
-              UserUtil.getDataPermissionType() === 'SELF'
-            "
-            style="width: 120rpx"
+            v-if="UserUtil.getDataPermissionType() === 'PROJECT'"
+            style="width: 120rpx; z-index: 1000"
             color="#2C65F6"
             type="primary"
             size="small"
             @click="handleDistribute(item.projectCustomerId)"
             >分配</up-button
+          >
+          <up-button
+            v-if="UserUtil.getDataPermissionType() === 'SELF'"
+            style="width: 120rpx; z-index: 1000"
+            color="#2C65F6"
+            type="primary"
+            size="small"
+            @click="handleGrab(item.projectCustomerId)"
+            >抢客</up-button
           >
         </view>
       </view>
@@ -117,10 +115,8 @@
     <view class="select-all" v-if="isBatch">
       <view class="select-all-left">
         <view
-          :class="
-            isAllSelect || customerIds.length === list.length ? 'avatar-btn-active' : 'avatar-btn'
-          "
-          @click="handleAllSelect"
+          :class="isAllSelect || customerIds.length === list.length ? 'avatar-btn-active' : 'avatar-btn'"
+          @click.stop="handleAllSelect"
         >
           <view class="avatar-btn-inner"></view>
         </view>
@@ -129,21 +125,12 @@
         }}</text>
         <text class="select-all-number">已选择 {{ customerIds.length }} 组</text>
       </view>
-      <up-button
-        style="width: 120rpx"
-        color="#2C65F6"
-        type="primary"
-        size="small"
-        @click="handleBatchDistribute"
+      <up-button style="width: 120rpx" color="#2C65F6" type="primary" size="small" @click="handleBatchDistribute"
         >批量分配</up-button
       >
     </view>
 
-    <AssignPopup
-      :show="showAssignPopup"
-      @close="showAssignPopup = false"
-      @confirm="handleAssignConfirm"
-    />
+    <AssignPopup :show="showAssignPopup" @close="showAssignPopup = false" @confirm="handleAssignConfirm" />
   </view>
 </template>
 
@@ -294,6 +281,40 @@ const handleBatchDistribute = () => {
   }
   assignType.value = 1;
   showAssignPopup.value = true;
+};
+
+// 设置分配规则
+const handleSetRule = () => {
+  uni.navigateTo({
+    url: "/pages/pool/rulePool"
+  });
+};
+
+// 抢客
+const handleGrab = (id: number) => {
+  uni.showModal({
+    title: "确认要获取该客户嘛？",
+    content: "抢到该客户后请及时跟进！",
+    success: res => {
+      if (res.confirm) {
+        requestApi
+          .post("/home/public-guest-pool/grab/customer", {
+            id: id
+          })
+          .then(res => {
+            if (res.code === 0) {
+              uni.showToast({ title: "抢客成功", icon: "success" });
+              pageNumber.value = 1;
+              pages.value = 0;
+              list.value = [];
+              getCustomerPoolList();
+            } else {
+              uni.showToast({ title: res.msg, icon: "none" });
+            }
+          });
+      }
+    }
+  });
 };
 
 // 分配确认
