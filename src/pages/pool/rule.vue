@@ -1,6 +1,18 @@
 <template>
   <view class="rule-page">
     <view class="rule-title">
+      <view>抢客规则</view>
+    </view>
+
+    <view class="rule-question">
+      <text>置业顾问每天可抢</text>
+      <input type="number" class="rule-input" v-model="takeReportPool" />
+      <text>个客户</text>
+    </view>
+  </view>
+
+  <view class="rule-page">
+    <view class="rule-title">
       <view>请选择分配规则</view>
       <view class="rule-subtitle">*三种方式任选其一，系统默认手动分配</view>
     </view>
@@ -35,7 +47,8 @@
             @touchmove="touchMove"
             @touchend="touchEnd"
             :style="dragIndex === index ? { transform: `translateY(${offsetY}px)` } : {}"
-            :class="{ dragging: dragIndex === index }">
+            :class="{ dragging: dragIndex === index }"
+          >
             <text class="member-index">{{ index + 1 }}</text>
             <text class="member-name">{{ member.name }}</text>
           </view>
@@ -74,13 +87,14 @@ const dragIndex = ref<number>(-1);
 const startY = ref<number>(0);
 const offsetY = ref<number>(0);
 const itemHeight = 80; // 每个项目的高度（rpx）
+const takeReportPool = ref(0);
 
 const getRuleList = () => {
   requestApi
     .post("/home/query/project/config/applet", {
       id: ProjectUtil.getProjectInfo().projectId
     })
-    .then((res) => {
+    .then(res => {
       if (res.code === 0) {
         selectedRule.value = res.data.assignMethod;
         memberList.value = res.data.groupUserDtos.map((item: any, index: number) => ({
@@ -156,9 +170,10 @@ const handleSave = () => {
     .post("/home/updateAssignMethod", {
       assignMethod: selectedRule.value,
       projectId: ProjectUtil.getProjectInfo().projectId,
-      groupUserDtos: selectedRule.value === "SORT" ? groupUserDtos : undefined
+      groupUserDtos: selectedRule.value === "SORT" ? groupUserDtos : undefined,
+      takeReportPool: takeReportPool.value
     })
-    .then((res) => {
+    .then(res => {
       if (res.code === 0) {
         uni.hideLoading();
         uni.showToast({ title: "保存成功", icon: "success" });
@@ -184,6 +199,23 @@ onMounted(() => {
   margin-top: 20rpx;
   box-sizing: border-box;
   padding: 30rpx;
+}
+
+.rule-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 32rpx;
+  color: $uni-text-color;
+  margin-bottom: 20rpx;
+}
+
+.rule-input {
+  width: 100rpx;
+  height: 60rpx;
+  border-bottom: 1rpx solid #e5e5e5;
+  text-align: center;
 }
 
 .rule-title {

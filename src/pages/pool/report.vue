@@ -8,10 +8,16 @@
           v-model="commonName"
           placeholder="请输入客户姓名、手机尾号"
           placeholder-class="placeholder"
-          @input="handleCommonNameInput" />
+          @input="handleCommonNameInput"
+        />
       </view>
 
-      <template v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'">
+      <template
+        v-if="
+          UserUtil.getDataPermissionType() === 'PROJECT' ||
+          UserUtil.getDataPermissionType() === 'SELF'
+        "
+      >
         <up-button
           v-if="isBatch"
           style="width: 120rpx"
@@ -21,17 +27,17 @@
           @click="handleBatchCancel"
           >取消选择</up-button
         >
-        <up-button v-else style="width: 120rpx" color="#2C65F6" type="primary" size="small" @click="handleBatchCancel"
+        <up-button
+          v-else
+          style="width: 120rpx"
+          color="#2C65F6"
+          type="primary"
+          size="small"
+          @click="handleBatchCancel"
           >批量选择</up-button
         >
       </template>
-      <up-button
-        v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'"
-        style="width: 40rpx"
-        color="#2C65F6"
-        type="primary"
-        size="small"
-        @click="handleSet"
+      <up-button style="width: 40rpx" color="#2C65F6" type="primary" size="small" @click="handleSet"
         >设置</up-button
       >
     </view>
@@ -42,8 +48,11 @@
           <view class="avatar-text">{{ item.projectCustomerName.slice(0, 1) }}</view>
           <template v-if="isBatch">
             <view
-              :class="customerIds.includes(item.projectCustomerId) ? 'avatar-btn-active' : 'avatar-btn'"
-              @click="handleCustomerSelect(item.projectCustomerId)">
+              :class="
+                customerIds.includes(item.projectCustomerId) ? 'avatar-btn-active' : 'avatar-btn'
+              "
+              @click="handleCustomerSelect(item.projectCustomerId)"
+            >
               <view class="avatar-btn-inner"></view>
             </view>
           </template>
@@ -67,13 +76,22 @@
         </view>
         <view class="action-btn">
           <up-button
-            v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'"
+            v-if="UserUtil.getDataPermissionType() === 'PROJECT'"
             style="width: 120rpx"
             color="#2C65F6"
             type="primary"
             size="small"
             @click="handleDistribute(item.projectCustomerId)"
             >分配</up-button
+          >
+          <up-button
+            v-if="UserUtil.getDataPermissionType() === 'SELF'"
+            style="width: 120rpx; z-index: 1000"
+            color="#2C65F6"
+            type="primary"
+            size="small"
+            @click="handleGrab(item.projectCustomerId)"
+            >抢客</up-button
           >
         </view>
       </view>
@@ -83,8 +101,11 @@
     <view class="select-all" v-if="isBatch">
       <view class="select-all-left">
         <view
-          :class="isAllSelect || customerIds.length === list.length ? 'avatar-btn-active' : 'avatar-btn'"
-          @click="handleAllSelect">
+          :class="
+            isAllSelect || customerIds.length === list.length ? 'avatar-btn-active' : 'avatar-btn'
+          "
+          @click="handleAllSelect"
+        >
           <view class="avatar-btn-inner"></view>
         </view>
         <text class="select-all-text">{{
@@ -92,12 +113,21 @@
         }}</text>
         <text class="select-all-number">已选择 {{ customerIds.length }} 组</text>
       </view>
-      <up-button style="width: 120rpx" color="#2C65F6" type="primary" size="small" @click="handleBatchDistribute"
+      <up-button
+        style="width: 120rpx"
+        color="#2C65F6"
+        type="primary"
+        size="small"
+        @click="handleBatchDistribute"
         >批量分配</up-button
       >
     </view>
 
-    <AssignPopup :show="showAssignPopup" @close="showAssignPopup = false" @confirm="handleAssignConfirm" />
+    <AssignPopup
+      :show="showAssignPopup"
+      @close="showAssignPopup = false"
+      @confirm="handleAssignConfirm"
+    />
   </view>
 </template>
 
@@ -139,8 +169,8 @@ const getCustomerPoolList = () => {
   loadStatus.value = "loading";
   requestApi
     .post("/home/query/customer/report/record", {
-      id:OrganizationUtil.getOrganizationInfo().id,
-      type:OrganizationUtil.getOrganizationInfo().type,
+      id: OrganizationUtil.getOrganizationInfo().id,
+      type: OrganizationUtil.getOrganizationInfo().type,
       commonName: commonName.value,
       pageNumber: pageNumber.value,
       pageSize: 10,
@@ -148,7 +178,7 @@ const getCustomerPoolList = () => {
       reportBroker: "",
       reportStore: ""
     })
-    .then((res) => {
+    .then(res => {
       if (res.code === 0) {
         list.value = [...list.value, ...res.data.list];
         pages.value = res.data.pages;
@@ -181,7 +211,7 @@ const handleBatchCancel = () => {
 // 客户选择
 const handleCustomerSelect = (id: number) => {
   if (customerIds.value.includes(id)) {
-    customerIds.value = customerIds.value.filter((item) => item !== id);
+    customerIds.value = customerIds.value.filter(item => item !== id);
   } else {
     customerIds.value.push(id);
   }
@@ -191,7 +221,7 @@ const handleCustomerSelect = (id: number) => {
 const handleAllSelect = () => {
   isAllSelect.value = !isAllSelect.value;
   if (isAllSelect.value) {
-    customerIds.value = list.value.map((item) => item.projectCustomerId);
+    customerIds.value = list.value.map(item => item.projectCustomerId);
   } else {
     customerIds.value = [];
   }
@@ -202,6 +232,33 @@ const handleDistribute = (id: number) => {
   customerId.value = id;
   assignType.value = 0;
   showAssignPopup.value = true;
+};
+
+// 抢客
+const handleGrab = (id: number) => {
+  uni.showModal({
+    title: "确认要获取该客户嘛？",
+    content: "抢到该客户后请及时跟进！",
+    success: res => {
+      if (res.confirm) {
+        requestApi
+          .post("/home/report-pool/grab/customer", {
+            id: id
+          })
+          .then(res => {
+            if (res.code === 0) {
+              uni.showToast({ title: "抢客成功", icon: "success" });
+              pageNumber.value = 1;
+              pages.value = 0;
+              list.value = [];
+              getCustomerPoolList();
+            } else {
+              uni.showToast({ title: res.msg, icon: "none" });
+            }
+          });
+      }
+    }
+  });
 };
 
 // 批量分配
@@ -225,7 +282,7 @@ const handleAssignConfirm = (value: string) => {
         customerId: customerId.value,
         userId: value
       })
-      .then((res) => {
+      .then(res => {
         if (res.code === 0) {
           showAssignPopup.value = false;
           uni.showToast({ title: "分配成功", icon: "success" });
@@ -244,7 +301,7 @@ const handleAssignConfirm = (value: string) => {
         customerIds: customerIds.value,
         userId: value
       })
-      .then((res) => {
+      .then(res => {
         if (res.code === 0) {
           showAssignPopup.value = false;
           uni.showToast({ title: "分配成功", icon: "success" });

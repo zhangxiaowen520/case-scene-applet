@@ -11,7 +11,7 @@
           @input="handleCommonNameInput"
         />
       </view>
-      <template v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'">
+      <template v-if="UserUtil.getDataPermissionType() === 'PROJECT'">
         <up-button
           v-if="isBatch"
           style="width: 120rpx"
@@ -21,11 +21,17 @@
           @click="handleBatchCancel"
           >取消选择</up-button
         >
-        <up-button v-else style="width: 120rpx" color="#2C65F6" type="primary" size="small" @click="handleBatchCancel"
+        <up-button
+          v-else
+          style="width: 120rpx"
+          color="#2C65F6"
+          type="primary"
+          size="small"
+          @click="handleBatchCancel"
           >批量选择</up-button
         >
         <up-button
-          v-if="UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF'"
+          v-if="UserUtil.getDataPermissionType() === 'PROJECT'"
           style="width: 40rpx"
           color="#2C65F6"
           type="primary"
@@ -41,7 +47,9 @@
         <text :class="{ active: sortType === 'all' }">全部</text>
       </view>
       <view class="filter-item" @click.stop="handIsAscendingTimeClick">
-        <text :class="{ active: sortType === 'isAscendingTime' }">{{ orderBy ? "创建时间升序" : "创建时间降序" }}</text>
+        <text :class="{ active: sortType === 'isAscendingTime' }">{{
+          orderBy ? "创建时间升序" : "创建时间降序"
+        }}</text>
         <up-icon
           :name="orderBy ? 'arrow-up' : 'arrow-down'"
           size="12"
@@ -59,12 +67,19 @@
     </view>
 
     <view class="customer-list">
-      <view class="customer-item" v-for="(item, index) in list" :key="index" @click.stop="handleCustomerClick(item)">
+      <view
+        class="customer-item"
+        v-for="(item, index) in list"
+        :key="index"
+        @click.stop="handleCustomerClick(item)"
+      >
         <view class="avatar">
           <view class="avatar-text">{{ item.level || "-" }}</view>
           <template v-if="isBatch">
             <view
-              :class="customerIds.includes(item.projectCustomerId) ? 'avatar-btn-active' : 'avatar-btn'"
+              :class="
+                customerIds.includes(item.projectCustomerId) ? 'avatar-btn-active' : 'avatar-btn'
+              "
               @click="handleCustomerSelect(item.projectCustomerId)"
             >
               <view class="avatar-btn-inner"></view>
@@ -115,7 +130,9 @@
     <view class="select-all" v-if="isBatch">
       <view class="select-all-left">
         <view
-          :class="isAllSelect || customerIds.length === list.length ? 'avatar-btn-active' : 'avatar-btn'"
+          :class="
+            isAllSelect || customerIds.length === list.length ? 'avatar-btn-active' : 'avatar-btn'
+          "
           @click.stop="handleAllSelect"
         >
           <view class="avatar-btn-inner"></view>
@@ -125,12 +142,21 @@
         }}</text>
         <text class="select-all-number">已选择 {{ customerIds.length }} 组</text>
       </view>
-      <up-button style="width: 120rpx" color="#2C65F6" type="primary" size="small" @click="handleBatchDistribute"
+      <up-button
+        style="width: 120rpx"
+        color="#2C65F6"
+        type="primary"
+        size="small"
+        @click="handleBatchDistribute"
         >批量分配</up-button
       >
     </view>
 
-    <AssignPopup :show="showAssignPopup" @close="showAssignPopup = false" @confirm="handleAssignConfirm" />
+    <AssignPopup
+      :show="showAssignPopup"
+      @close="showAssignPopup = false"
+      @confirm="handleAssignConfirm"
+    />
   </view>
 </template>
 
