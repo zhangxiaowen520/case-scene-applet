@@ -15,19 +15,22 @@
       </view>
     </view>
     <view class="list">
-      <view class="list-item" v-for="item in list" :key="item.id">
-        <image :src="item.titleImg" class="list-item-image" />
-        <view class="list-item-title">{{ item.title }}</view>
-        <view class="list-item-time">
-          活动时间：{{ item.signUpStartTime }} - {{ item.signUpEndTime }}
+      <template v-for="item in list" :key="item.id">
+        <view class="list-item" @tap.stop="handleActiveDetails(item.id)">
+          <image :src="item.titleImg" class="list-item-image" />
+          <view class="list-item-title">{{ item.title }}</view>
+          <view class="list-item-time">
+            活动时间：{{ item.signUpStartTime }} - {{ item.signUpEndTime }}
+          </view>
+          <view class="list-item-time"> 报名人数：{{ item.numberOfApplicants || 0 }} 人 </view>
+          <view class="list-status">
+            <text v-if="item.status === 1">活动未开始</text>
+            <text v-if="item.status === 2">活动已结束</text>
+            <text v-if="item.status === 3">活动进行中</text>
+          </view>
         </view>
-        <view class="list-item-time"> 报名人数：{{ item.numberOfApplicants || 0 }} 人 </view>
-        <view class="list-status">
-          <text v-if="item.status === 1">活动未开始</text>
-          <text v-if="item.status === 2">活动已结束</text>
-          <text v-if="item.status === 3">活动进行中</text>
-        </view>
-      </view>
+      </template>
+
       <up-loadmore :status="loadStatus" />
     </view>
   </view>
@@ -66,8 +69,15 @@ const getCustomerPoolList = () => {
 };
 
 const handleStatus = (type: number) => {
+  list.value = [];
   status.value = type;
   getCustomerPoolList();
+};
+
+const handleActiveDetails = (id: number) => {
+  uni.navigateTo({
+    url: `/pages/share/activeDetails?id=${id}`
+  });
 };
 
 onMounted(() => {

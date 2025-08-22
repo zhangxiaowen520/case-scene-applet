@@ -359,6 +359,12 @@
       "style": {
         "navigationBarTitleText": "热门活动"
       }
+    },
+    {
+      "path": "pages/share/activeDetails",
+      "style": {
+        "navigationBarTitleText": "活动信息"
+      }
     }
   ],
   "condition": {
