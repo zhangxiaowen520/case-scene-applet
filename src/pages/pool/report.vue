@@ -12,12 +12,7 @@
         />
       </view>
 
-      <template
-        v-if="
-          UserUtil.getDataPermissionType() === 'PROJECT' ||
-          UserUtil.getDataPermissionType() === 'SELF'
-        "
-      >
+      <template v-if="UserUtil.getDataPermissionType() === 'PROJECT'">
         <up-button
           v-if="isBatch"
           style="width: 120rpx"
@@ -37,7 +32,13 @@
           >批量选择</up-button
         >
       </template>
-      <up-button style="width: 40rpx" color="#2C65F6" type="primary" size="small" @click="handleSet"
+      <up-button
+        v-if="UserUtil.getDataPermissionType() === 'PROJECT'"
+        style="width: 40rpx"
+        color="#2C65F6"
+        type="primary"
+        size="small"
+        @click="handleSet"
         >设置</up-button
       >
     </view>
@@ -86,7 +87,7 @@
           >
           <up-button
             v-if="UserUtil.getDataPermissionType() === 'SELF'"
-            style="width: 120rpx; z-index: 1000"
+            style="width: 120rpx"
             color="#2C65F6"
             type="primary"
             size="small"

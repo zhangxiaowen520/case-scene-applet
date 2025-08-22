@@ -106,7 +106,7 @@
         <view class="action-btn" @click.stop>
           <up-button
             v-if="UserUtil.getDataPermissionType() === 'PROJECT'"
-            style="width: 120rpx; z-index: 1000"
+            style="width: 120rpx"
             color="#2C65F6"
             type="primary"
             size="small"
@@ -115,7 +115,7 @@
           >
           <up-button
             v-if="UserUtil.getDataPermissionType() === 'SELF'"
-            style="width: 120rpx; z-index: 1000"
+            style="width: 120rpx"
             color="#2C65F6"
             type="primary"
             size="small"
