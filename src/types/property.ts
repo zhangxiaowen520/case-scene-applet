@@ -54,3 +54,52 @@ export interface PropertyStatisticsDataInterface {
   valueTotalSum: number;
   returnedMoney: number;
 }
+
+export interface ProjectInfoInterface {
+  activities: ProjectInfoActivitiesInterface[];
+  address: string;
+  houseTypes: ProjectInfoHouseTypesInterface[];
+  id: number;
+  latitude: number;
+  longitude: number;
+  name: string;
+  outdoorLandscapeImg: string;
+  overallReviewPictureUrl: string;
+  progresses: any[];
+  projectNearbyAmenities: any[];
+  propertyStatus: string;
+  realEstateConsultantId: number;
+  realEstateConsultantName: string;
+  tags: any[];
+}
+
+export interface ProjectInfoActivitiesInterface {
+  createTime: string;
+  createUser: number;
+  createUserName: string;
+  endTime: string;
+  id: number;
+  introduction: string;
+  location: string;
+  numberOfApplicants: number;
+  signUpEndTime: string;
+  signUpStartTime: string;
+  startTime: string;
+  status: number;
+  title: string;
+  titleImg: string;
+  updateTime: string;
+}
+
+export interface ProjectInfoHouseTypesInterface {
+  area: string;
+  balcony: string;
+  hall: string;
+  houseTypeImg: string;
+  id: number;
+  name: string;
+  referenceTotalPrice: string;
+  room: string;
+  roomFace: string;
+  toilet: string;
+}

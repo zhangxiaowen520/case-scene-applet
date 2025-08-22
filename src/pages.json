@@ -347,30 +347,30 @@
       "style": {
         "navigationBarTitleText": "个人中心"
       }
+    },
+    {
+      "path": "pages/share/index",
+      "style": {
+        "navigationBarTitleText": "楼盘详情"
+      }
+    },
+    {
+      "path": "pages/share/activities",
+      "style": {
+        "navigationBarTitleText": "热门活动"
+      }
     }
   ],
   "condition": {
     "current": 0,
     "list": [
       {
-        "name": "首页",
-        "path": "pages/index/index"
+        "name": "楼盘详情",
+        "path": "pages/share/index"
       },
       {
-        "name": "客户",
-        "path": "pages/customer/index"
-      },
-      {
-        "name": "全民",
-        "path": "pages/people/index"
-      },
-      {
-        "name": "五位一体人员填报",
-        "path": "pages/my/fiveInOnePersonnel"
-      },
-      {
-        "name": "任务下发",
-        "path": "pages/my/missionIssuance"
+        "name": "热门活动",
+        "path": "pages/share/activities"
       }
     ]
   },
