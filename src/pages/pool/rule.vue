@@ -235,6 +235,7 @@ onMounted(() => {
 
 .rule-list {
   margin-top: 60rpx;
+  padding-bottom: 120rpx;
 }
 
 .rule-item {
