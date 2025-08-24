@@ -43,6 +43,7 @@ import type { LoadStatusType } from "@/types/request";
 
 const props = defineProps<{
   id: number;
+  shareUserId: number;
 }>();
 
 // 加载状态
@@ -77,7 +78,7 @@ const handleStatus = (type: number) => {
 
 const handleActivityDetails = (id: number) => {
   uni.navigateTo({
-    url: `/pages/share/activityDetails?id=${id}`
+    url: `/pages/share/activityDetails?id=${props.id}&shareUserId=${props.shareUserId}&activityId=${id}`
   });
 };
 

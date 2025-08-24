@@ -1,5 +1,5 @@
 <template>
-  <view>
+  <view class="share-page">
     <view v-if="details.overallReviewPictureUrl" class="overall-review-picture-container">
       <u-swiper
         height="300"
@@ -43,10 +43,21 @@
             :list="details.overallReviewPictureUrl?.split(',') || []"
             @click="previewImage"
           ></u-swiper>
-          <view class="info-inquiry">
-            <img src="@/static/images/inquiry.png" alt="" class="info-inquiry-icon" />
-            <text>咨询楼栋详情</text>
-          </view>
+          <button
+            class="info-inquiry"
+            open-type="getPhoneNumber"
+            @getphonenumber="getWechatCustomerPhone"
+            :loading="loading"
+          >
+            <img
+              v-if="!loading"
+              src="@/static/images/inquiry.png"
+              alt=""
+              class="info-inquiry-icon"
+            />
+            <text v-if="loading">提交中</text>
+            <text v-if="!loading">咨询楼栋详情</text>
+          </button>
         </view>
       </view>
       <!-- 户型展示 -->
@@ -142,10 +153,21 @@
             </template>
           </scroll-view>
           <!-- 咨询按钮 -->
-          <view class="info-inquiry">
-            <img src="@/static/images/inquiry.png" alt="" class="info-inquiry-icon" />
-            <text>咨询周边详情</text>
-          </view>
+          <button
+            class="info-inquiry"
+            open-type="getPhoneNumber"
+            @getphonenumber="getWechatCustomerPhone"
+            :loading="loading"
+          >
+            <text v-if="loading">提交中</text>
+            <img
+              v-if="!loading"
+              src="@/static/images/inquiry.png"
+              alt=""
+              class="info-inquiry-icon"
+            />
+            <text v-if="!loading">咨询周边详情</text>
+          </button>
         </view>
       </view>
       <!-- 活动信息  -->
@@ -162,9 +184,9 @@
             <view class="activity-item">
               <image class="activity-image" :src="item.titleImg"></image>
               <view class="activity-title">{{ item.title }}</view>
-              <view class="info-inquiry">
+              <button class="info-inquiry" @click="handleActivityDetails(item.id)">
                 <text>报名参加</text>
-              </view>
+              </button>
             </view>
           </template>
         </u-swiper>
@@ -174,18 +196,25 @@
         <view class="info-title">
           <view class="progress-header">
             <text class="progress-title">工程进度</text>
-            <text class="progress-update-time">{{ details.progressUpdateTime }} 更新</text>
+            <!-- <text class="progress-update-time">{{ details.progressUpdateTime }} 更新</text> -->
           </view>
-          <view class="right" @tap.stop="toProgress">
+          <!-- <view class="right" @tap.stop="toProgress">
             <text>更多</text>
             <up-icon name="arrow-right" size="12" color="#979797"></up-icon>
-          </view>
+          </view> -->
         </view>
         <view class="steps-container">
-          <view class="certification-time">
-            <text class="time-label">取证时间</text>
-            <text class="time-value">{{ details.certificationTime }}</text>
-          </view>
+          <scroll-view class="certification-times" scroll-x="true" show-scrollbar="false">
+            <view
+              class="certification-time"
+              v-for="(item, index) in details.progresses"
+              :key="index"
+              :class="{ active: index === activeTimeIndex }"
+            >
+              <view class="time-label">取证时间</view>
+              <view class="time-value">{{ item.createTime }}</view>
+            </view>
+          </scroll-view>
           <view class="progress-steps">
             <view class="progress-step" v-for="(item, index) in progressSteps" :key="index">
               <view class="step-content">
@@ -231,10 +260,15 @@
             <view>置业顾问</view>
           </view>
         </view>
-        <view class="advisor-phone">
-          <view>在线咨询</view>
-          <view>专属高品质服务</view>
-        </view>
+        <button
+          class="advisor-phone"
+          open-type="getPhoneNumber"
+          @getphonenumber="getWechatCustomerPhone"
+          :loading="loading"
+        >
+          <view v-if="!loading">在线咨询</view>
+          <view v-if="!loading">专属高品质服务</view>
+        </button>
       </view>
     </view>
   </view>
@@ -287,6 +321,7 @@ const categories = ref([
 ]);
 
 const activeCategory = ref(0);
+const activeTimeIndex = ref(0);
 
 // 模拟设施数据
 const facilitiesData = ref<AmenitiesByType>({
@@ -415,28 +450,30 @@ const previewHouseImage = (url: string) => {
 // 跳转到楼盘总平图
 const toOverallReviewPicture = () => {
   uni.navigateTo({
-    url: `/pages/share/overallReviewPicture?id=${details.value.id}`
+    url: `/pages/share/overallReviewPicture?id=${details.value.id}&shareUserId=${
+      UserUtil.getUserInfo().id || 0
+    }`
   });
 };
 
 // 跳转到户型展示
 const toHouseType = () => {
   uni.navigateTo({
-    url: `/pages/share/houseType?id=${details.value.id}`
+    url: `/pages/share/houseType?id=${details.value.id}&shareUserId=${props.shareUserId || 0}`
   });
 };
 
 // 跳转到周边配套
 const toNearbyAmenity = () => {
   uni.navigateTo({
-    url: `/pages/share/nearbyAmenity?id=${details.value.id}`
+    url: `/pages/share/nearbyAmenity?id=${details.value.id}&shareUserId=${props.shareUserId || 0}`
   });
 };
 
 // 跳转到活动信息
 const toActivity = () => {
   uni.navigateTo({
-    url: `/pages/share/activity?id=${details.value.id}`
+    url: `/pages/share/activity?id=${details.value.id}&shareUserId=${props.shareUserId || 0}`
   });
 };
 
@@ -444,6 +481,12 @@ const toActivity = () => {
 const toProgress = () => {
   uni.navigateTo({
     url: `/pages/share/progress?id=${details.value.id}`
+  });
+};
+
+const handleActivityDetails = (activityId: number) => {
+  uni.navigateTo({
+    url: `/pages/share/activityDetails?id=${props.id}&shareUserId=${props.shareUserId}&activityId=${activityId}`
   });
 };
 
@@ -485,12 +528,72 @@ const onShareTimeline = () => {
   };
 };
 
+//获取微信客户手机号，value为微信获取手机号返回的code
+const loading = ref(false);
+
+const getWechatCustomerPhone = async (e: any) => {
+  // 如果用户拒绝授权
+  if (!e.detail.code) {
+    uni.showToast({
+      title: "获取手机号失败，请重试",
+      icon: "none"
+    });
+    return;
+  }
+
+  try {
+    loading.value = true;
+    const res = await requestApi.post("/common/applet/wx/phone", {
+      value: e.detail.code
+    });
+
+    if (res.code === 0 && res.data) {
+      // 保存手机号到本地
+      uni.setStorageSync("userPhone", res.data.phone);
+      //咨询报备
+      advisoryClick(res.data);
+    } else {
+      throw new Error(res.msg || "获取手机号失败");
+    }
+  } catch (error: any) {
+    uni.showToast({
+      title: error.message || "获取手机号失败，请重试",
+      icon: "none"
+    });
+  } finally {
+    loading.value = false;
+  }
+};
+
+//咨询报备/v2.1/project/advisory
+const advisoryClick = (phone: string) => {
+  requestApi
+    .post("/v2.1/project/advisory", {
+      id: 0,
+      phone: phone,
+      shareUserId: props.shareUserId || 0
+    })
+    .then(res => {
+      if (res.code === 0) {
+        uni.showModal({
+          title: "提交成功",
+          content: "稍后会有置业顾问联系您"
+        });
+      } else {
+        uni.showToast({ title: res.msg, icon: "none" });
+      }
+    });
+};
+
 onMounted(() => {
   getProjectInfo();
 });
 </script>
 
 <style lang="scss" scoped>
+.share-page {
+  padding-bottom: 200rpx;
+}
 .title {
   display: flex;
   flex-direction: column;
@@ -587,6 +690,15 @@ onMounted(() => {
     color: #fd800b;
     border-radius: 10rpx;
     margin-top: 20rpx;
+    border: none;
+    outline: none;
+    &::after {
+      display: none;
+    }
+
+    &[loading] {
+      opacity: 0.7;
+    }
   }
 
   .info-inquiry-icon {
@@ -770,23 +882,43 @@ onMounted(() => {
 }
 
 .steps-container {
-  padding-bottom: 200rpx;
+  background-color: #fff6e9;
+  border-radius: 12rpx;
+
+  .certification-times {
+    margin-bottom: 30rpx;
+    white-space: nowrap;
+  }
 
   .certification-time {
-    display: flex;
-    align-items: center;
-    margin-bottom: 30rpx;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20rpx 30rpx;
+    background: #f9f9f9;
+    margin-right: 20rpx;
+    border-radius: 12rpx;
+    transition: all 0.3s ease;
+
+    &.active {
+      background: #fff6e9;
+    }
 
     .time-label {
-      font-size: 28rpx;
+      font-size: 24rpx;
       color: #666;
       margin-right: 20rpx;
+      margin-bottom: 10rpx;
     }
 
     .time-value {
-      font-size: 32rpx;
+      font-size: 28rpx;
       color: #fd800b;
       font-weight: 500;
+    }
+
+    &:last-child {
+      margin-right: 0;
     }
   }
 
@@ -978,6 +1110,18 @@ onMounted(() => {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    border: none;
+    padding: 0;
+    margin: 0;
+    line-height: 1.5;
+
+    &::after {
+      display: none;
+    }
+
+    &[loading] {
+      opacity: 0.7;
+    }
   }
 }
 

@@ -35,7 +35,18 @@
       </view>
     </view>
     <view class="active-details-footer">
-      <button class="signup-button" @click="handleSignup">立即报名</button>
+      <button
+        v-if="details.status === 3"
+        class="signup-button"
+        open-type="getPhoneNumber"
+        @getphonenumber="getWechatCustomerPhone"
+        :loading="loading"
+      >
+        <text v-if="loading">提交中</text>
+        <text v-if="!loading">立即报名</text>
+      </button>
+      <button v-if="details.status === 2" class="signup-button-disabled">活动已结束</button>
+      <button v-if="details.status === 1" class="signup-button-disabled">活动未开始</button>
     </view>
   </view>
 </template>
@@ -43,7 +54,7 @@
 <script setup lang="ts">
 import { requestApi } from "@/api/request";
 import { onLoad } from "@dcloudio/uni-app";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 
 interface DetailsType {
   createTime: string;
@@ -63,18 +74,19 @@ interface DetailsType {
   updateTime: string;
 }
 
+// status 1:活动未开始，2:活动结束，3:活动中
 const details = ref<DetailsType>({} as DetailsType);
 
-onLoad(options => {
-  if (options && options.id) {
-    getActiveDetails(options.id);
-  }
-});
+const props = defineProps<{
+  id: number;
+  shareUserId: number;
+  activityId: number;
+}>();
 
-const getActiveDetails = (id: number) => {
+const getActiveDetails = () => {
   requestApi
     .post("/v2.1/project/activity/info", {
-      id: Number(id)
+      id: Number(props.activityId)
     })
     .then(res => {
       if (res.code === 0) {
@@ -83,38 +95,66 @@ const getActiveDetails = (id: number) => {
     });
 };
 
-const goBack = () => {
-  uni.navigateBack();
-};
+//获取微信客户手机号，value为微信获取手机号返回的code
+const loading = ref(false);
 
-const handleSignup = () => {
-  // 检查活动状态
-  const now = new Date().getTime();
-  const signUpStart = new Date(details.value.signUpStartTime).getTime();
-  const signUpEnd = new Date(details.value.signUpEndTime).getTime();
-
-  if (now < signUpStart) {
+const getWechatCustomerPhone = async (e: any) => {
+  // 如果用户拒绝授权
+  if (!e.detail.code) {
     uni.showToast({
-      title: "活动报名未开始",
+      title: "获取手机号失败，请重试",
       icon: "none"
     });
     return;
   }
 
-  if (now > signUpEnd) {
+  try {
+    loading.value = true;
+    const res = await requestApi.post("/common/applet/wx/phone", {
+      value: e.detail.code
+    });
+
+    if (res.code === 0 && res.data) {
+      // 保存手机号到本地
+      uni.setStorageSync("userPhone", res.data.phone);
+      //咨询报备
+      advisoryClick(res.data);
+    } else {
+      throw new Error(res.msg || "获取手机号失败");
+    }
+  } catch (error: any) {
     uni.showToast({
-      title: "活动报名已结束",
+      title: error.message || "获取手机号失败，请重试",
       icon: "none"
     });
-    return;
+  } finally {
+    loading.value = false;
   }
-
-  // TODO: 跳转到报名页面
-  uni.showToast({
-    title: "报名功能开发中",
-    icon: "none"
-  });
 };
+
+//咨询报备/v2.1/project/advisory
+const advisoryClick = (phone: string) => {
+  requestApi
+    .post("/v2.1/project/advisory", {
+      id: 0,
+      phone: phone,
+      shareUserId: props.shareUserId || 0
+    })
+    .then(res => {
+      if (res.code === 0) {
+        uni.showModal({
+          title: "提交成功",
+          content: "稍后会有置业顾问联系您"
+        });
+      } else {
+        uni.showToast({ title: res.msg, icon: "none" });
+      }
+    });
+};
+
+onMounted(() => {
+  getActiveDetails();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -241,6 +281,20 @@ const handleSignup = () => {
       &:active {
         opacity: 0.8;
       }
+    }
+
+    .signup-button-disabled {
+      width: 100%;
+      height: 44px;
+      line-height: 44px;
+      background-color: #ccc;
+      color: black;
+      font-size: 16px;
+      border-radius: 4px;
+      border: none;
+      opacity: 0.5;
+      box-shadow: none;
+      outline: none;
     }
   }
 }
