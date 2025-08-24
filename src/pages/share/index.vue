@@ -3,7 +3,7 @@
     <template v-if="details.overallReviewPictureUrl">
       <u-swiper
         height="300"
-        :list="details.overallReviewPictureUrl.split(',')"
+        :list="details.overallReviewPictureUrl?.split(',') || []"
         @click="previewImage"
       ></u-swiper>
     </template>
@@ -27,7 +27,7 @@
       <view class="info-item">
         <view class="info-title">
           <text>楼盘总平图</text>
-          <view class="right">
+          <view class="right" @tap.stop="toOverallReviewPicture">
             <text>详情</text>
             <up-icon name="arrow-right" size="12" color="#979797"></up-icon>
           </view>
@@ -35,7 +35,7 @@
         <view class="info-content">
           <u-swiper
             height="150"
-            :list="details.overallReviewPictureUrl.split(',')"
+            :list="details.overallReviewPictureUrl?.split(',') || []"
             @click="previewImage"
           ></u-swiper>
           <view class="info-inquiry">
@@ -48,7 +48,7 @@
       <view class="info-item">
         <view class="info-title">
           <text>户型展示</text>
-          <view class="right">
+          <view class="right" @tap.stop="toHouseType">
             <text>查看全部</text>
             <up-icon name="arrow-right" size="12" color="#979797"></up-icon>
           </view>
@@ -81,10 +81,10 @@
       <view class="info-item">
         <view class="info-title">
           <text>周边配套</text>
-          <view class="right">
+          <!-- <view class="right" @tap.stop="toNearbyAmenity">
             <text>详情</text>
             <up-icon name="arrow-right" size="12" color="#979797"></up-icon>
-          </view>
+          </view> -->
         </view>
         <view class="surrounding-content">
           <!-- 地图区域 -->
@@ -98,6 +98,13 @@
               :enable-zoom="true"
               :enable-scroll="true"
               :enable-rotate="false"
+              :markers="[
+                {
+                  latitude: details.latitude,
+                  longitude: details.longitude,
+                  title: details.name
+                }
+              ]"
               @tap="onMapTap"
             ></map>
           </view>
@@ -114,19 +121,24 @@
             </view>
           </view>
           <!-- 设施列表 -->
-          <view class="facility-list">
-            <view
-              v-for="(facility, index) in currentFacilities"
-              :key="index"
-              class="facility-item"
-              @click="selectFacility(facility)"
-            >
-              <view class="facility-info">
-                <view class="facility-name">{{ facility.name }}</view>
+          <scroll-view class="facility-list" scroll-y="true" show-scrollbar="false">
+            <template v-if="currentFacilities.length > 0">
+              <view
+                v-for="(facility, index) in currentFacilities"
+                :key="index"
+                class="facility-item"
+                @click="selectFacility(facility)"
+              >
+                <view class="facility-info">
+                  <view class="facility-name">{{ facility.name }}</view>
+                </view>
+                <view class="facility-distance">{{ facility.distance }}</view>
               </view>
-              <view class="facility-distance">{{ facility.distance }}</view>
-            </view>
-          </view>
+            </template>
+            <template v-else>
+              <view class="facility-none">暂无数据</view>
+            </template>
+          </scroll-view>
           <!-- 咨询按钮 -->
           <view class="info-inquiry">
             <img src="@/static/images/inquiry.png" alt="" class="info-inquiry-icon" />
@@ -138,7 +150,7 @@
       <view class="info-item">
         <view class="info-title">
           <text>活动信息</text>
-          <view class="right">
+          <view class="right" @tap.stop="toActivity">
             <text>查看更多</text>
             <up-icon name="arrow-right" size="12" color="#979797"></up-icon>
           </view>
@@ -159,10 +171,10 @@
       <view class="info-item">
         <view class="info-title">
           <text>工程进度</text>
-          <view class="right">
+          <!-- <view class="right" @tap.stop="toProgress">
             <text>查看更多</text>
             <up-icon name="arrow-right" size="12" color="#979797"></up-icon>
-          </view>
+          </view> -->
         </view>
         <view class="steps-container">
           <up-steps current="0">
@@ -205,51 +217,53 @@ import { onMounted, ref, computed } from "vue";
 
 const details = ref<ProjectInfoInterface>({} as ProjectInfoInterface);
 
-// 周边配套相关数据
-const mapData = ref({
-  latitude: 39.9042, // 默认纬度
-  longitude: 116.4074, // 默认经度
-  scale: 14,
-  markers: []
-});
+// 定义周边配套设施的类型
+interface NearbyAmenity {
+  type: "TRAFFIC" | "EDUCATE" | "MEDICAL" | "LIFE" | "LEISURE";
+  name: string;
+  address: string;
+  distance: number;
+  latitude: number;
+  longitude: number;
+  id: number;
+  projectId: number;
+}
 
+interface Amenity {
+  name: string;
+  address: string;
+  distance: string;
+  latitude: number;
+  longitude: number;
+}
+
+interface AmenitiesByType {
+  TRAFFIC: Amenity[];
+  EDUCATE: Amenity[];
+  MEDICAL: Amenity[];
+  LIFE: Amenity[];
+  LEISURE: Amenity[];
+}
+
+// 周边配套分类数据
+//TRAFFIC,EDUCATE,MEDICAL,LIFE,LEISURE
 const categories = ref([
-  { name: "交通", key: "transportation" },
-  { name: "教育", key: "education" },
-  { name: "医疗", key: "medical" },
-  { name: "生活", key: "life" },
-  { name: "休闲", key: "leisure" }
+  { name: "交通", key: "TRAFFIC" },
+  { name: "教育", key: "EDUCATE" },
+  { name: "医疗", key: "MEDICAL" },
+  { name: "生活", key: "LIFE" },
+  { name: "休闲", key: "LEISURE" }
 ]);
 
 const activeCategory = ref(0);
 
 // 模拟设施数据
-const facilitiesData = ref({
-  transportation: [
-    { name: "地铁站", address: "距离项目500米", distance: "500m" },
-    { name: "公交站", address: "距离项目200米", distance: "200m" },
-    { name: "火车站", address: "距离项目2公里", distance: "2km" }
-  ],
-  education: [
-    { name: "幼儿园", address: "距离项目300米", distance: "300m" },
-    { name: "小学", address: "距离项目800米", distance: "800m" },
-    { name: "中学", address: "距离项目1.5公里", distance: "1.5km" }
-  ],
-  medical: [
-    { name: "社区医院", address: "距离项目400米", distance: "400m" },
-    { name: "药店", address: "距离项目150米", distance: "150m" },
-    { name: "三甲医院", address: "距离项目3公里", distance: "3km" }
-  ],
-  life: [
-    { name: "超市", address: "距离项目100米", distance: "100m" },
-    { name: "银行", address: "距离项目250米", distance: "250m" },
-    { name: "菜市场", address: "距离项目600米", distance: "600m" }
-  ],
-  leisure: [
-    { name: "公园", address: "距离项目700米", distance: "700m" },
-    { name: "健身房", address: "距离项目350米", distance: "350m" },
-    { name: "电影院", address: "距离项目1.2公里", distance: "1.2km" }
-  ]
+const facilitiesData = ref<AmenitiesByType>({
+  TRAFFIC: [],
+  EDUCATE: [],
+  MEDICAL: [],
+  LIFE: [],
+  LEISURE: []
 });
 
 const currentFacilities = computed(() => {
@@ -267,6 +281,33 @@ const getProjectInfo = () => {
     .then(res => {
       if (res.code === 0) {
         details.value = res.data;
+        // 将周边配套数据转换为数组 projectNearbyAmenities
+        if (
+          details.value.projectNearbyAmenities &&
+          details.value.projectNearbyAmenities.length > 0
+        ) {
+          const amenitiesByType: AmenitiesByType = {
+            TRAFFIC: [],
+            EDUCATE: [],
+            MEDICAL: [],
+            LIFE: [],
+            LEISURE: []
+          };
+          // 遍历并分类周边配套数据
+          details.value.projectNearbyAmenities.forEach((item: NearbyAmenity) => {
+            if (amenitiesByType[item.type]) {
+              amenitiesByType[item.type].push({
+                name: item.name,
+                address: item.address,
+                distance: `${item.distance}m`,
+                latitude: item.latitude,
+                longitude: item.longitude
+              });
+            }
+          });
+          // 更新设施数据
+          facilitiesData.value = amenitiesByType;
+        }
       } else {
         uni.showToast({ title: res.msg, icon: "none" });
       }
@@ -292,7 +333,7 @@ const onMapTap = (e: any) => {
 //预览
 const previewImage = (index: number) => {
   // 将逗号分隔的图片字符串转换为数组
-  const imageList = details.value.outdoorLandscapeImg.split(",");
+  const imageList = details.value.overallReviewPictureUrl?.split(",") || [];
   uni.previewImage({
     current: index,
     urls: imageList,
@@ -318,6 +359,41 @@ const previewHouseImage = (url: string) => {
       }
     });
   }
+};
+
+// 跳转到楼盘总平图
+const toOverallReviewPicture = () => {
+  uni.navigateTo({
+    url: `/pages/share/overallReviewPicture?id=${details.value.id}`
+  });
+};
+
+// 跳转到户型展示
+const toHouseType = () => {
+  uni.navigateTo({
+    url: `/pages/share/houseType?id=${details.value.id}`
+  });
+};
+
+// 跳转到周边配套
+const toNearbyAmenity = () => {
+  uni.navigateTo({
+    url: `/pages/share/nearbyAmenity?id=${details.value.id}`
+  });
+};
+
+// 跳转到活动信息
+const toActivity = () => {
+  uni.navigateTo({
+    url: `/pages/share/activity`
+  });
+};
+
+// 跳转到工程进度
+const toProgress = () => {
+  uni.navigateTo({
+    url: `/pages/share/progress?id=${details.value.id}`
+  });
 };
 
 onMounted(() => {
@@ -548,6 +624,7 @@ onMounted(() => {
   }
 
   .facility-list {
+    height: 310rpx;
     margin-bottom: 20rpx;
 
     .facility-item {
@@ -573,6 +650,13 @@ onMounted(() => {
         font-weight: 400;
       }
     }
+  }
+  .facility-none {
+    font-size: 28rpx;
+    font-weight: 400;
+    color: #979797;
+    text-align: center;
+    padding-top: 100rpx;
   }
 }
 .activity-item {

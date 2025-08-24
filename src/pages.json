@@ -355,15 +355,27 @@
       }
     },
     {
-      "path": "pages/share/activities",
+      "path": "pages/share/activity",
       "style": {
         "navigationBarTitleText": "热门活动"
       }
     },
     {
-      "path": "pages/share/activeDetails",
+      "path": "pages/share/activityDetails",
       "style": {
         "navigationBarTitleText": "活动信息"
+      }
+    },
+    {
+      "path": "pages/share/houseType",
+      "style": {
+        "navigationBarTitleText": "户型展示"
+      }
+    },
+    {
+      "path": "pages/share/overallReviewPicture",
+      "style": {
+        "navigationBarTitleText": "楼盘总平"
       }
     }
   ],

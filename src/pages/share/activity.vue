@@ -16,7 +16,7 @@
     </view>
     <view class="list">
       <template v-for="item in list" :key="item.id">
-        <view class="list-item" @tap.stop="handleActiveDetails(item.id)">
+        <view class="list-item" @tap.stop="handleActivityDetails(item.id)">
           <image :src="item.titleImg" class="list-item-image" />
           <view class="list-item-title">{{ item.title }}</view>
           <view class="list-item-time">
@@ -74,9 +74,9 @@ const handleStatus = (type: number) => {
   getCustomerPoolList();
 };
 
-const handleActiveDetails = (id: number) => {
+const handleActivityDetails = (id: number) => {
   uni.navigateTo({
-    url: `/pages/share/activeDetails?id=${id}`
+    url: `/pages/share/activityDetails?id=${id}`
   });
 };
 

@@ -20,7 +20,7 @@
         </view>
         <view class="info-item">
           <view class="info-label">报名人数：</view>
-          <view class="info-value">{{ details.numberOfApplicants }}人报名</view>
+          <view class="info-value">{{ details.numberOfApplicants }} 人报名</view>
         </view>
       </view>
     </view>
@@ -31,16 +31,7 @@
     <view class="active-details-section">
       <view class="section-title">活动规则</view>
       <view class="section-content">
-        <view class="rule-item"
-          >1. 报名时间：{{ details.signUpStartTime }}-{{ details.signUpEndTime }}，活动时间：{{
-            details.startTime
-          }}-{{ details.endTime }}；</view
-        >
-        <view class="rule-item"
-          >2. 活动地点：{{ details.location }}（四川省成都市青羊区金辉路138号）；</view
-        >
-        <view class="rule-item">3. 活动对象：到访越秀阅今沙沙盘并完成到访登记记录的客户；</view>
-        <view class="rule-item">4. 本活动需实名制参与，报名时请您填写姓名和联系方式。</view>
+        <!-- {{ details.ruleText }} -->
       </view>
     </view>
     <view class="active-details-footer">
@@ -129,8 +120,8 @@ const handleSignup = () => {
 <style lang="scss" scoped>
 .active-details-image {
   width: 100%;
-  height: 300rpx;
-  border-radius: 10rpx;
+  // height: 300rpx;
+  // border-radius: 10rpx;
 }
 
 .active-details {
