@@ -6,7 +6,13 @@
 
     <!-- 楼盘信息卡片 -->
     <view class="property-info-card">
-      <view class="card-title">楼盘信息</view>
+      <view class="card-title">
+        <text>楼盘信息</text>
+        <view class="share-btn" @click="goMore">
+          <text>更多详情</text>
+          <u-icon name="arrow-right" size="14" color="#007aff"></u-icon>
+        </view>
+      </view>
       <view class="info-grid">
         <view class="info-item">
           <text class="label">项目名称:</text>
@@ -130,6 +136,7 @@
 import type { HouseInfoInterface, PropertyInfoInterface } from "@/types/property";
 import { ref } from "vue";
 import { formatMoney } from "@/utils/tools";
+import { UserUtil } from "@/utils/auth";
 
 const props = defineProps<{
   data: PropertyInfoInterface;
@@ -169,6 +176,12 @@ const previewHouseImage = (url: string) => {
 const goAll = () => {
   uni.navigateTo({
     url: `/pages/property/all?list=${JSON.stringify(props.houseInfo)}`
+  });
+};
+
+const goMore = () => {
+  uni.navigateTo({
+    url: `/pages/share/index?id=${props.data.id}&shareUserId=${UserUtil.getUserInfo().id}`
   });
 };
 </script>
@@ -299,5 +312,12 @@ const goAll = () => {
   font-size: 24rpx;
   color: #ff3b33;
   margin-left: 4rpx;
+}
+
+.share-btn {
+  display: flex;
+  align-items: center;
+  font-size: 28rpx;
+  color: #007aff;
 }
 </style>
