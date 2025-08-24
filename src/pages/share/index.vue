@@ -15,7 +15,7 @@
     <view class="title">
       <view class="title-1">{{ details.name }}</view>
       <view class="title-tag">
-        <view class="title-tag-success">在售</view>
+        <!-- <view class="title-tag-success">在售</view> -->
         <template v-for="value in details.tags" :key="value.id">
           <view class="title-tag-default">
             {{ value.name }}
