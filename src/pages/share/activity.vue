@@ -41,11 +41,12 @@ import { onMounted, ref } from "vue";
 import { requestApi } from "@/api/request";
 import type { LoadStatusType } from "@/types/request";
 
+const props = defineProps<{
+  id: number;
+}>();
+
 // 加载状态
 const loadStatus = ref<LoadStatusType>("loading");
-// 页码
-// 总页数
-const pages = ref(0);
 //列表
 const list = ref<any[]>([]);
 //活动状态,1:活动未开始，2:活动结束，3:活动中，其他为全部
@@ -56,7 +57,7 @@ const getCustomerPoolList = () => {
   loadStatus.value = "loading";
   requestApi
     .post("/v2.1/project/activity", {
-      projectId: 57,
+      projectId: props.id,
       status: status.value
     })
     .then(res => {

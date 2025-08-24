@@ -397,7 +397,7 @@ const toNearbyAmenity = () => {
 // 跳转到活动信息
 const toActivity = () => {
   uni.navigateTo({
-    url: `/pages/share/activity`
+    url: `/pages/share/activity?id=${details.value.id}`
   });
 };
 
