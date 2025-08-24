@@ -56,6 +56,8 @@ export interface PropertyStatisticsDataInterface {
 }
 
 export interface ProjectInfoInterface {
+  progressUpdateTime?: string; // 工程进度更新时间
+  certificationTime?: string; // 取证时间
   activities: ProjectInfoActivitiesInterface[];
   address: string;
   houseTypes: ProjectInfoHouseTypesInterface[];

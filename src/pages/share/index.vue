@@ -110,7 +110,6 @@
                   title: details.name
                 }
               ]"
-              @tap="onMapTap"
             ></map>
           </view>
           <!-- 分类标签 -->
@@ -125,14 +124,12 @@
               {{ category.name }}
             </view>
           </view>
-          <!-- 设施列表 -->
           <scroll-view class="facility-list" scroll-y="true" show-scrollbar="false">
             <template v-if="currentFacilities.length > 0">
               <view
                 v-for="(facility, index) in currentFacilities"
                 :key="index"
                 class="facility-item"
-                @click="selectFacility(facility)"
               >
                 <view class="facility-info">
                   <view class="facility-name">{{ facility.name }}</view>
@@ -175,26 +172,54 @@
       <!-- 工程进度  -->
       <view class="info-item">
         <view class="info-title">
-          <text>工程进度</text>
-          <!-- <view class="right" @tap.stop="toProgress">
-            <text>查看更多</text>
+          <view class="progress-header">
+            <text class="progress-title">工程进度</text>
+            <text class="progress-update-time">{{ details.progressUpdateTime }} 更新</text>
+          </view>
+          <view class="right" @tap.stop="toProgress">
+            <text>更多</text>
             <up-icon name="arrow-right" size="12" color="#979797"></up-icon>
-          </view> -->
+          </view>
         </view>
         <view class="steps-container">
-          <up-steps current="0">
-            <up-steps-item
-              v-for="(item, index) in details.progresses"
-              :key="index"
-              :title="item.nodeName"
-            >
-              <template #icon>
-                <view class="slot-icon">
-                  <up-icon name="checkmark" color="#fff" size="20"></up-icon>
+          <view class="certification-time">
+            <text class="time-label">取证时间</text>
+            <text class="time-value">{{ details.certificationTime }}</text>
+          </view>
+          <view class="progress-steps">
+            <view class="progress-step" v-for="(item, index) in progressSteps" :key="index">
+              <view class="step-content">
+                <view
+                  class="step-icon"
+                  :class="{
+                    completed: index < currentProgressIndex,
+                    current: index === currentProgressIndex,
+                    pending: index > currentProgressIndex
+                  }"
+                >
+                  <text v-if="index > currentProgressIndex" class="step-number">{{
+                    index + 1
+                  }}</text>
+                  <text v-else-if="index === currentProgressIndex" class="step-text">进行中</text>
+                  <text v-else class="icon-check">✓</text>
                 </view>
-              </template>
-            </up-steps-item>
-          </up-steps>
+                <text class="step-title">{{ item.name }}</text>
+              </view>
+              <view v-if="index < progressSteps.length - 1" class="step-line-container">
+                <view
+                  class="step-line"
+                  :style="{
+                    width:
+                      index < currentProgressIndex
+                        ? '100%'
+                        : index === currentProgressIndex
+                        ? '50%'
+                        : '0%'
+                  }"
+                ></view>
+              </view>
+            </view>
+          </view>
         </view>
       </view>
       <!-- 顾问 -->
@@ -272,6 +297,29 @@ const facilitiesData = ref<AmenitiesByType>({
   LEISURE: []
 });
 
+// 进度步骤定义
+const progressSteps = [
+  { name: "开工", value: "开工" },
+  { name: "基坑", value: "基坑" },
+  { name: "主体", value: "主体" },
+  { name: "封顶", value: "封顶" },
+  { name: "外立面", value: "外立面" },
+  { name: "装修/室内", value: "装修/室内" },
+  { name: "公区", value: "公区" },
+  { name: "交房", value: "交房" }
+];
+
+const progresses = ref<any[]>([]);
+
+// 计算当前进度索引
+const currentProgressIndex = computed(() => {
+  // 如果没有进度数据，返回-1
+  if (!details.value.progresses?.length) return -1;
+
+  // 返回进度数据的长度减1（因为数组索引从0开始）
+  return details.value.progresses.length;
+});
+
 const props = defineProps<{
   id: number;
   shareUserId: number;
@@ -293,6 +341,8 @@ const getProjectInfo = () => {
     .then(res => {
       if (res.code === 0) {
         details.value = res.data;
+        // 更新进度数据
+        progresses.value = details.value.progresses || [];
         // 将周边配套数据转换为数组 projectNearbyAmenities
         if (
           details.value.projectNearbyAmenities &&
@@ -329,17 +379,6 @@ const getProjectInfo = () => {
 // 切换分类
 const switchCategory = (index: number) => {
   activeCategory.value = index;
-};
-
-// 选择设施
-const selectFacility = (facility: any) => {
-  console.log("选择的设施:", facility);
-  // 可以在这里添加设施详情页面跳转逻辑
-};
-
-// 地图点击事件
-const onMapTap = (e: any) => {
-  console.log("地图点击:", e);
 };
 
 //预览
@@ -732,13 +771,164 @@ onMounted(() => {
 
 .steps-container {
   padding-bottom: 200rpx;
-  .slot-icon {
-    width: 30px;
-    background-color: $u-warning;
-    border-radius: 100px;
+
+  .certification-time {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30rpx;
+
+    .time-label {
+      font-size: 28rpx;
+      color: #666;
+      margin-right: 20rpx;
+    }
+
+    .time-value {
+      font-size: 32rpx;
+      color: #fd800b;
+      font-weight: 500;
+    }
+  }
+
+  .progress-steps {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20rpx 10rpx;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .progress-step {
+    display: flex;
+    align-items: center;
+    position: relative;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .step-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-icon {
+    min-width: 32rpx;
+    height: 32rpx;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-bottom: 8rpx;
+    font-size: 20rpx;
+    color: #fff;
+    position: relative;
+    transition: all 0.3s ease;
+    padding: 0 4rpx;
+
+    &.completed {
+      background-color: #fd800b;
+      width: 32rpx;
+    }
+
+    &.current {
+      background-color: #fd800b;
+      border-radius: 16rpx;
+      padding: 0 12rpx;
+
+      &::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border: 2rpx solid #fd800b;
+        border-radius: 16rpx;
+        animation: pulse 1.5s infinite;
+      }
+    }
+
+    &.pending {
+      background-color: #e0e0e0;
+      color: #999;
+      width: 32rpx;
+    }
+  }
+
+  .step-title {
+    font-size: 20rpx;
+    color: #333;
+    white-space: nowrap;
+    transform: scale(0.9);
+    transform-origin: center;
+    text-align: center;
+  }
+
+  .step-line-container {
+    height: 2rpx;
+    flex: 1;
+    margin: 0;
+    background-color: #e0e0e0;
+    position: absolute;
+    left: 50%;
+    right: -50%;
+    top: 16rpx;
+    z-index: 0;
+  }
+
+  .step-line {
+    height: 100%;
+    background-color: #fd800b;
+    transition: width 0.3s ease;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  .icon-check {
+    font-size: 20rpx;
+    line-height: 1;
+  }
+
+  .step-number {
+    font-size: 20rpx;
+    line-height: 1;
+  }
+
+  .step-text {
+    font-size: 20rpx;
+    line-height: 1;
+    white-space: nowrap;
+  }
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+
+  .progress-title {
+    font-size: 36rpx;
+    font-weight: 600;
+    color: #1a2734;
+  }
+
+  .progress-update-time {
+    font-size: 24rpx;
+    color: #979797;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0;
   }
 }
 
