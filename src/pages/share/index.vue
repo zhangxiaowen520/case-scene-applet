@@ -1,12 +1,17 @@
 <template>
   <view>
-    <template v-if="details.overallReviewPictureUrl">
+    <view v-if="details.overallReviewPictureUrl" class="overall-review-picture-container">
       <u-swiper
         height="300"
         :list="details.overallReviewPictureUrl?.split(',') || []"
         @click="previewImage"
       ></u-swiper>
-    </template>
+      <view class="share-icon-container">
+        <button open-type="share" class="share-icon">
+          <image src="@/static/images/share.png" mode="widthFix" class="share-icon"></image>
+        </button>
+      </view>
+    </view>
     <view class="title">
       <view class="title-1">{{ details.name }}</view>
       <view class="title-tag">
@@ -17,7 +22,7 @@
           </view>
         </template>
       </view>
-      <view class="title-address">
+      <view class="title-address" @tap="toLocation">
         <img src="@/static/images/location.png" alt="" class="title-address-icon" />
         <text>{{ details.address }}</text>
       </view>
@@ -213,6 +218,7 @@
 <script setup lang="ts">
 import { requestApi } from "@/api/request";
 import type { ProjectInfoInterface } from "@/types/property";
+import { ProjectUtil, UserUtil } from "@/utils/auth";
 import { onMounted, ref, computed } from "vue";
 
 const details = ref<ProjectInfoInterface>({} as ProjectInfoInterface);
@@ -266,6 +272,11 @@ const facilitiesData = ref<AmenitiesByType>({
   LEISURE: []
 });
 
+const props = defineProps<{
+  id: number;
+  shareUserId: number;
+}>();
+
 const currentFacilities = computed(() => {
   const categoryKey = categories.value[activeCategory.value].key;
   return facilitiesData.value[categoryKey as keyof typeof facilitiesData.value] || [];
@@ -275,8 +286,9 @@ const currentFacilities = computed(() => {
 const getProjectInfo = () => {
   requestApi
     .post("/v2.1/project/info", {
+      // id: props.id || ProjectUtil.getProjectInfo().projectId,
       id: 57,
-      shareUserId: 0
+      shareUserId: props.shareUserId || 0
     })
     .then(res => {
       if (res.code === 0) {
@@ -394,6 +406,44 @@ const toProgress = () => {
   uni.navigateTo({
     url: `/pages/share/progress?id=${details.value.id}`
   });
+};
+
+const toLocation = () => {
+  uni.openLocation({
+    latitude: details.value.latitude,
+    longitude: details.value.longitude
+  });
+};
+
+// 定义分享给朋友的回调
+const onShareAppMessage = () => {
+  return {
+    title: details.value.name,
+    content: details.value.address,
+    path: `/pages/share/index?id=${details.value.id}&shareUserId=${UserUtil.getUserInfo().id || 0}`,
+    imageUrl: details.value.overallReviewPictureUrl?.split(",")[0],
+    success: () => {
+      uni.showToast({ title: "分享成功", icon: "success" });
+    },
+    fail: () => {
+      uni.showToast({ title: "分享失败", icon: "none" });
+    }
+  };
+};
+
+// 定义分享到朋友圈的回调
+const onShareTimeline = () => {
+  return {
+    title: details.value.name,
+    query: `id=${details.value.id}`,
+    imageUrl: details.value.overallReviewPictureUrl?.split(",")[0],
+    success: () => {
+      uni.showToast({ title: "分享成功", icon: "success" });
+    },
+    fail: () => {
+      uni.showToast({ title: "分享失败", icon: "none" });
+    }
+  };
 };
 
 onMounted(() => {
@@ -739,5 +789,32 @@ onMounted(() => {
     align-items: center;
     justify-content: center;
   }
+}
+
+.share-icon {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.share-icon-container {
+  position: absolute;
+  top: 30rpx;
+  right: 30rpx;
+}
+
+.overall-review-picture-container {
+  position: relative;
 }
 </style>
