@@ -53,9 +53,9 @@
         <template v-if="currentTab === 1">
           <Property_1 :list="propertyList" />
         </template>
-        <template v-if="currentTab === 2">
+        <!-- <template v-if="currentTab === 2">
           <Property_2 :data="propertyInfo" :houseInfo="houseInfo" />
-        </template>
+        </template> -->
       </view>
     </template>
   </view>
@@ -132,9 +132,16 @@ const handleTabClick = (e: any) => {
   if (currentTab.value === 1) {
     getHouseSaleControl();
   }
+  // if (currentTab.value === 2) {
+  //   getPropertyInfo();
+  //   getHouseType();
+  // }
   if (currentTab.value === 2) {
-    getPropertyInfo();
-    getHouseType();
+    uni.navigateTo({
+      url: `/pages/share/index?id=${selectedLocation.value.id}&shareUserId=${
+        UserUtil.getUserInfo().id
+      }`
+    });
   }
 };
 

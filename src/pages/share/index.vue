@@ -369,8 +369,8 @@ const currentFacilities = computed(() => {
 const getProjectInfo = () => {
   requestApi
     .post("/v2.1/project/info", {
-      // id: props.id || ProjectUtil.getProjectInfo().projectId,
-      id: 57,
+      id: props.id || ProjectUtil.getProjectInfo().projectId,
+      // id: 57,
       shareUserId: props.shareUserId || 0
     })
     .then(res => {
@@ -451,15 +451,17 @@ const previewHouseImage = (url: string) => {
 const toOverallReviewPicture = () => {
   uni.navigateTo({
     url: `/pages/share/overallReviewPicture?id=${details.value.id}&shareUserId=${
-      UserUtil.getUserInfo().id || 0
-    }`
+      props.shareUserId || 0
+    }&realEstateConsultantName=${details.value.realEstateConsultantName}`
   });
 };
 
 // 跳转到户型展示
 const toHouseType = () => {
   uni.navigateTo({
-    url: `/pages/share/houseType?id=${details.value.id}&shareUserId=${props.shareUserId || 0}`
+    url: `/pages/share/houseType?id=${details.value.id}&shareUserId=${
+      props.shareUserId || 0
+    }&realEstateConsultantName=${details.value.realEstateConsultantName}`
   });
 };
 
