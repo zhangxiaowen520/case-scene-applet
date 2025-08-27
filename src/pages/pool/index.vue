@@ -21,13 +21,7 @@
           @click="handleBatchCancel"
           >取消选择</up-button
         >
-        <up-button
-          v-else
-          style="width: 120rpx"
-          color="#2C65F6"
-          type="primary"
-          size="small"
-          @click="handleBatchCancel"
+        <up-button v-else style="width: 120rpx" color="#2C65F6" type="primary" size="small" @click="handleBatchCancel"
           >批量选择</up-button
         >
         <up-button
@@ -43,43 +37,27 @@
     </view>
 
     <view class="filter-bar">
-      <view class="filter-item" @click="handleSortClick">
-        <text :class="{ active: sortType === 'all' }">全部</text>
-      </view>
-      <view class="filter-item" @click.stop="handIsAscendingTimeClick">
-        <text :class="{ active: sortType === 'isAscendingTime' }">{{
-          orderBy ? "创建时间升序" : "创建时间降序"
-        }}</text>
-        <up-icon
-          :name="orderBy ? 'arrow-up' : 'arrow-down'"
-          size="12"
-          :color="sortType === 'isAscendingTime' ? '#2C65F6' : '#666666'"
-        ></up-icon>
-      </view>
-      <view class="filter-item" @click.stop="handleIsAscendingLevelClick">
-        <text :class="{ active: sortType === 'isAscendingLevel' }">意向等级</text>
-        <up-icon
-          :name="orderBy ? 'arrow-up' : 'arrow-down'"
-          size="12"
-          :color="sortType === 'isAscendingLevel' ? '#2C65F6' : '#666666'"
-        ></up-icon>
+      <TimeSelection :timeStart="timeStart" :timeEnd="timeEnd" @timeStart="showTimeStart" @timeEnd="showTimeEnd" />
+      <picker :range="userValueList" @change="handleUserClick($event)">
+        <view class="filter-item">
+          <text>{{ userName }}</text>
+          <up-icon :name="'arrow-down'" size="12" :color="'#666666'"></up-icon>
+        </view>
+      </picker>
+
+      <view class="filter-item" @click="handleReasonClick">
+        <text>掉入原因</text>
+        <up-icon :name="'arrow-down'" size="12" :color="'#666666'"></up-icon>
       </view>
     </view>
 
     <view class="customer-list">
-      <view
-        class="customer-item"
-        v-for="(item, index) in list"
-        :key="index"
-        @click.stop="handleCustomerClick(item)"
-      >
+      <view class="customer-item" v-for="(item, index) in list" :key="index" @click.stop="handleCustomerClick(item)">
         <view class="avatar">
           <view class="avatar-text">{{ item.level || "-" }}</view>
           <template v-if="isBatch">
             <view
-              :class="
-                customerIds.includes(item.projectCustomerId) ? 'avatar-btn-active' : 'avatar-btn'
-              "
+              :class="customerIds.includes(item.projectCustomerId) ? 'avatar-btn-active' : 'avatar-btn'"
               @click="handleCustomerSelect(item.projectCustomerId)"
             >
               <view class="avatar-btn-inner"></view>
@@ -130,9 +108,7 @@
     <view class="select-all" v-if="isBatch">
       <view class="select-all-left">
         <view
-          :class="
-            isAllSelect || customerIds.length === list.length ? 'avatar-btn-active' : 'avatar-btn'
-          "
+          :class="isAllSelect || customerIds.length === list.length ? 'avatar-btn-active' : 'avatar-btn'"
           @click.stop="handleAllSelect"
         >
           <view class="avatar-btn-inner"></view>
@@ -142,21 +118,12 @@
         }}</text>
         <text class="select-all-number">已选择 {{ customerIds.length }} 组</text>
       </view>
-      <up-button
-        style="width: 120rpx"
-        color="#2C65F6"
-        type="primary"
-        size="small"
-        @click="handleBatchDistribute"
+      <up-button style="width: 120rpx" color="#2C65F6" type="primary" size="small" @click="handleBatchDistribute"
         >批量分配</up-button
       >
     </view>
 
-    <AssignPopup
-      :show="showAssignPopup"
-      @close="showAssignPopup = false"
-      @confirm="handleAssignConfirm"
-    />
+    <AssignPopup :show="showAssignPopup" @close="showAssignPopup = false" @confirm="handleAssignConfirm" />
   </view>
 </template>
 
@@ -169,6 +136,8 @@ import type { CustomerPoolInterface } from "@/types/pool";
 import AssignPopup from "@/components/AssignPopup/index.vue";
 import type { LoadStatusType } from "@/types/request";
 import { UserUtil } from "@/utils/auth";
+import TimeSelection from "@/components/TimeSelection/index.vue";
+import dayjs from "dayjs";
 
 // 加载状态
 const loadStatus = ref<LoadStatusType>("loading");
@@ -182,10 +151,6 @@ const list = ref<CustomerPoolInterface[]>([]);
 const isBatch = ref(false);
 //搜索关键字、客户名称、手机号
 const commonName = ref("");
-//排序类型
-const sortType = ref<"all" | "isAscendingLevel" | "isAscendingTime">("all");
-//排序
-const orderBy = ref<boolean>(false);
 //  客户id
 const customerId = ref(0);
 //批量选择
@@ -196,6 +161,15 @@ const isAllSelect = ref(false);
 const showAssignPopup = ref(false);
 //分配类型 0:分配 1:批量分配
 const assignType = ref(0);
+// 时间选择
+//当天
+const timeStart = ref(dayjs().format("YYYY-MM-DD"));
+const timeEnd = ref(dayjs().format("YYYY-MM-DD"));
+// 置业顾问
+const userList = ref<any[]>([]);
+const userValueList = ref<any[]>([]);
+const userId = ref("");
+const userName = ref("原职业顾问");
 
 // 根据项目id查询公客池
 const getCustomerPoolList = () => {
@@ -203,11 +177,9 @@ const getCustomerPoolList = () => {
   requestApi
     .post("/home/query/common/customer/pool", {
       commonName: commonName.value,
-      estateConsultantName: "",
-      orderField: sortType.value,
-      orderBy: orderBy.value,
       pageNumber: pageNumber.value,
       pageSize: 10,
+      oldEstateConsultantId: userId.value,
       projectId: ProjectUtil.getProjectInfo().projectId,
       id: OrganizationUtil.getOrganizationInfo().id,
       type: OrganizationUtil.getOrganizationInfo().type
@@ -225,38 +197,31 @@ const getCustomerPoolList = () => {
     });
 };
 
-const handleSortClick = () => {
-  // 处理排序点击
-  sortType.value = "all";
-  orderBy.value = false;
-  pageNumber.value = 1;
-  pages.value = 0;
-  list.value = [];
-  getCustomerPoolList();
+//获取置业顾问
+const getUserList = () => {
+  requestApi
+    .post("/home/wait/distribution/users", {
+      id: ProjectUtil.getProjectInfo().projectId
+    })
+    .then(res => {
+      if (res.code === 0) {
+        //增加一个默认选项
+        userList.value = [{ user: { id: 0, name: "全部" } }, ...res.data];
+        userValueList.value = ["全部", ...res.data.map((item: { user: { name: any } }) => item?.user?.name)];
+      }
+    });
+};
+
+const showTimeStart = (time: string) => {
+  timeStart.value = time;
+};
+
+const showTimeEnd = (time: string) => {
+  timeEnd.value = time;
 };
 
 //搜索关键字输入
 const handleCommonNameInput = () => {
-  pageNumber.value = 1;
-  pages.value = 0;
-  list.value = [];
-  getCustomerPoolList();
-};
-
-// 创建时间排序
-const handIsAscendingTimeClick = () => {
-  sortType.value = "isAscendingTime";
-  orderBy.value = !orderBy.value;
-  pageNumber.value = 1;
-  pages.value = 0;
-  list.value = [];
-  getCustomerPoolList();
-};
-
-// 意向等级排序
-const handleIsAscendingLevelClick = () => {
-  sortType.value = "isAscendingLevel";
-  orderBy.value = !orderBy.value;
   pageNumber.value = 1;
   pages.value = 0;
   list.value = [];
@@ -390,12 +355,35 @@ const handleCustomerClick = (item: any) => {
   });
 };
 
+// 置业顾问点击
+const handleUserClick = (event: any) => {
+  const index = event.detail.value;
+  if (index == 0) {
+    userId.value = "";
+    userName.value = "原职业顾问";
+  } else {
+    userId.value = userList.value[index].user.id;
+    userName.value = userList.value[index].user.name;
+  }
+
+  pageNumber.value = 1;
+  pages.value = 0;
+  list.value = [];
+  getCustomerPoolList();
+};
+
+// 掉入原因点击
+const handleReasonClick = () => {
+  console.log("掉入原因点击");
+};
+
 onShow(() => {
   pageNumber.value = 1;
   pages.value = 0;
   list.value = [];
 
   getCustomerPoolList();
+  getUserList();
 });
 
 onReachBottom(() => {

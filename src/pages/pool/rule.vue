@@ -7,7 +7,7 @@
     <view class="rule-question">
       <text>置业顾问每天可抢</text>
       <input type="number" class="rule-input" v-model="takeReportPool" />
-      <text>个客户</text>
+      <text>天未到访客户</text>
     </view>
   </view>
 
