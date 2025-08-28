@@ -191,12 +191,13 @@
           <scroll-view class="certification-times" scroll-x="true" show-scrollbar="false">
             <view
               class="certification-time"
-              v-for="(item, index) in details.progresses"
+              v-for="(item, index) in sortedProgresses"
               :key="index"
               :class="{ active: index === activeTimeIndex }"
+              @click="selectProgressTime(index)"
             >
               <view class="time-label">取证时间</view>
-              <view class="time-value">{{ item.createTime }}</view>
+              <view class="time-value">{{ item.takeTime }}</view>
             </view>
           </scroll-view>
           <view class="progress-steps">
@@ -205,13 +206,15 @@
                 <view
                   class="step-icon"
                   :class="{
-                    completed: index < currentProgressIndex,
-                    current: index === currentProgressIndex,
-                    pending: index > currentProgressIndex
+                    completed: index < sortedProgresses.length - activeTimeIndex,
+                    current: index === sortedProgresses.length - activeTimeIndex,
+                    pending: index > sortedProgresses.length - activeTimeIndex
                   }"
                 >
-                  <text v-if="index > currentProgressIndex" class="step-number">{{ index + 1 }}</text>
-                  <text v-else-if="index === currentProgressIndex" class="step-text">进行中</text>
+                  <text v-if="index > sortedProgresses.length - activeTimeIndex" class="step-number">{{
+                    index + 1
+                  }}</text>
+                  <text v-else-if="index === sortedProgresses.length - activeTimeIndex" class="step-text">进行中</text>
                   <text v-else class="icon-check">✓</text>
                 </view>
                 <text class="step-title">{{ item.name }}</text>
@@ -220,7 +223,12 @@
                 <view
                   class="step-line"
                   :style="{
-                    width: index < currentProgressIndex ? '100%' : index === currentProgressIndex ? '50%' : '0%'
+                    width:
+                      index < sortedProgresses.length - 1 - activeTimeIndex
+                        ? '100%'
+                        : index === sortedProgresses.length - 1 - activeTimeIndex
+                        ? '50%'
+                        : '0%'
                   }"
                 ></view>
               </view>
@@ -324,14 +332,26 @@ const progressSteps = [
 
 const progresses = ref<any[]>([]);
 
+// 倒序排列的进度数据（最新的在最前面）
+const sortedProgresses = computed(() => {
+  if (!details.value.progresses?.length) return [];
+  return [...details.value.progresses].reverse();
+});
+
 // 计算当前进度索引
 const currentProgressIndex = computed(() => {
   // 如果没有进度数据，返回-1
   if (!details.value.progresses?.length) return -1;
 
-  // 返回进度数据的长度减1（因为数组索引从0开始）
-  return details.value.progresses.length;
+  // 根据选中的时间索引计算进度
+  // 选中的时间索引 + 1 表示当前进行到的步骤
+  return activeTimeIndex.value + 1;
 });
+
+// 选择进度时间
+const selectProgressTime = (index: number) => {
+  activeTimeIndex.value = index;
+};
 
 const props = defineProps<{
   id: number;
@@ -356,6 +376,10 @@ const getProjectInfo = () => {
         details.value = res.data;
         // 更新进度数据
         progresses.value = details.value.progresses || [];
+        // 默认选择最新的进度时间（倒序后第一个）
+        if (details.value.progresses && details.value.progresses.length > 0) {
+          activeTimeIndex.value = 0;
+        }
         // 将周边配套数据转换为数组 projectNearbyAmenities
         if (details.value.projectNearbyAmenities && details.value.projectNearbyAmenities.length > 0) {
           const amenitiesByType: AmenitiesByType = {
@@ -866,15 +890,15 @@ onMounted(() => {
   .certification-times {
     margin-bottom: 30rpx;
     white-space: nowrap;
+    overflow-x: auto;
   }
 
   .certification-time {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: flex-start;
+    display: inline-block;
+    width: calc(50% - 60rpx);
+    margin-right: 20rpx;
     padding: 20rpx 30rpx;
     background: #f9f9f9;
-    margin-right: 20rpx;
     border-radius: 12rpx;
     transition: all 0.3s ease;
 
@@ -885,7 +909,6 @@ onMounted(() => {
     .time-label {
       font-size: 24rpx;
       color: #666;
-      margin-right: 20rpx;
       margin-bottom: 10rpx;
     }
 
