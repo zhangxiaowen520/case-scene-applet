@@ -1,12 +1,7 @@
 <template>
   <view class="page-container">
     <view class="overall-review-picture-container" :style="containerStyle">
-      <image
-        :src="details.imgUrl"
-        class="overall-review-picture-img"
-        mode="widthFix"
-        @load="onImageLoad"
-      />
+      <image :src="details.imgUrl" class="overall-review-picture-img" mode="widthFix" @load="onImageLoad" />
       <view
         v-for="item in details.floorList"
         :key="item.id"
@@ -45,9 +40,7 @@
       <view class="building-header">
         <view class="building-title">
           <text class="title-text">{{ selectedFloor.name }}</text>
-          <view class="status-tag" :class="getStatusClass(selectedFloor.state)">{{
-            selectedFloor.stateName
-          }}</view>
+          <view class="status-tag" :class="getStatusClass(selectedFloor.state)">{{ selectedFloor.stateName }}</view>
         </view>
       </view>
 
@@ -115,6 +108,7 @@
       <button
         class="advisor-phone"
         open-type="getPhoneNumber"
+        :disabled="TokenUtil.hasToken()"
         @getphonenumber="getWechatCustomerPhone"
         :loading="loading"
       >
@@ -128,6 +122,7 @@
 <script setup lang="ts">
 import { requestApi } from "@/api/request";
 import { onMounted, ref, computed } from "vue";
+import { TokenUtil } from "@/utils/auth";
 
 interface OverallReviewPictureType {
   floorList: FloorListType[];
@@ -197,9 +192,7 @@ const containerStyle = computed(() => {
   return {
     position: "relative" as const,
     width: "100%",
-    paddingBottom: imageSize.value.height
-      ? `${(imageSize.value.height / imageSize.value.width) * 100}%`
-      : "75%"
+    paddingBottom: imageSize.value.height ? `${(imageSize.value.height / imageSize.value.width) * 100}%` : "75%"
   };
 });
 

@@ -29,6 +29,7 @@
       <button
         class="advisor-phone"
         open-type="getPhoneNumber"
+        :disabled="TokenUtil.hasToken()"
         @getphonenumber="getWechatCustomerPhone"
         :loading="loading"
       >
@@ -42,6 +43,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { requestApi } from "@/api/request";
+import { TokenUtil } from "@/utils/auth";
 
 interface HouseTypeType {
   area: string;

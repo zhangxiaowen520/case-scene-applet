@@ -6,9 +6,7 @@
       <view class="active-details-info">
         <view class="info-item">
           <view class="info-label">报名时间：</view>
-          <view class="info-value"
-            >{{ details.signUpStartTime }} - {{ details.signUpEndTime }}</view
-          >
+          <view class="info-value">{{ details.signUpStartTime }} - {{ details.signUpEndTime }}</view>
         </view>
         <view class="info-item">
           <view class="info-label">活动时间：</view>
@@ -39,6 +37,7 @@
         v-if="details.status === 3"
         class="signup-button"
         open-type="getPhoneNumber"
+        :disabled="TokenUtil.hasToken()"
         @getphonenumber="getWechatCustomerPhone"
         :loading="loading"
       >
@@ -53,8 +52,8 @@
 
 <script setup lang="ts">
 import { requestApi } from "@/api/request";
-import { onLoad } from "@dcloudio/uni-app";
 import { onMounted, ref } from "vue";
+import { TokenUtil } from "@/utils/auth";
 
 interface DetailsType {
   createTime: string;

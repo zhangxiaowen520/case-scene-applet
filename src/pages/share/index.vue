@@ -1,11 +1,7 @@
 <template>
   <view class="share-page">
     <view v-if="details.overallReviewPictureUrl" class="overall-review-picture-container">
-      <u-swiper
-        height="300"
-        :list="details.overallReviewPictureUrl?.split(',') || []"
-        @click="previewImage"
-      ></u-swiper>
+      <u-swiper height="300" :list="details.overallReviewPictureUrl?.split(',') || []" @click="previewImage"></u-swiper>
       <view class="share-icon-container">
         <button open-type="share" class="share-icon">
           <image src="@/static/images/share.png" mode="widthFix" class="share-icon"></image>
@@ -46,15 +42,11 @@
           <button
             class="info-inquiry"
             open-type="getPhoneNumber"
+            :disabled="TokenUtil.hasToken()"
             @getphonenumber="getWechatCustomerPhone"
             :loading="loading"
           >
-            <img
-              v-if="!loading"
-              src="@/static/images/inquiry.png"
-              alt=""
-              class="info-inquiry-icon"
-            />
+            <img v-if="!loading" src="@/static/images/inquiry.png" alt="" class="info-inquiry-icon" />
             <text v-if="loading">提交中</text>
             <text v-if="!loading">咨询楼栋详情</text>
           </button>
@@ -111,8 +103,8 @@
               :latitude="details.latitude"
               :longitude="details.longitude"
               :show-location="true"
-              :enable-zoom="true"
-              :enable-scroll="true"
+              :enable-zoom="false"
+              :enable-scroll="false"
               :enable-rotate="false"
               :markers="[
                 {
@@ -137,11 +129,7 @@
           </view>
           <scroll-view class="facility-list" scroll-y="true" show-scrollbar="false">
             <template v-if="currentFacilities.length > 0">
-              <view
-                v-for="(facility, index) in currentFacilities"
-                :key="index"
-                class="facility-item"
-              >
+              <view v-for="(facility, index) in currentFacilities" :key="index" class="facility-item">
                 <view class="facility-info">
                   <view class="facility-name">{{ facility.name }}</view>
                 </view>
@@ -155,17 +143,13 @@
           <!-- 咨询按钮 -->
           <button
             class="info-inquiry"
+            :disabled="TokenUtil.hasToken()"
             open-type="getPhoneNumber"
             @getphonenumber="getWechatCustomerPhone"
             :loading="loading"
           >
             <text v-if="loading">提交中</text>
-            <img
-              v-if="!loading"
-              src="@/static/images/inquiry.png"
-              alt=""
-              class="info-inquiry-icon"
-            />
+            <img v-if="!loading" src="@/static/images/inquiry.png" alt="" class="info-inquiry-icon" />
             <text v-if="!loading">咨询周边详情</text>
           </button>
         </view>
@@ -226,9 +210,7 @@
                     pending: index > currentProgressIndex
                   }"
                 >
-                  <text v-if="index > currentProgressIndex" class="step-number">{{
-                    index + 1
-                  }}</text>
+                  <text v-if="index > currentProgressIndex" class="step-number">{{ index + 1 }}</text>
                   <text v-else-if="index === currentProgressIndex" class="step-text">进行中</text>
                   <text v-else class="icon-check">✓</text>
                 </view>
@@ -238,12 +220,7 @@
                 <view
                   class="step-line"
                   :style="{
-                    width:
-                      index < currentProgressIndex
-                        ? '100%'
-                        : index === currentProgressIndex
-                        ? '50%'
-                        : '0%'
+                    width: index < currentProgressIndex ? '100%' : index === currentProgressIndex ? '50%' : '0%'
                   }"
                 ></view>
               </view>
@@ -261,6 +238,7 @@
           </view>
         </view>
         <button
+          :disabled="TokenUtil.hasToken()"
           class="advisor-phone"
           open-type="getPhoneNumber"
           @getphonenumber="getWechatCustomerPhone"
@@ -277,7 +255,7 @@
 <script setup lang="ts">
 import { requestApi } from "@/api/request";
 import type { ProjectInfoInterface } from "@/types/property";
-import { ProjectUtil, UserUtil } from "@/utils/auth";
+import { ProjectUtil, TokenUtil, UserUtil } from "@/utils/auth";
 import { onMounted, ref, computed } from "vue";
 
 const details = ref<ProjectInfoInterface>({} as ProjectInfoInterface);
@@ -379,10 +357,7 @@ const getProjectInfo = () => {
         // 更新进度数据
         progresses.value = details.value.progresses || [];
         // 将周边配套数据转换为数组 projectNearbyAmenities
-        if (
-          details.value.projectNearbyAmenities &&
-          details.value.projectNearbyAmenities.length > 0
-        ) {
+        if (details.value.projectNearbyAmenities && details.value.projectNearbyAmenities.length > 0) {
           const amenitiesByType: AmenitiesByType = {
             TRAFFIC: [],
             EDUCATE: [],
@@ -492,6 +467,7 @@ const handleActivityDetails = (activityId: number) => {
   });
 };
 
+// 跳转到地图
 const toLocation = () => {
   uni.openLocation({
     latitude: details.value.latitude,
@@ -1124,6 +1100,22 @@ onMounted(() => {
     &[loading] {
       opacity: 0.7;
     }
+  }
+  .advisor-phone-disabled {
+    width: 310rpx;
+    height: 120rpx;
+    border-radius: 12rpx;
+    background: #979797 !important;
+    font-size: 28rpx;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    padding: 0;
+    margin: 0;
+    line-height: 1.5;
   }
 }
 

@@ -38,17 +38,18 @@
 
     <view class="filter-bar">
       <TimeSelection :timeStart="timeStart" :timeEnd="timeEnd" @timeStart="showTimeStart" @timeEnd="showTimeEnd" />
-      <picker :range="userValueList" @change="handleUserClick($event)">
+      <picker :range="userValueList" @change="handleUserClick($event)" class="filter-item">
         <view class="filter-item">
           <text>{{ userName }}</text>
           <up-icon :name="'arrow-down'" size="12" :color="'#666666'"></up-icon>
         </view>
       </picker>
-
-      <view class="filter-item" @click="handleReasonClick">
-        <text>掉入原因</text>
-        <up-icon :name="'arrow-down'" size="12" :color="'#666666'"></up-icon>
-      </view>
+      <picker :range="reasonValueList" @change="handleReasonClick($event)" class="filter-item">
+        <view class="filter-item">
+          <text>掉入原因</text>
+          <up-icon :name="'arrow-down'" size="12" :color="'#666666'"></up-icon>
+        </view>
+      </picker>
     </view>
 
     <view class="customer-list">
@@ -163,13 +164,24 @@ const showAssignPopup = ref(false);
 const assignType = ref(0);
 // 时间选择
 //当天
-const timeStart = ref(dayjs().format("YYYY-MM-DD"));
+const timeStart = ref(dayjs().subtract(30, "day").format("YYYY-MM-DD"));
 const timeEnd = ref(dayjs().format("YYYY-MM-DD"));
 // 置业顾问
 const userList = ref<any[]>([]);
 const userValueList = ref<any[]>([]);
 const userId = ref("");
 const userName = ref("原职业顾问");
+// 掉入原因
+const reasonList = ref<any[]>([
+  { value: "0", label: "全部" },
+  { value: "FAILED_TO_FOLLOW_UP", label: "跟进不及时" },
+  { value: "ABANDONED", label: "主动放弃" },
+  { value: "TRANSACTION_CANCELED", label: "交易作废" },
+  { value: "PERSONNEL_CHANGE", label: "人员变更" }
+]);
+const reasonValueList = ref<any[]>(reasonList.value.map(item => item.label));
+const reasonId = ref("");
+const reasonName = ref("掉入原因");
 
 // 根据项目id查询公客池
 const getCustomerPoolList = () => {
@@ -179,7 +191,10 @@ const getCustomerPoolList = () => {
       commonName: commonName.value,
       pageNumber: pageNumber.value,
       pageSize: 10,
+      dateTimeBegin: timeStart.value,
+      dateTimeEnd: timeEnd.value,
       oldEstateConsultantId: userId.value,
+      reasonType: reasonId.value,
       projectId: ProjectUtil.getProjectInfo().projectId,
       id: OrganizationUtil.getOrganizationInfo().id,
       type: OrganizationUtil.getOrganizationInfo().type
@@ -214,10 +229,18 @@ const getUserList = () => {
 
 const showTimeStart = (time: string) => {
   timeStart.value = time;
+  pageNumber.value = 1;
+  pages.value = 0;
+  list.value = [];
+  getCustomerPoolList();
 };
 
 const showTimeEnd = (time: string) => {
   timeEnd.value = time;
+  pageNumber.value = 1;
+  pages.value = 0;
+  list.value = [];
+  getCustomerPoolList();
 };
 
 //搜索关键字输入
@@ -373,8 +396,20 @@ const handleUserClick = (event: any) => {
 };
 
 // 掉入原因点击
-const handleReasonClick = () => {
-  console.log("掉入原因点击");
+const handleReasonClick = (event: any) => {
+  const index = event.detail.value;
+  if (index == 0) {
+    reasonId.value = "";
+    reasonName.value = "掉入原因";
+  } else {
+    reasonId.value = reasonList.value[index].value;
+    reasonName.value = reasonList.value[index].label;
+  }
+
+  pageNumber.value = 1;
+  pages.value = 0;
+  list.value = [];
+  getCustomerPoolList();
 };
 
 onShow(() => {
