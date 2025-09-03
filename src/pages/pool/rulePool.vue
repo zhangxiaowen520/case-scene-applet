@@ -15,10 +15,22 @@
 
 <script setup lang="ts">
 import { requestApi } from "@/api/request";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { ProjectUtil } from "@/utils/auth";
 
 const takeCommonPool = ref(0);
+
+const getRuleList = () => {
+  requestApi
+    .post("/home/query/project/config/applet", {
+      id: ProjectUtil.getProjectInfo().projectId
+    })
+    .then(res => {
+      if (res.code === 0) {
+        takeCommonPool.value = res.data.takeCommonPool;
+      }
+    });
+};
 
 const handleCancel = () => {
   uni.navigateBack();
@@ -45,6 +57,10 @@ const handleSave = () => {
       }
     });
 };
+
+onMounted(() => {
+  getRuleList();
+});
 </script>
 
 <style lang="scss" scoped>

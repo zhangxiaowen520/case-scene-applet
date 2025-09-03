@@ -102,6 +102,7 @@ const getRuleList = () => {
           name: item.groupUserName,
           originSort: item.sort
         }));
+        takeReportPool.value = res.data.takeReportPool;
       }
     });
 };
