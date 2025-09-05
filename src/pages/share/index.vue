@@ -1,7 +1,11 @@
 <template>
   <view class="share-page">
-    <view v-if="details.overallReviewPictureUrl" class="overall-review-picture-container">
-      <u-swiper height="300" :list="details.overallReviewPictureUrl?.split(',') || []" @click="previewImage"></u-swiper>
+    <view v-if="details.outdoorLandscapeImg" class="overall-review-picture-container">
+      <u-swiper
+        height="300"
+        :list="details.outdoorLandscapeImg?.split(',') || []"
+        @click="previewImage"
+      ></u-swiper>
       <view class="share-icon-container">
         <button open-type="share" class="share-icon">
           <image src="@/static/images/share.png" mode="widthFix" class="share-icon"></image>
@@ -37,7 +41,7 @@
           <u-swiper
             height="150"
             :list="details.overallReviewPictureUrl?.split(',') || []"
-            @click="previewImage"
+            @click="previewImage2"
           ></u-swiper>
           <button
             class="info-inquiry"
@@ -46,7 +50,12 @@
             @getphonenumber="getWechatCustomerPhone"
             :loading="loading"
           >
-            <img v-if="!loading" src="@/static/images/inquiry.png" alt="" class="info-inquiry-icon" />
+            <img
+              v-if="!loading"
+              src="@/static/images/inquiry.png"
+              alt=""
+              class="info-inquiry-icon"
+            />
             <text v-if="loading">提交中</text>
             <text v-if="!loading">咨询楼栋详情</text>
           </button>
@@ -129,7 +138,11 @@
           </view>
           <scroll-view class="facility-list" scroll-y="true" show-scrollbar="false">
             <template v-if="currentFacilities.length > 0">
-              <view v-for="(facility, index) in currentFacilities" :key="index" class="facility-item">
+              <view
+                v-for="(facility, index) in currentFacilities"
+                :key="index"
+                class="facility-item"
+              >
                 <view class="facility-info">
                   <view class="facility-name">{{ facility.name }}</view>
                 </view>
@@ -149,7 +162,12 @@
             :loading="loading"
           >
             <text v-if="loading">提交中</text>
-            <img v-if="!loading" src="@/static/images/inquiry.png" alt="" class="info-inquiry-icon" />
+            <img
+              v-if="!loading"
+              src="@/static/images/inquiry.png"
+              alt=""
+              class="info-inquiry-icon"
+            />
             <text v-if="!loading">咨询周边详情</text>
           </button>
         </view>
@@ -194,6 +212,9 @@
               v-for="(item, index) in sortedProgresses"
               :key="index"
               :class="{ active: index === activeTimeIndex }"
+              :style="{
+                width: sortedProgresses.length > 2 ? 'calc(50% - 100rpx)' : 'calc(50% - 60rpx)'
+              }"
               @click="selectProgressTime(index)"
             >
               <view class="time-label">取证时间</view>
@@ -211,10 +232,16 @@
                     pending: index > sortedProgresses.length - activeTimeIndex
                   }"
                 >
-                  <text v-if="index > sortedProgresses.length - activeTimeIndex" class="step-number">{{
-                    index + 1
-                  }}</text>
-                  <text v-else-if="index === sortedProgresses.length - activeTimeIndex" class="step-text">进行中</text>
+                  <text
+                    v-if="index > sortedProgresses.length - activeTimeIndex"
+                    class="step-number"
+                    >{{ index + 1 }}</text
+                  >
+                  <text
+                    v-else-if="index === sortedProgresses.length - activeTimeIndex"
+                    class="step-text"
+                    >进行中</text
+                  >
                   <text v-else class="icon-check">✓</text>
                 </view>
                 <text class="step-title">{{ item.name }}</text>
@@ -381,7 +408,10 @@ const getProjectInfo = () => {
           activeTimeIndex.value = 0;
         }
         // 将周边配套数据转换为数组 projectNearbyAmenities
-        if (details.value.projectNearbyAmenities && details.value.projectNearbyAmenities.length > 0) {
+        if (
+          details.value.projectNearbyAmenities &&
+          details.value.projectNearbyAmenities.length > 0
+        ) {
           const amenitiesByType: AmenitiesByType = {
             TRAFFIC: [],
             EDUCATE: [],
@@ -417,6 +447,22 @@ const switchCategory = (index: number) => {
 
 //预览
 const previewImage = (index: number) => {
+  // 将逗号分隔的图片字符串转换为数组
+  const imageList = details.value.outdoorLandscapeImg?.split(",") || [];
+  uni.previewImage({
+    current: index,
+    urls: imageList,
+    success: () => {
+      console.log("图片预览成功");
+    },
+    fail: err => {
+      console.error("图片预览失败:", err);
+    }
+  });
+};
+
+//预览
+const previewImage2 = (index: number) => {
   // 将逗号分隔的图片字符串转换为数组
   const imageList = details.value.overallReviewPictureUrl?.split(",") || [];
   uni.previewImage({

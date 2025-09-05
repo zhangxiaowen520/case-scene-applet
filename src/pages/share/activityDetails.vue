@@ -1,12 +1,15 @@
 <template>
   <view class="active-details">
+    <SignUpPopup v-model:show="showSignUpPopup" @submit="handleSignUpSubmit" />
     <image :src="details.titleImg" class="active-details-image" mode="aspectFill" />
     <view class="active-details-content">
       <view class="active-details-title">{{ details.title }}</view>
       <view class="active-details-info">
         <view class="info-item">
           <view class="info-label">报名时间：</view>
-          <view class="info-value">{{ details.signUpStartTime }} - {{ details.signUpEndTime }}</view>
+          <view class="info-value"
+            >{{ details.signUpStartTime }} - {{ details.signUpEndTime }}</view
+          >
         </view>
         <view class="info-item">
           <view class="info-label">活动时间：</view>
@@ -16,29 +19,18 @@
           <view class="info-label">活动地点：</view>
           <view class="info-value">{{ details.location }}</view>
         </view>
-        <view class="info-item">
-          <view class="info-label">报名人数：</view>
-          <view class="info-value">{{ details.numberOfApplicants }} 人报名</view>
-        </view>
       </view>
     </view>
     <view class="active-details-section">
       <view class="section-title">活动简介</view>
       <view class="section-content">{{ details.introduction }}</view>
     </view>
-    <view class="active-details-section">
-      <view class="section-title">活动规则</view>
-      <view class="section-content">
-        <!-- {{ details.ruleText }} -->
-      </view>
-    </view>
     <view class="active-details-footer">
       <button
         v-if="details.status === 3"
         class="signup-button"
         open-type="getPhoneNumber"
-        :disabled="TokenUtil.hasToken()"
-        @getphonenumber="getWechatCustomerPhone"
+        @click="handleSignUp"
         :loading="loading"
       >
         <text v-if="loading">提交中</text>
@@ -53,7 +45,7 @@
 <script setup lang="ts">
 import { requestApi } from "@/api/request";
 import { onMounted, ref } from "vue";
-import { TokenUtil } from "@/utils/auth";
+import SignUpPopup from "@/components/SignUpPopup/index.vue";
 
 interface DetailsType {
   createTime: string;
@@ -96,59 +88,33 @@ const getActiveDetails = () => {
 
 //获取微信客户手机号，value为微信获取手机号返回的code
 const loading = ref(false);
+const showSignUpPopup = ref(false);
 
-const getWechatCustomerPhone = async (e: any) => {
-  // 如果用户拒绝授权
-  if (!e.detail.code) {
-    uni.showToast({
-      title: "获取手机号失败，请重试",
-      icon: "none"
-    });
-    return;
-  }
+const handleSignUp = () => {
+  showSignUpPopup.value = true;
+};
 
+const handleSignUpSubmit = async (form: { customerName: string; phone: string }) => {
+  loading.value = true;
   try {
-    loading.value = true;
-    const res = await requestApi.post("/common/applet/wx/phone", {
-      value: e.detail.code
+    const res = await requestApi.post("/v2.1/project/activity/sign", {
+      customerName: form.customerName,
+      phone: form.phone,
+      projectActivityId: Number(props.activityId)
     });
 
-    if (res.code === 0 && res.data) {
-      // 保存手机号到本地
-      uni.setStorageSync("userPhone", res.data.phone);
-      //咨询报备
-      advisoryClick(res.data);
+    if (res.code === 0) {
+      uni.showToast({ title: "报名成功", icon: "success" });
+      getActiveDetails(); // 刷新活动详情
     } else {
-      throw new Error(res.msg || "获取手机号失败");
+      uni.showToast({ title: res.msg || "报名失败", icon: "error" });
     }
-  } catch (error: any) {
-    uni.showToast({
-      title: error.message || "获取手机号失败，请重试",
-      icon: "none"
-    });
+  } catch (error) {
+    console.error("报名失败：", error);
+    uni.showToast({ title: "报名失败，请稍后重试", icon: "error" });
   } finally {
     loading.value = false;
   }
-};
-
-//咨询报备/v2.1/project/advisory
-const advisoryClick = (phone: string) => {
-  requestApi
-    .post("/v2.1/project/advisory", {
-      id: 0,
-      phone: phone,
-      shareUserId: props.shareUserId || 0
-    })
-    .then(res => {
-      if (res.code === 0) {
-        uni.showModal({
-          title: "提交成功",
-          content: "稍后会有置业顾问联系您"
-        });
-      } else {
-        uni.showToast({ title: res.msg, icon: "none" });
-      }
-    });
 };
 
 onMounted(() => {

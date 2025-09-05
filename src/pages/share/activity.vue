@@ -22,7 +22,7 @@
           <view class="list-item-time">
             活动时间：{{ item.signUpStartTime }} - {{ item.signUpEndTime }}
           </view>
-          <view class="list-item-time"> 报名人数：{{ item.numberOfApplicants || 0 }} 人 </view>
+          <!-- <view class="list-item-time"> 报名人数：{{ item.numberOfApplicants || 0 }} 人 </view> -->
           <view class="list-status">
             <text v-if="item.status === 1">活动未开始</text>
             <text v-if="item.status === 2">活动已结束</text>
