@@ -29,7 +29,6 @@
       <button
         v-if="details.status === 3"
         class="signup-button"
-        open-type="getPhoneNumber"
         @click="handleSignUp"
         :loading="loading"
       >
