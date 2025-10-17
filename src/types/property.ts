@@ -66,6 +66,7 @@ export interface ProjectInfoInterface {
   longitude: number;
   name: string;
   outdoorLandscapeImg: string;
+  birdSEyeImg: string;
   overallReviewPictureUrl: string;
   progresses: any[];
   projectNearbyAmenities: any[];

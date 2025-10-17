@@ -23,7 +23,7 @@
           show-arrow
         />
       </view>
-      <view @click="handleSourceChannelChange">
+      <!-- <view @click="handleSourceChannelChange">
         <form-input
           label="来源渠道"
           v-model="sourceChannelName"
@@ -32,7 +32,7 @@
           disabled
           show-arrow
         />
-      </view>
+      </view> -->
       <view @click="handleProjectChange">
         <form-input
           label="报备项目"
@@ -154,22 +154,22 @@ const isAllCompleted = computed(() => {
   return reportStatus.value.every(item => item.status === "success" || item.status === "failed");
 });
 
-const handleSourceChannelChange = () => {
-  uni.showActionSheet({
-    itemList: ["销售", "策划", "渠道", "全民", "物业"],
-    success: res => {
-      const map = {
-        0: "销售",
-        1: "策划",
-        2: "渠道",
-        3: "全民",
-        4: "物业"
-      };
-      sourceChannelName.value = map[res.tapIndex as keyof typeof map];
-      sourceChannel.value = res.tapIndex + 1;
-    }
-  });
-};
+// const handleSourceChannelChange = () => {
+//   uni.showActionSheet({
+//     itemList: ["销售", "策划", "渠道", "全民", "物业"],
+//     success: res => {
+//       const map = {
+//         0: "销售",
+//         1: "策划",
+//         2: "渠道",
+//         3: "全民",
+//         4: "物业"
+//       };
+//       sourceChannelName.value = map[res.tapIndex as keyof typeof map];
+//       sourceChannel.value = res.tapIndex + 1;
+//     }
+//   });
+// };
 
 const handleHasOldCustomerChange = () => {
   uni.showActionSheet({
@@ -282,7 +282,7 @@ const handleSave = async () => {
         phone: phone.value,
         sex: sex.value,
         projectId: pid,
-        sourceChannel: sourceChannel.value,
+        // sourceChannel: sourceChannel.value,
         hasOldCustomer: hasOldCustomer.value,
         ...(isChannelKing.value && { reportStore: reportStoreName.value })
       };

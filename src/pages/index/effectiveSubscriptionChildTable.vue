@@ -16,7 +16,11 @@
     </view>
     <!-- 客户列表 -->
     <view class="customer-list">
-      <view class="customer-item" v-for="(item, index) in customerList" :key="item.projectCustomerId">
+      <view
+        class="customer-item"
+        v-for="(item, index) in customerList"
+        :key="item.projectCustomerId"
+      >
         <view class="avatar">
           <view class="avatar-text">{{ item.level || "-" }}</view>
         </view>
@@ -76,7 +80,10 @@
               class="count-down"
             >
               <text class="status-green">跟进倒计时</text>
-              <up-count-down :time="getTimeRemaining(item.nextFollowUpTime)" format="HH:mm:ss"></up-count-down>
+              <up-count-down
+                :time="getTimeRemaining(item.nextFollowUpTime)"
+                format="HH:mm:ss"
+              ></up-count-down>
             </view>
             <text v-if="item.lastProjectCustomerTime" class="status-red"
               >上次到访 {{ item.lastProjectCustomerTime.slice(0, 10) }}</text
@@ -99,7 +106,8 @@
         <view class="action-btn">
           <up-button
             v-if="
-              (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+              (UserUtil.getDataPermissionType() === 'PROJECT' ||
+                UserUtil.getDataPermissionType() === 'SELF') &&
               UserUtil.getUserInfo().id === item?.realEstateConsultantId
             "
             plain
@@ -111,7 +119,8 @@
           >
           <up-button
             v-if="
-              (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+              (UserUtil.getDataPermissionType() === 'PROJECT' ||
+                UserUtil.getDataPermissionType() === 'SELF') &&
               item.visitNumber > 0 &&
               UserUtil.getUserInfo().id === item?.realEstateConsultantId
             "
@@ -124,7 +133,8 @@
           >
           <up-button
             v-if="
-              (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
+              (UserUtil.getDataPermissionType() === 'PROJECT' ||
+                UserUtil.getDataPermissionType() === 'SELF') &&
               UserUtil.getUserInfo().id === item?.realEstateConsultantId &&
               item.visitNumber > 0 &&
               item.hasPhone
@@ -140,6 +150,13 @@
       </view>
       <up-loadmore :status="loadStatus" :nomore-text="`共 ${customerList.length} 条`" />
     </view>
+    <VisitPopup
+      :id="customerId"
+      :phone="customerPhone"
+      :show="isVisitPopup"
+      @close="handleVisitPopupClose"
+      @confirm="visitConfirm"
+    />
   </view>
 </template>
 
@@ -151,6 +168,7 @@ import { UserUtil, OrganizationUtil } from "@/utils/auth";
 import type { CustomerInterface } from "@/types/customer";
 import dayjs from "dayjs";
 import { getTimeRemaining } from "@/utils/tools";
+import VisitPopup from "@/components/VisitPopup/index.vue";
 
 const props = defineProps<{
   dataId: number;
@@ -171,6 +189,12 @@ const pages = ref(0);
 const commonName = ref("");
 //客户列表
 const customerList = ref<CustomerInterface[]>([]);
+//客户到访弹窗
+const isVisitPopup = ref(false);
+//客户id
+const customerId = ref(0);
+//客户手机号
+const customerPhone = ref("");
 
 //搜索关键字输入
 const handleCommonNameInput = () => {
@@ -229,39 +253,85 @@ const handleWriteFollowUpClick = (item: CustomerInterface) => {
 };
 
 // 客户到访
+// const handleCustomerVisitClick = (id: number, phone: string) => {
+//   uni.showModal({
+//     title: "提示",
+//     content: "是否确认到访?",
+//     success: res => {
+//       if (res.confirm) {
+//         requestApi
+//           .post("/customer/visit", {
+//             projectCustomerId: id,
+//             code: "1234"
+//           })
+//           .then(res => {
+//             if (res.code === 0) {
+//               uni.showToast({
+//                 title: "操作成功",
+//                 icon: "success"
+//               });
+//               setTimeout(() => {
+//                 pageNumber.value = 1;
+//                 pages.value = 0;
+//                 customerList.value = [];
+//                 getCustomerList();
+//               }, 0);
+//             } else {
+//               uni.showToast({
+//                 title: res.msg,
+//                 icon: "none"
+//               });
+//             }
+//           });
+//       }
+//     }
+//   });
+// };
+
 const handleCustomerVisitClick = (id: number, phone: string) => {
-  uni.showModal({
-    title: "提示",
-    content: "是否确认到访?",
-    success: res => {
-      if (res.confirm) {
-        requestApi
-          .post("/customer/visit", {
-            projectCustomerId: id,
-            code: "1234"
-          })
-          .then(res => {
-            if (res.code === 0) {
-              uni.showToast({
-                title: "操作成功",
-                icon: "success"
-              });
-              setTimeout(() => {
-                pageNumber.value = 1;
-                pages.value = 0;
-                customerList.value = [];
-                getCustomerList();
-              }, 0);
-            } else {
-              uni.showToast({
-                title: res.msg,
-                icon: "none"
-              });
-            }
-          });
-      }
-    }
+  // 先重置状态
+  customerId.value = 0;
+  customerPhone.value = "";
+  isVisitPopup.value = false;
+
+  // 然后设置新的值
+  setTimeout(() => {
+    customerId.value = id;
+    customerPhone.value = phone;
+    isVisitPopup.value = true;
+  }, 0);
+};
+
+//处理弹窗关闭
+const handleVisitPopupClose = () => {
+  isVisitPopup.value = false;
+  setTimeout(() => {
+    customerId.value = 0;
+    customerPhone.value = "";
+  }, 0);
+};
+
+//处理确认
+const visitConfirm = () => {
+  uni.showToast({
+    title: "操作成功",
+    icon: "success"
   });
+
+  // 先关闭弹窗
+  isVisitPopup.value = false;
+
+  // 延迟执行其他操作
+  setTimeout(() => {
+    customerId.value = 0;
+    customerPhone.value = "";
+
+    // 重新加载列表
+    pageNumber.value = 1;
+    pages.value = 0;
+    customerList.value = [];
+    getCustomerList();
+  }, 0);
 };
 
 // 打电话

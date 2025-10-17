@@ -1,9 +1,9 @@
 <template>
   <view class="share-page">
-    <view v-if="details.outdoorLandscapeImg" class="overall-review-picture-container">
+    <view v-if="details.birdSEyeImg" class="overall-review-picture-container">
       <u-swiper
         height="300"
-        :list="details.outdoorLandscapeImg?.split(',') || []"
+        :list="details.birdSEyeImg?.split(',') || []"
         @click="previewImage"
       ></u-swiper>
       <view class="share-icon-container">
@@ -448,7 +448,7 @@ const switchCategory = (index: number) => {
 //预览
 const previewImage = (index: number) => {
   // 将逗号分隔的图片字符串转换为数组
-  const imageList = details.value.outdoorLandscapeImg?.split(",") || [];
+  const imageList = details.value.birdSEyeImg?.split(",") || [];
   uni.previewImage({
     current: index,
     urls: imageList,

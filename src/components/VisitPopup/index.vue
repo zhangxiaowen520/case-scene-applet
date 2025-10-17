@@ -5,7 +5,8 @@
     mode="center"
     :closeOnClickOverlay="false"
     :safeAreaInsetBottom="false"
-    customStyle="border-radius: 20rpx;">
+    customStyle="border-radius: 20rpx;"
+  >
     <view class="assign-popup">
       <text class="assign-popup-title">客户到访确认</text>
       <view class="assign-popup-content">
@@ -16,8 +17,22 @@
       </view>
     </view>
     <view class="assign-popup-btn">
-      <up-button style="height: 70rpx" size="small" color="#2C65F6" plain type="primary" @click="close">取消</up-button>
-      <up-button style="height: 70rpx" size="small" color="#2C65F6" type="primary" :loading="loading" @click="confirm"
+      <up-button
+        style="height: 70rpx"
+        size="small"
+        color="#2C65F6"
+        plain
+        type="primary"
+        @click="close"
+        >取消</up-button
+      >
+      <up-button
+        style="height: 70rpx"
+        size="small"
+        color="#2C65F6"
+        type="primary"
+        :loading="loading"
+        @click="confirm"
         >确定</up-button
       >
     </view>
@@ -34,7 +49,6 @@ const props = defineProps<{
   phone: string;
   show: boolean;
 }>();
-
 const codeValue = ref("");
 const loading = ref(false);
 const isGetCode = ref(false);
@@ -89,7 +103,7 @@ const confirm = () => {
       projectCustomerId: props.id,
       code: codeValue.value
     })
-    .then((res) => {
+    .then(res => {
       if (res.code === 0) {
         resetState();
         emit("confirm");
@@ -107,7 +121,7 @@ const confirm = () => {
 
 const getCode = () => {
   if (isGetCode.value) return; // 防止重复点击
-  
+
   // 清空验证码输入框
   codeValue.value = "";
 
@@ -115,7 +129,7 @@ const getCode = () => {
     .post("/customer/visitCode", {
       id: props.id
     })
-    .then((res) => {
+    .then(res => {
       if (res.code === 0) {
         isGetCode.value = true;
         second.value = 60;
@@ -136,7 +150,7 @@ const getCode = () => {
 // 监听 show 的变化，当弹窗隐藏时重置状态
 watch(
   () => props.show,
-  (newVal) => {
+  newVal => {
     if (!newVal) {
       resetState();
     }

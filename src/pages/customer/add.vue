@@ -23,7 +23,7 @@
           show-arrow
         />
       </view>
-      <view @click="handleSourceChannelChange">
+      <!-- <view @click="handleSourceChannelChange">
         <form-input
           label="来源渠道"
           v-model="sourceChannelName"
@@ -32,7 +32,7 @@
           disabled
           show-arrow
         />
-      </view>
+      </view> -->
       <view class="form-btn">
         <up-button
           color="#2C65F6"
@@ -63,22 +63,22 @@ const sourceChannelName = ref("");
 const hasOldCustomer = ref<number>(0);
 const hasOldCustomerName = ref("");
 
-const handleSourceChannelChange = () => {
-  uni.showActionSheet({
-    itemList: ["销售", "策划", "渠道", "全民", "物业"],
-    success: res => {
-      const map = {
-        0: "销售",
-        1: "策划",
-        2: "渠道",
-        3: "全民",
-        4: "物业"
-      };
-      sourceChannelName.value = map[res.tapIndex as keyof typeof map];
-      sourceChannel.value = res.tapIndex + 1;
-    }
-  });
-};
+// const handleSourceChannelChange = () => {
+//   uni.showActionSheet({
+//     itemList: ["销售", "策划", "渠道", "全民", "物业"],
+//     success: res => {
+//       const map = {
+//         0: "销售",
+//         1: "策划",
+//         2: "渠道",
+//         3: "全民",
+//         4: "物业"
+//       };
+//       sourceChannelName.value = map[res.tapIndex as keyof typeof map];
+//       sourceChannel.value = res.tapIndex + 1;
+//     }
+//   });
+// };
 
 const handleHasOldCustomerChange = () => {
   uni.showActionSheet({
@@ -120,7 +120,7 @@ const handleSave = () => {
           name: name.value,
           phone: phone.value,
           sex: sex.value,
-          sourceChannel: sourceChannel.value,
+          // sourceChannel: sourceChannel.value,
           hasOldCustomer: hasOldCustomer.value
         })
         .then(res => {

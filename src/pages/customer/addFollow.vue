@@ -4,13 +4,22 @@
       <view class="form-item">
         <text class="form-item-label">跟进方式</text>
         <view class="form-item-content">
-          <view class="tag" :class="{ 'tag-active': followType === '电话' }" @click="handleFollowTypeClick('电话')"
+          <view
+            class="tag"
+            :class="{ 'tag-active': followType === '电话' }"
+            @click="handleFollowTypeClick('电话')"
             >电话</view
           >
-          <view class="tag" :class="{ 'tag-active': followType === '微信' }" @click="handleFollowTypeClick('微信')"
+          <view
+            class="tag"
+            :class="{ 'tag-active': followType === '微信' }"
+            @click="handleFollowTypeClick('微信')"
             >微信</view
           >
-          <view class="tag" :class="{ 'tag-active': followType === '拜访' }" @click="handleFollowTypeClick('拜访')"
+          <view
+            class="tag"
+            :class="{ 'tag-active': followType === '拜访' }"
+            @click="handleFollowTypeClick('拜访')"
             >拜访</view
           >
         </view>
@@ -24,7 +33,8 @@
             height="120"
             placeholder="请输入"
             count
-            max-length="200" />
+            max-length="200"
+          />
         </view>
       </view>
       <view class="form-item">
@@ -37,11 +47,14 @@
             name="1"
             multiple
             :previewFullImage="true"
-            :maxCount="10"></u-upload>
+            :maxCount="10"
+          ></u-upload>
         </view>
       </view>
     </view>
-    <up-button type="primary" size="large" :loading="loading" color="#2c65f6" @click="handleSubmit">提交</up-button>
+    <up-button type="primary" size="large" :loading="loading" color="#2c65f6" @click="handleSubmit"
+      >提交</up-button
+    >
   </view>
 </template>
 
@@ -49,7 +62,8 @@
 import { BASE_URL, requestApi } from "@/api/request";
 import type { UploadFile } from "@/types/request";
 import { TokenUtil } from "@/utils/auth";
-import { ref } from "vue";
+import { onShow } from "@dcloudio/uni-app";
+import { onMounted, ref } from "vue";
 
 const props = defineProps<{
   projectCustomerId: string;
@@ -59,9 +73,37 @@ const followType = ref("电话"); // 跟进方式
 const followContent = ref(""); // 跟进内容
 const fileList = ref<UploadFile[]>([]); // 跟进图
 const loading = ref(false); // 提交状态
+const isHas = ref(false); // 客户状态
 
 const handleFollowTypeClick = (type: string) => {
   followType.value = type;
+};
+
+const getHasInfoComplete = () => {
+  try {
+    requestApi
+      .post("/customer/has-info-complete", {
+        id: props.projectCustomerId
+      })
+      .then(res => {
+        if (res.code === 0) {
+          isHas.value = res.data;
+          if (!res.data) {
+            uni.showModal({
+              content: "请先完善客户资料",
+              showCancel: false,
+              success: () => {
+                uni.reLaunch({
+                  url: `/pages/customer/details?projectCustomerId=${props.projectCustomerId}`
+                });
+              }
+            });
+          }
+        } else {
+          uni.showToast({ title: res.msg, icon: "none" });
+        }
+      });
+  } catch (error) {}
 };
 
 // 提交
@@ -75,7 +117,7 @@ const handleSubmit = () => {
     return;
   }
   loading.value = true;
-  const images = fileList.value.map((item) => item.url);
+  const images = fileList.value.map(item => item.url);
   //将images拼接为字符串，逗号分隔
   const imagesStr = images.join(",");
   requestApi
@@ -85,7 +127,7 @@ const handleSubmit = () => {
       content: followContent.value,
       images: imagesStr
     })
-    .then((res) => {
+    .then(res => {
       if (res.code === 0) {
         uni.showToast({ title: "提交成功", icon: "none" });
         setTimeout(() => {
@@ -158,7 +200,7 @@ const uploadFilePromise = (url: string): Promise<string> => {
         "Content-Type": "multipart/form-data",
         Authentication: TokenUtil.getToken()
       },
-      success: (res) => {
+      success: res => {
         try {
           const data = JSON.parse(res.data);
           if (data.code === 0) {
@@ -170,13 +212,17 @@ const uploadFilePromise = (url: string): Promise<string> => {
           reject(e);
         }
       },
-      fail: (error) => {
+      fail: error => {
         console.log(error);
         reject(error);
       }
     });
   });
 };
+
+onShow(() => {
+  getHasInfoComplete();
+});
 </script>
 
 <style lang="scss" scoped>
