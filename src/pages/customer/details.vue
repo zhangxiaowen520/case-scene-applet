@@ -8,11 +8,7 @@
           <text class="name">{{ customerInfo?.name }}</text>
           <text class="phone">{{ customerInfo?.phone }}</text>
         </view>
-        <view
-          v-if="UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant"
-          class="edit-btn"
-          @click="goBasic"
-        >
+        <view v-if="UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant" class="edit-btn" @click="goBasic">
           <up-icon name="edit-pen" size="16" color="#4080ff"></up-icon>
           <text>编辑</text>
         </view>
@@ -35,11 +31,7 @@
           <text class="label">到访次数:</text>
           <text class="value">{{ customerInfo?.visitNumber }}</text>
         </view>
-        <view
-          class="info-item"
-          v-for="item in customerInfo?.basicInfos.slice(0, 5)"
-          :key="item.customerFieldId"
-        >
+        <view class="info-item" v-for="item in customerInfo?.basicInfos.slice(0, 5)" :key="item.customerFieldId">
           <text class="label">{{ item.fieldName }}:</text>
           <text class="value">{{ item.value || "-" }}</text>
         </view>
@@ -54,11 +46,7 @@
           </view>
         </template>
         <view class="info-show-more" @click="handleShowMoreBasicInfo">
-          <up-icon
-            :name="showMoreBasicInfo ? 'arrow-up' : 'arrow-down'"
-            size="12"
-            color="#4080ff"
-          ></up-icon>
+          <up-icon :name="showMoreBasicInfo ? 'arrow-up' : 'arrow-down'" size="12" color="#4080ff"></up-icon>
           <text class="show-more-text">{{ showMoreBasicInfo ? "点击收起" : "点击显示更多" }}</text>
         </view>
       </view>
@@ -67,21 +55,13 @@
     <view class="demand-section">
       <view class="section-header">
         <text class="title">客户需求</text>
-        <view
-          v-if="UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant"
-          class="edit-btn"
-          @click="goNeed"
-        >
+        <view v-if="UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant" class="edit-btn" @click="goNeed">
           <up-icon name="edit-pen" size="16" color="#4080ff"></up-icon>
           <text>编辑</text>
         </view>
       </view>
       <view class="info-list">
-        <view
-          class="info-item"
-          v-for="item in customerInfo?.demandInfos.slice(0, 7)"
-          :key="item.customerFieldId"
-        >
+        <view class="info-item" v-for="item in customerInfo?.demandInfos.slice(0, 7)" :key="item.customerFieldId">
           <text class="label">{{ item.fieldName }}:</text>
           <text class="value">{{ item.value || "-" }}</text>
         </view>
@@ -96,11 +76,7 @@
           </view>
         </template>
         <view class="info-show-more" @click="handleShowMoreDemandInfo">
-          <up-icon
-            :name="showMoreDemandInfo ? 'arrow-up' : 'arrow-down'"
-            size="12"
-            color="#4080ff"
-          ></up-icon>
+          <up-icon :name="showMoreDemandInfo ? 'arrow-up' : 'arrow-down'" size="12" color="#4080ff"></up-icon>
           <text class="show-more-text">{{ showMoreDemandInfo ? "点击收起" : "点击显示更多" }}</text>
         </view>
       </view>
@@ -131,6 +107,17 @@
         @handleComment="handleComment"
       />
     </view>
+    <!-- 到访记录 -->
+    <view class="info-section">
+      <view class="section-header">
+        <text class="title">到访记录</text>
+        <view class="more-btn" @click="goVisit">
+          <text>查看更多</text>
+          <u-icon name="arrow-right" size="14" color="#979797"></u-icon>
+        </view>
+      </view>
+      <VisitRecord :records="customerVisitRecord" />
+    </view>
     <!-- 报备记录 -->
     <view class="info-section">
       <view class="section-header">
@@ -142,8 +129,7 @@
     <view class="btn-group">
       <up-button
         v-if="
-          (UserUtil.getDataPermissionType() === 'PROJECT' ||
-            UserUtil.getDataPermissionType() === 'SELF') &&
+          (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
           UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant &&
           customerInfo?.visitNumber > 0
         "
@@ -157,8 +143,7 @@
       >
       <up-button
         v-if="
-          (UserUtil.getDataPermissionType() === 'PROJECT' ||
-            UserUtil.getDataPermissionType() === 'SELF') &&
+          (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
           UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant &&
           customerInfo?.visitNumber > 0
         "
@@ -172,8 +157,7 @@
       >
       <up-button
         v-if="
-          (UserUtil.getDataPermissionType() === 'PROJECT' ||
-            UserUtil.getDataPermissionType() === 'SELF') &&
+          (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
           UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant &&
           customerInfo?.visitNumber > 0
         "
@@ -186,8 +170,7 @@
       >
       <up-button
         v-if="
-          (UserUtil.getDataPermissionType() === 'PROJECT' ||
-            UserUtil.getDataPermissionType() === 'SELF') &&
+          (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
           UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant &&
           customerInfo?.visitNumber > 0
         "
@@ -209,8 +192,7 @@
       >
       <up-button
         v-if="
-          (UserUtil.getDataPermissionType() === 'PROJECT' ||
-            UserUtil.getDataPermissionType() === 'SELF') &&
+          (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
           UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant &&
           customerInfo?.visitNumber > 0
         "
@@ -223,8 +205,7 @@
       >
       <up-button
         v-if="
-          (UserUtil.getDataPermissionType() === 'PROJECT' ||
-            UserUtil.getDataPermissionType() === 'SELF') &&
+          (UserUtil.getDataPermissionType() === 'PROJECT' || UserUtil.getDataPermissionType() === 'SELF') &&
           UserUtil.getUserInfo().id === customerInfo?.realEstateConsultant &&
           customerInfo?.visitNumber > 0 &&
           customerInfo?.hasPhone
@@ -236,11 +217,7 @@
         >打电话</up-button
       >
     </view>
-    <AssignPopup
-      :show="showAssignPopup"
-      @close="showAssignPopup = false"
-      @confirm="handleAssignConfirm"
-    />
+    <AssignPopup :show="showAssignPopup" @close="showAssignPopup = false" @confirm="handleAssignConfirm" />
     <!-- 添加时间选择弹窗 -->
     <up-datetime-picker
       :show="isSignTimeShow"
@@ -258,13 +235,15 @@ import { ref, computed } from "vue";
 import OwnershipChangeRecord from "./components/OwnershipChangeRecord.vue";
 import FollowUpRecord from "./components/FollowUpRecord.vue";
 import ReportingRecord from "./components/ReportingRecord.vue";
+import VisitRecord from "./components/VisitRecord.vue";
 import { requestApi } from "@/api/request";
 import { onLoad, onShow } from "@dcloudio/uni-app";
 import type {
   CustomerChangeRecordInterface,
   CustomerDetailsInterface,
   CustomerFollowUpRecordInterface,
-  CustomerReportingRecordInterface
+  CustomerReportingRecordInterface,
+  CustomerVisitRecordInterface
 } from "@/types/customer";
 import { OrganizationUtil, ProjectUtil, UserUtil } from "@/utils/auth";
 import AssignPopup from "@/components/AssignPopup/index.vue";
@@ -285,6 +264,8 @@ const customerChangeRecord = ref<CustomerChangeRecordInterface[]>([]);
 const customerFollowUpRecord = ref<CustomerFollowUpRecordInterface[]>([]);
 // 客户报备记录
 const customerReportingRecord = ref<CustomerReportingRecordInterface[]>([]);
+// 客户到访记录
+const customerVisitRecord = ref<CustomerVisitRecordInterface[]>([]);
 // 分配弹窗
 const showAssignPopup = ref(false);
 // 添加签约时间相关的响应式变量
@@ -314,6 +295,7 @@ onLoad(options => {
     getCustomerChangeRecord(options.projectCustomerId);
     getCustomerFollowUpRecord(options.projectCustomerId);
     getCustomerReportingRecord(options.projectCustomerId);
+    getCustomerVisitRecord(options.projectCustomerId);
   }
 });
 
@@ -323,6 +305,7 @@ onShow(() => {
     getCustomerChangeRecord(projectCustomerId.value);
     getCustomerFollowUpRecord(projectCustomerId.value);
     getCustomerReportingRecord(projectCustomerId.value);
+    getCustomerVisitRecord(projectCustomerId.value);
   }
 });
 
@@ -419,6 +402,21 @@ const getCustomerReportingRecord = (id: string | number) => {
     });
 };
 
+// 获取客户到访记录
+const getCustomerVisitRecord = (id: string | number) => {
+  requestApi
+    .post("/customer/visit/record", {
+      customerId: id,
+      pageNumber: 1,
+      pageSize: 5
+    })
+    .then(res => {
+      if (res.code === 0) {
+        customerVisitRecord.value = res.data.list;
+      }
+    });
+};
+
 // 显示更多
 const handleShowMoreBasicInfo = () => {
   showMoreBasicInfo.value = !showMoreBasicInfo.value;
@@ -432,20 +430,20 @@ const handleShowMoreDemandInfo = () => {
 // 跳转基础信息
 const goBasic = () => {
   uni.navigateTo({
-    url: `/pages/customer/basic?id=${customerInfo.value?.id}&level=${
-      customerInfo.value?.level
-    }&sex=${customerInfo.value?.sex}&name=${customerInfo.value?.name}&phone=${
-      customerInfo.value?.phone
-    }&infos=${JSON.stringify(customerInfo.value?.basicInfos)}`
+    url: `/pages/customer/basic?id=${customerInfo.value?.id}&level=${customerInfo.value?.level}&sex=${
+      customerInfo.value?.sex
+    }&name=${customerInfo.value?.name}&phone=${customerInfo.value?.phone}&infos=${JSON.stringify(
+      customerInfo.value?.basicInfos
+    )}`
   });
 };
 
 // 跳转客户需求
 const goNeed = () => {
   uni.navigateTo({
-    url: `/pages/customer/need?id=${customerInfo.value?.id}&name=${
-      customerInfo.value?.name
-    }&infos=${JSON.stringify(customerInfo.value?.demandInfos)}`
+    url: `/pages/customer/need?id=${customerInfo.value?.id}&name=${customerInfo.value?.name}&infos=${JSON.stringify(
+      customerInfo.value?.demandInfos
+    )}`
   });
 };
 
@@ -460,6 +458,13 @@ const goAttribution = () => {
 const goFollow = () => {
   uni.navigateTo({
     url: `/pages/customer/follow?id=${projectCustomerId.value}`
+  });
+};
+
+// 跳转到访记录
+const goVisit = () => {
+  uni.navigateTo({
+    url: `/pages/customer/visit?id=${projectCustomerId.value}`
   });
 };
 

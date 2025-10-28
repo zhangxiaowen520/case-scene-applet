@@ -257,6 +257,12 @@
       }
     },
     {
+      "path": "pages/customer/visit",
+      "style": {
+        "navigationBarTitleText": "到访记录"
+      }
+    },
+    {
       "path": "pages/customer/need",
       "style": {
         "navigationBarTitleText": "客户需求"

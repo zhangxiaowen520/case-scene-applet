@@ -107,3 +107,18 @@ export interface CustomerReportingRecordInterface {
   sourceChannelName: string;
   visitNumber: number | null;
 }
+
+export interface CustomerVisitRecordInterface {
+  code: string;
+  createTime: string;
+  createUser: number;
+  deleteTime: string;
+  deleteUser: number;
+  frequency: number;
+  id: number;
+  isDeleted: boolean;
+  method: "GENERAL" | "FORCIBLY";
+  methodName: string;
+  projectCustomerId: number;
+  updateTime: string;
+}
