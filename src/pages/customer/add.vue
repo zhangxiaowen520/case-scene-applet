@@ -115,7 +115,7 @@ const handleSave = () => {
     ],
     success: success => {
       requestApi
-        .post("/national/marketing/report", {
+        .post("/customer/report", {
           projectId: ProjectUtil.getProjectInfo().projectId,
           name: name.value,
           phone: phone.value,
