@@ -4,14 +4,7 @@
       <form-input label="客户姓名" v-model="name" required placeholder="请输入" />
       <form-input label="客户电话" v-model="phone" required placeholder="请输入" />
       <view @click="handleGenderChange">
-        <form-input
-          label="客户性别"
-          v-model="sex"
-          required
-          placeholder="请选择"
-          disabled
-          show-arrow
-        />
+        <form-input label="客户性别" v-model="sex" required placeholder="请选择" disabled show-arrow />
       </view>
       <view @click="handleHasOldCustomerChange">
         <form-input
@@ -23,25 +16,11 @@
           show-arrow
         />
       </view>
-      <!-- <view @click="handleSourceChannelChange">
-        <form-input
-          label="来源渠道"
-          v-model="sourceChannelName"
-          required
-          placeholder="请选择"
-          disabled
-          show-arrow
-        />
-      </view> -->
+      <view @click="handleSourceChannelChange">
+        <form-input label="来源渠道" v-model="sourceChannelName" required placeholder="请选择" disabled show-arrow />
+      </view>
       <view class="form-btn">
-        <up-button
-          color="#2C65F6"
-          type="primary"
-          size="large"
-          :loading="loading"
-          @click="handleSave"
-          >保存</up-button
-        >
+        <up-button color="#2C65F6" type="primary" size="large" :loading="loading" @click="handleSave">保存</up-button>
       </view>
     </view>
   </view>
@@ -57,28 +36,25 @@ const name = ref("");
 const phone = ref("");
 const sex = ref("");
 const loading = ref(false);
-// 来源渠道,1:销售，2:策划，3:渠道，4：全民，5:物业
+// 来源渠道,1:销售，2:策划
 const sourceChannel = ref<number>(0);
 const sourceChannelName = ref("");
 const hasOldCustomer = ref<number>(0);
 const hasOldCustomerName = ref("");
 
-// const handleSourceChannelChange = () => {
-//   uni.showActionSheet({
-//     itemList: ["销售", "策划", "渠道", "全民", "物业"],
-//     success: res => {
-//       const map = {
-//         0: "销售",
-//         1: "策划",
-//         2: "渠道",
-//         3: "全民",
-//         4: "物业"
-//       };
-//       sourceChannelName.value = map[res.tapIndex as keyof typeof map];
-//       sourceChannel.value = res.tapIndex + 1;
-//     }
-//   });
-// };
+const handleSourceChannelChange = () => {
+  uni.showActionSheet({
+    itemList: ["销售", "策划"],
+    success: res => {
+      const map = {
+        0: "销售",
+        1: "策划"
+      };
+      sourceChannelName.value = map[res.tapIndex as keyof typeof map];
+      sourceChannel.value = res.tapIndex + 1;
+    }
+  });
+};
 
 const handleHasOldCustomerChange = () => {
   uni.showActionSheet({
@@ -109,10 +85,7 @@ const handleSave = () => {
   }
   loading.value = true;
   uni.requestSubscribeMessage({
-    tmplIds: [
-      "randtQk6QHnQwZZ3LIcpBfQcTwsoHbXEaoontsm6BlY",
-      "4GRYF8ESsWqnlU8l86glyaTqH5y73SNhz2XEK2sWu3A"
-    ],
+    tmplIds: ["randtQk6QHnQwZZ3LIcpBfQcTwsoHbXEaoontsm6BlY", "4GRYF8ESsWqnlU8l86glyaTqH5y73SNhz2XEK2sWu3A"],
     success: success => {
       requestApi
         .post("/customer/report", {
@@ -120,7 +93,7 @@ const handleSave = () => {
           name: name.value,
           phone: phone.value,
           sex: sex.value,
-          // sourceChannel: sourceChannel.value,
+          sourceChannel: sourceChannel.value,
           hasOldCustomer: hasOldCustomer.value
         })
         .then(res => {
@@ -132,6 +105,10 @@ const handleSave = () => {
             name.value = "";
             phone.value = "";
             sex.value = "";
+            sourceChannel.value = 0;
+            sourceChannelName.value = "";
+            hasOldCustomer.value = 0;
+            hasOldCustomerName.value = "";
           } else {
             uni.showToast({
               title: res.msg,
