@@ -4,6 +4,7 @@
       <view class="record-content">
         <view class="row-content">
           <view class="time">{{ step.createTime }}</view>
+          <view class="time-expire" v-if="step.visitBaoHuTime">有效期至：{{ step.visitBaoHuTime }}</view>
         </view>
         <view class="row-content">
           <view class="tag visit">{{ step.methodName }}</view>
@@ -50,6 +51,11 @@ const props = defineProps<{
   .time {
     font-size: 28rpx;
     color: rgba(26, 39, 52, 0.5);
+  }
+
+  .time-expire {
+    font-size: 22rpx;
+    color: #999;
   }
 
   .operator {
