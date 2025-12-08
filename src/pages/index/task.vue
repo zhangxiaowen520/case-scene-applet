@@ -18,7 +18,8 @@
               type="success"
               bg-color="rgba(255, 59, 51, 0.1)"
               border-color="rgba(255, 59, 51, 0.1)"
-              color="#FF3B33" />
+              color="#FF3B33"
+            />
             <u-tag
               v-if="item.visitNumber === 1"
               text="已到访"
@@ -26,7 +27,8 @@
               type="success"
               bg-color="rgba(44, 101, 246, 0.1)"
               border-color="rgba(44, 101, 246, 0.1)"
-              color="#2C65F6" />
+              color="#2C65F6"
+            />
             <u-tag
               v-if="item.visitNumber >= 2"
               text="复访"
@@ -34,14 +36,16 @@
               type="success"
               bg-color="rgba(71, 198, 134, 0.1)"
               border-color="rgba(71, 198, 134, 0.1)"
-              color="#47C686" />
+              color="#47C686"
+            />
             <view
               v-if="
                 item.nextFollowUpTime &&
                 dayjs(item.nextFollowUpTime).isBefore(dayjs().add(24, 'hour')) &&
                 getTimeRemaining(item.nextFollowUpTime) > 0
               "
-              class="count-down">
+              class="count-down"
+            >
               <text class="status-green">跟进倒计时</text>
               <up-count-down :time="getTimeRemaining(item.nextFollowUpTime)" format="HH:mm:ss"></up-count-down>
             </view>
@@ -92,7 +96,7 @@
 <script setup lang="ts">
 import { requestApi } from "@/api/request";
 import type { CustomerInterface } from "@/types/customer";
-import { ProjectUtil } from "@/utils/auth";
+import { OrganizationUtil, ProjectUtil } from "@/utils/auth";
 import { onReachBottom, onShow } from "@dcloudio/uni-app";
 import { ref } from "vue";
 import { phoneDesensitization } from "@/utils/tools";
@@ -118,10 +122,10 @@ const getCustomerList = () => {
     .post("/home/query/closer/task/list", {
       pageNumber: pageNumber.value,
       pageSize: 10,
-      projectId: ProjectUtil.getProjectInfo().projectId,
+      projectId: OrganizationUtil.getOrganizationInfo().id,
       type: Number(props.type)
     })
-    .then((res) => {
+    .then(res => {
       if (res.code === 0) {
         customerList.value = [...customerList.value, ...res.data.list];
         pages.value = res.data.pages;
@@ -146,7 +150,7 @@ const handleCallClick = (phone: string, id?: number) => {
           .post("/customer/customer/phone", {
             id: id
           })
-          .then((res) => {
+          .then(res => {
             if (res.code === 0) {
               console.log("拨打电话成功");
             }
