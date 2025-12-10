@@ -6,8 +6,11 @@
           <view class="time">{{ step.reportTime }}</view>
           <view v-if="step.hasJdUser" class="update" @click="handleUpdate(step)">修改</view>
         </view>
+        <view class="row-content" v-if="step.reportBaoHuTime">
+          <view class="time-expire">有效期至：{{ step.reportBaoHuTime }}</view>
+        </view>
         <view class="row-content">
-          <view class="time" style="font-size: 24rpx">{{ step.reportStore }}</view>
+          <view class="time-expire">{{ step.reportStore }}</view>
         </view>
         <view class="row-content">
           <view class="desc-wrapper">
@@ -16,12 +19,7 @@
           <view class="desc-wrapper">
             <view class="desc">{{ step.brokerPhone }}</view>
           </view>
-          <up-icon
-            name="phone"
-            size="16"
-            color="#2C65F6"
-            @click="handleCall(step.brokerPhone)"
-          ></up-icon>
+          <up-icon name="phone" size="16" color="#2C65F6" @click="handleCall(step.brokerPhone)"></up-icon>
         </view>
       </view>
     </template>
@@ -83,6 +81,11 @@ const handleUpdate = (step: CustomerReportingRecordInterface) => {
   .time {
     font-size: 28rpx;
     color: rgba(26, 39, 52, 0.5);
+  }
+
+  .time-expire {
+    font-size: 22rpx;
+    color: #999;
   }
 
   .operator {

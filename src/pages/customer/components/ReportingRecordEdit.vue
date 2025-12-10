@@ -3,6 +3,7 @@
     <view class="form">
       <form-input label="报备经纪人" v-model="reportBroker" required placeholder="请输入" />
       <form-input label="经纪人电话" v-model="brokerPhone" required placeholder="请输入" />
+      <form-input label="报备门店" v-model="reportStore" required placeholder="请输入" />
       <view @click="handleSourceChannelChange">
         <form-input
           label="来源渠道"
@@ -36,6 +37,7 @@ import { onLoad } from "@dcloudio/uni-app";
 
 const reportBroker = ref("");
 const brokerPhone = ref("");
+const reportStore = ref("");
 const loading = ref(false);
 const recordData = ref<CustomerReportingRecordInterface>();
 
@@ -69,7 +71,7 @@ const handleSourceChannelChange = () => {
 };
 
 const handleSave = async () => {
-  if (!reportBroker.value || !brokerPhone.value) {
+  if (!reportBroker.value || !brokerPhone.value || !reportStore.value) {
     uni.showToast({
       title: "请填写完整信息",
       icon: "none"
@@ -82,7 +84,8 @@ const handleSave = async () => {
     customerReportRecordId: recordData.value?.customerReportRecordId,
     reportBroker: reportBroker.value,
     brokerPhone: brokerPhone.value,
-    sourceChannel: sourceChannel.value
+    sourceChannel: sourceChannel.value,
+    reportStore: reportStore.value
   };
 
   try {
@@ -119,6 +122,7 @@ onLoad((options: any) => {
       recordData.value = data;
       reportBroker.value = data.reportBroker || "";
       brokerPhone.value = data.brokerPhone || "";
+      reportStore.value = data.reportStore || "";
       sourceChannel.value = data.sourceChannel || 0;
       sourceChannelName.value =
         sourceChannelMap[data.sourceChannel as keyof typeof sourceChannelMap] || "";
