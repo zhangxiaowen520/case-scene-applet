@@ -5,7 +5,8 @@
     mode="center"
     :closeOnClickOverlay="false"
     :safeAreaInsetBottom="false"
-    customStyle="border-radius: 20rpx;">
+    customStyle="border-radius: 20rpx;"
+  >
     <view class="assign-popup">
       <text class="assign-popup-title">分配客户</text>
       <view class="assign-popup-label">
@@ -20,7 +21,8 @@
               :name="item?.user?.id"
               :label="item?.user?.name"
               :checked="value === item?.user?.id"
-              @change="handleRadioChange"></up-radio>
+              @change="handleRadioChange"
+            ></up-radio>
           </template>
         </up-radio-group>
       </view>
@@ -42,7 +44,7 @@
 
 <script setup lang="ts">
 import { requestApi } from "@/api/request";
-import { ProjectUtil } from "@/utils/auth";
+import { OrganizationUtil, ProjectUtil } from "@/utils/auth";
 import { onMounted, ref, watch } from "vue";
 
 const props = defineProps<{
@@ -57,7 +59,7 @@ const loading = ref(false);
 
 watch(
   () => props.show,
-  (newVal) => {
+  newVal => {
     if (!newVal) {
       value.value = "";
       loading.value = false;
@@ -84,9 +86,9 @@ const handleAssignClick = () => {
 const getUserList = () => {
   requestApi
     .post("/home/wait/distribution/users", {
-      id: ProjectUtil.getProjectInfo().projectId
+      id: OrganizationUtil.getOrganizationInfo().id
     })
-    .then((res) => {
+    .then(res => {
       if (res.code === 0) {
         userList.value = res.data;
       }
