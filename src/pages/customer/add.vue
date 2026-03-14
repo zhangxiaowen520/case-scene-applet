@@ -30,7 +30,7 @@
 import { ref } from "vue";
 import FormInput from "@/components/From/FormInput.vue";
 import { requestApi } from "@/api/request";
-import { ProjectUtil } from "@/utils/auth";
+import { OrganizationUtil, ProjectUtil } from "@/utils/auth";
 
 const name = ref("");
 const phone = ref("");
@@ -89,7 +89,7 @@ const handleSave = () => {
     success: success => {
       requestApi
         .post("/customer/report", {
-          projectId: ProjectUtil.getProjectInfo().projectId,
+          projectId: OrganizationUtil.getOrganizationInfo().id,
           name: name.value,
           phone: phone.value,
           sex: sex.value,
